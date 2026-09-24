@@ -55,22 +55,13 @@ export default function MasterDashboardPage() {
             />
           </div>
 
-          {/* Upper Status Row: 4 Clean Status Indicators (System Status, Alerts, Asset Health, Energy) */}
-          <div className="px-6 pt-1 flex items-center justify-between pointer-events-none shrink-0">
+          {/* Central Area: Open 3D Viewport with Right Side Status Rail */}
+          <div className="relative flex-1 flex items-center justify-end px-6 pointer-events-none">
+            {/* Vertically Stacked Status Rail on the Right Side */}
             <div className="pointer-events-auto">
-              <TopStatusPills />
-            </div>
-
-            {/* Subtle View Mode Badge */}
-            <div className="pointer-events-auto hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#0D1014]/85 backdrop-blur-md border border-white/[0.08] text-[11px] text-[#8B9199]">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[#F4F4F5] font-semibold">Airport Digital Twin</span>
-              <span>• Real-Time Synchronized</span>
+              <TopStatusPills layout="vertical" />
             </div>
           </div>
-
-          {/* Central Layer: Spacious Unobstructed 3D Airfield Viewport */}
-          <div className="relative flex-1 pointer-events-none" />
 
           {/* Contextual Entity Inspection Card (appears on landmark/asset click) */}
           <ContextualEntityModal />
