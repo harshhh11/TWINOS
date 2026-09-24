@@ -17,7 +17,7 @@ import {
   GitFork,
   ArrowRight,
 } from 'lucide-react';
-import { useTwinStore } from '@/lib/twin/twinStateStore';
+import { useTwinStore } from '../../lib/twin/twinStateStore';
 
 interface NavItem {
   label: string;
@@ -98,12 +98,12 @@ export function LeftSidebar() {
                 </div>
 
                 {item.label === 'Alerts' && activeIncidents > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                  <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
                     {activeIncidents}
                   </span>
                 )}
                 {item.label === 'Incidents' && (
-                  <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+                  <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">
                     1
                   </span>
                 )}

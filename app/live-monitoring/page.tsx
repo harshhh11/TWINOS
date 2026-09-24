@@ -182,6 +182,7 @@ export default function LiveMonitoringPage() {
 
             {/* Custom Uploaded Image/Video */}
             {uploadedMediaUrl && !isWebcamActive && (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={uploadedMediaUrl}
                 alt="Uploaded CCTV Sample"
