@@ -14,14 +14,13 @@ import {
   Layers,
   Zap,
   Cpu,
-  Users,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
 
 interface PredictionItem {
   id: string;
-  category: 'CONGESTION' | 'RESOURCE' | 'DEGRADATION' | 'INCIDENT';
+  category: 'EQUIPMENT' | 'RESOURCE' | 'DEGRADATION' | 'INCIDENT';
   title: string;
   location: string;
   timeframe: string;
@@ -36,54 +35,54 @@ interface PredictionItem {
 const INITIAL_PREDICTIONS: PredictionItem[] = [
   {
     id: 'pred-1',
-    category: 'CONGESTION',
-    title: 'Passenger Queue Bottleneck at Terminal B Security',
-    location: 'Terminal B - Concourse B2',
-    timeframe: 'In 20 minutes (16:45)',
-    confidence: 94,
-    expectedImpact: 'Security queue will exceed capacity (+14 min delay for 480 passengers), potentially delaying 3 flight departures.',
-    recommendedAction: 'Open Security Checkpoint C and deploy 2 mobile passenger flow marshals to divert line.',
-    coordinates: [11, 2.5, 3],
-    locationId: 'terminal-b',
-    applied: false,
-  },
-  {
-    id: 'pred-2',
     category: 'DEGRADATION',
     title: 'HVAC-03 Thermal Variance & Bearing Strain',
-    location: 'Terminal B South Roof',
+    location: 'Terminal B South Technical Bay',
     timeframe: 'In 4 hours (20:30)',
     confidence: 88,
-    expectedImpact: 'Internal temperature in Concourse B will rise by +3.4°C during peak passenger arrival wave.',
-    recommendedAction: 'Pre-cool Zone B2 by -1.5°C right now and shift 35% load to Auxiliary Chiller Unit 4.',
+    expectedImpact: 'Chiller efficiency will degrade by 18%, causing coil temperatures to rise to 31.5°C during afternoon flight banking.',
+    recommendedAction: 'Pre-cool Zone B2 by -1.5°C and shift 35% thermal load to Auxiliary Chiller Unit 4.',
     coordinates: [12, 3.8, 2],
     locationId: 'terminal-b',
     applied: false,
   },
   {
-    id: 'pred-3',
+    id: 'pred-2',
     category: 'RESOURCE',
     title: 'Evening Grid Power Surge Demand Peak',
     location: 'Substation South Grid',
     timeframe: 'In 2.5 hours (19:00)',
     confidence: 91,
-    expectedImpact: 'Peak load projected at 28.6 MW (+18% above nominal), triggering tiered peak tariff penalty.',
-    recommendedAction: 'Initiate automated peak shaving on non-essential baggage apron lighting (-1.2 MW).',
+    expectedImpact: 'Peak load projected at 28.6 MW (+18% above nominal baseline) due to simultaneous ground support operations.',
+    recommendedAction: 'Stage secondary transformer bank and balance feeder line B load.',
     coordinates: [-16, 1.2, 14],
     locationId: 'energy-hub',
     applied: false,
   },
   {
-    id: 'pred-4',
+    id: 'pred-3',
     category: 'INCIDENT',
-    title: 'Baggage Conveyor 03 Jam Risk via Luggage Volume Spike',
+    title: 'Baggage Conveyor 03 Bearing Friction Spike',
     location: 'Terminal A Logistics Reclaim Hall',
     timeframe: 'In 35 minutes (17:00)',
     confidence: 82,
-    expectedImpact: 'Carousel 3 belt slowdown under 84°C friction could cause 12-minute baggage retrieval bottleneck.',
-    recommendedAction: 'Divert Flight AI-102 luggage transfer to Carousel 4 and alert ground logistics crew.',
+    expectedImpact: 'Carousel 3 belt motor under 31.8°C bearing friction could trip automated breaker within 45 minutes.',
+    recommendedAction: 'Divert Flight AI-102 luggage transfer to Carousel 4 and dispatch lube maintenance crew.',
     coordinates: [-12, 0.8, 8],
     locationId: 'terminal-a',
+    applied: false,
+  },
+  {
+    id: 'pred-4',
+    category: 'EQUIPMENT',
+    title: 'Substation Transformer 02 Voltage Harmonics Trend',
+    location: 'Primary Power Distribution Vault',
+    timeframe: 'In 6 hours (22:00)',
+    confidence: 85,
+    expectedImpact: 'Harmonic distortion on 11kV busbar projected to reach 4.8%, close to 5.0% IEEE threshold.',
+    recommendedAction: 'Engage active power harmonic filter bank 2 on Substation Bus B.',
+    coordinates: [-16, 1.2, 14],
+    locationId: 'energy-hub',
     applied: false,
   },
 ];
@@ -130,17 +129,17 @@ export default function PredictionsPage() {
           <div>
             <h1 className="text-base font-bold text-[#F4F4F5] flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-[#F28C18]" />
-              AI Operational Predictions & Proactive Mitigations
+              Operational Trend Predictions & Asset Mitigations
             </h1>
             <p className="text-[11px] text-[#8B9199]">
-              Machine Learning Bottleneck Forecasting • Degradation Simulation • Prescriptive Remedies
+              Machine Learning Equipment Degradation Forecasting • Telemetry Projections • Preventative Actions
             </p>
           </div>
         </div>
 
         {/* Category Filters */}
         <div className="flex items-center gap-1.5 p-1 bg-white/5 border border-white/10 rounded-full text-xs">
-          {['ALL', 'CONGESTION', 'DEGRADATION', 'RESOURCE', 'INCIDENT'].map((cat) => (
+          {['ALL', 'DEGRADATION', 'RESOURCE', 'EQUIPMENT', 'INCIDENT'].map((cat) => (
             <button
               key={cat}
               onClick={() => setFilterCategory(cat)}
@@ -166,15 +165,15 @@ export default function PredictionsPage() {
             </div>
             <div>
               <h2 className="text-sm font-bold text-[#F4F4F5]">
-                {predictions.filter((p) => !p.applied).length} Active Proactive Forecasts Requiring Attention
+                {predictions.filter((p) => !p.applied).length} Active Asset & Operational Forecasts Requiring Attention
               </h2>
               <p className="text-xs text-[#8B9199] mt-0.5">
-                TwinOS predictive intelligence runs 15-minute forward simulations using physics models and historical neural baselines.
+                TwinOS predictive engine runs forward degradation projections using sensor history and physical telemetry models.
               </p>
             </div>
           </div>
           <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-            Avg Confidence: 89%
+            Avg Confidence: 87%
           </span>
         </div>
 
@@ -216,7 +215,7 @@ export default function PredictionsPage() {
 
                   {/* Expected Impact */}
                   <div className="p-3 rounded-xl bg-red-950/20 border border-red-500/20 mb-3 text-xs">
-                    <span className="text-[10px] font-bold text-red-400 uppercase block mb-1">
+                    <span className="text-[10px] font-bold text-red-400 uppercase block mb-1 font-mono">
                       Expected Operational Impact
                     </span>
                     <p className="text-[11px] text-white/80 leading-relaxed">
@@ -226,8 +225,8 @@ export default function PredictionsPage() {
 
                   {/* Recommended Action */}
                   <div className="p-3 rounded-xl bg-[#F28C18]/10 border border-[#F28C18]/25 mb-4 text-xs">
-                    <span className="text-[10px] font-bold text-[#F28C18] uppercase block mb-1">
-                      Recommended Action
+                    <span className="text-[10px] font-bold text-[#F28C18] uppercase block mb-1 font-mono">
+                      Recommended Preventive Action
                     </span>
                     <p className="text-[11px] text-[#F4F4F5] font-medium leading-relaxed">
                       {pred.recommendedAction}
@@ -257,12 +256,12 @@ export default function PredictionsPage() {
                     {pred.applied ? (
                       <>
                         <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Action Dispatched ✓</span>
+                        <span>Mitigation Applied ✓</span>
                       </>
                     ) : (
                       <>
                         <Sparkles className="w-3.5 h-3.5" />
-                        <span>Execute Recommended Action</span>
+                        <span>Dispatch Preventive Action</span>
                       </>
                     )}
                   </button>

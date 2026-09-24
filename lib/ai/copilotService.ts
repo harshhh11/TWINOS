@@ -24,7 +24,7 @@ export function answerTwinOSQuery(
     q.includes('degraded assets')
   ) {
     return {
-      content: `**Assets Requiring Attention:**\n\n1. ⚠️ **HVAC Air Handler 03 (Terminal B):** Health **78%**, Temp **29.2°C**, Failure Risk **14%**. Thermal load elevated due to concourse crowd density. Preventive lubrication due in 3 days.\n2. ⚠️ **High-Speed Baggage Carousel Belt 03 (Terminal A):** Health **76%**, Temp **31.8°C**, Failure Risk **22%**. Increased bearing vibration detected.\n\nAll other 4 primary assets (Elevators Bank 1, Power Node B, Optical PTZ B2, Escalator 04) are operating in optimal status (>88% health).`,
+      content: `**Assets Requiring Attention:**\n\n1. ⚠️ **HVAC Air Handler 03 (Terminal B):** Health **78%**, Temp **29.2°C**, Failure Risk **14%**. Thermal load elevated. Filter replacement and bearing lubrication scheduled.\n2. ⚠️ **High-Speed Baggage Carousel Belt 03 (Terminal A):** Health **76%**, Temp **31.8°C**, Failure Risk **22%**. Increased bearing vibration detected on sensor B-03.\n\nAll other primary assets (Elevators Bank 1, Power Substation B, Escalator 04) are operating in optimal status (>88% health).`,
       actions: [
         { label: 'Inspect HVAC-03', actionType: 'VIEW_ASSET', targetId: 'hvac-03' },
         { label: 'Inspect Baggage Belt 03', actionType: 'VIEW_ASSET', targetId: 'baggage-03' },
@@ -39,10 +39,10 @@ export function answerTwinOSQuery(
     q.includes('what incidents')
   ) {
     return {
-      content: `**Currently Active Incidents (${twinState.activeIncidentsCount} Total):**\n\n1. 🔴 **High Crowd Density Surge** — Terminal B Concourse B2 (Severity: HIGH, Confidence: 94%, Status: ACTION REQUIRED)\n2. 🟡 **Unusual Perimeter Movement** — Restricted Gate 4 Service Door (Severity: MEDIUM, Status: INVESTIGATING)\n3. 🟡 **Baggage Belt Motor Variance** — Carousel 03 Logistics (Severity: MEDIUM, Status: IN PROGRESS)\n\nAll incidents are linked with real-time coordinate beacons inside the 3D Digital Twin.`,
+      content: `**Currently Active Incidents (${twinState.activeIncidentsCount} Total):**\n\n1. 🔴 **HVAC Chiller Thermal Anomaly** — Terminal B Technical Room 4B (Severity: HIGH, Status: ACTION REQUIRED)\n2. 🟡 **Baggage Belt Motor Vibration Variance** — Carousel 03 Logistics (Severity: MEDIUM, Status: IN PROGRESS)\n3. 🟡 **Power Substation Line B Voltage Fluctuation** — Grid Hub (Severity: MEDIUM, Status: INVESTIGATING)\n\nAll incidents are linked with real-time operational telemetry inside the TwinOS ecosystem.`,
       actions: [
-        { label: 'Focus High Crowd in Twin', actionType: 'FOCUS_TWIN', targetId: 'terminal-b' },
-        { label: 'Analyze Cascade Impact', actionType: 'ANALYZE_IMPACT', targetId: 'terminal-b-root' },
+        { label: 'View Assets', actionType: 'VIEW_ASSET', targetId: 'hvac-03' },
+        { label: 'Analyze Dependency Cascade', actionType: 'ANALYZE_IMPACT', targetId: 'power-node-b-root' },
       ],
     };
   }
@@ -55,9 +55,9 @@ export function answerTwinOSQuery(
     q.includes('power consumption')
   ) {
     return {
-      content: `**Energy Consumption Analysis:**\n\n• **Current Terminal Load:** ${twinState.energyKwh.toLocaleString()} kWh (24.3 MW instantaneous)\n• **Root Factor:** HVAC chiller power draw has risen by **+28%** in Concourse B due to high passenger density (312 passengers concentrated in Zone B2).\n• **Secondary Load:** Baggage conveyor system operating at 91% duty cycle handling simultaneous international arrival luggage.\n• **AI Mitigation:** Pre-cooling Concourse B by -1.5°C and reducing non-essential apron lighting can shed **1.2 MW** of peak load.`,
+      content: `**Energy Telemetry Analysis:**\n\n• **Current Terminal Load:** ${twinState.energyKwh.toLocaleString()} kWh (24.3 MW instantaneous)\n• **Primary Factor:** HVAC chiller power draw accounts for **42%** of total facility energy load.\n• **Secondary Load:** Baggage logistics systems operating at peak throughput, consuming 4,860 kWh/hr.\n• **Status:** System running within stable operational envelope without grid overload.`,
       actions: [
-        { label: 'Focus Energy Substation in Twin', actionType: 'FOCUS_TWIN', targetId: 'energy-hub' },
+        { label: 'Inspect Substation', actionType: 'FOCUS_TWIN', targetId: 'energy-hub' },
         { label: 'Inspect HVAC Telemetry', actionType: 'VIEW_ASSET', targetId: 'hvac-03' },
       ],
     };
@@ -71,10 +71,10 @@ export function answerTwinOSQuery(
     q.includes('cascade')
   ) {
     return {
-      content: `**Dependency Impact Mapping (Terminal B / HVAC-03):**\n\n\`\`\`\nSubstation Node B (Power Grid)\n   ↓\nHVAC Unit 03 (Warning: 29.2°C)\n   ↓\nPassenger Zone B2 Concourse (Crowd Backpressure: 2.8/m²)\n   ↓\nSecurity Checkpoint B (+28 min queue delay)\n   ↓\nBaggage Transfer Conveyor 03 (Warning)\n\`\`\`\n\n**Total Cascading Risk:** Projected operational delay of **+35 minutes** across international departures if unmitigated.`,
+      content: `**Dependency Hierarchy Mapping (Power Substation B → Downstream Assets):**\n\n\`\`\`\nPower Substation B (Primary 11kV Grid Feed)\n   │\n   ├── HVAC Air Handler 03 (Elevated Temp: 29.2°C)\n   │      └── Terminal B Operations\n   │\n   ├── Baggage Conveyor System (Friction Alert: 31.8°C)\n   │      └── Logistics & Ground Baggage Flow\n   │\n   └── Concourse Escalator 04 (Optimal)\n\`\`\`\n\n**Impact Assessment:** Power supply fluctuations cascade directly into HVAC cooling loops and baggage transfer motors.`,
       actions: [
-        { label: 'Open Dependency Graph', actionType: 'ANALYZE_IMPACT', targetId: 'terminal-b-root' },
-        { label: 'View Terminal B in Twin', actionType: 'FOCUS_TWIN', targetId: 'terminal-b' },
+        { label: 'Open Dependency Graph', actionType: 'ANALYZE_IMPACT', targetId: 'power-node-b-root' },
+        { label: 'Inspect Assets', actionType: 'VIEW_ASSET', targetId: 'power-node-b-root' },
       ],
     };
   }
@@ -87,20 +87,20 @@ export function answerTwinOSQuery(
     q.includes('overview')
   ) {
     return {
-      content: `**TwinOS Daily Operational Summary:**\n\n• **Facility Status:** 99.8% Nominal with 1 High-Priority Active Bottleneck\n• **Airfield & Runways:** Runway 1 (09L/27R) & ATC radar operating nominally (RVR > 2000m)\n• **Key Bottleneck:** Terminal B Concourse B2 passenger density surge (+28% above schedule)\n• **Asset Health:** 94.2% fleet average health; 2 equipment units flagged for preventive maintenance (HVAC-03, Baggage Belt 03)\n• **Energy Grid:** 24.3 MW load (5.2% more efficient than baseline)\n• **Primary Prescriptive Action:** Open Security Checkpoint C to reduce queue wait times by 40%.`,
+      content: `**TwinOS Daily Operational Telemetry Summary:**\n\n• **Facility Status:** 99.8% Nominal System Integrity\n• **Airfield & Runways:** Runway 1 (09L/27R) and Ground Radar operating nominally\n• **Asset Health:** 94.2% fleet average health; 2 equipment units flagged for preventive maintenance (HVAC-03, Baggage Belt 03)\n• **Energy Grid:** 24.3 MW instantaneous power load\n• **Recommended Action:** Execute scheduled filter change for HVAC-03 and calibrate Baggage Belt 03 motor bearing.`,
       actions: [
-        { label: 'Focus Terminal B', actionType: 'FOCUS_TWIN', targetId: 'terminal-b' },
-        { label: 'Execute AI Mitigation', actionType: 'ANALYZE_IMPACT', targetId: 'terminal-b-root' },
+        { label: 'Inspect Assets', actionType: 'VIEW_ASSET', targetId: 'hvac-03' },
+        { label: 'View Dependency Graph', actionType: 'ANALYZE_IMPACT', targetId: 'power-node-b-root' },
       ],
     };
   }
 
   // Fallback / contextual
   return {
-    content: `**TwinOS Intelligence Center:**\n\n• Connected to real-time Digital Twin telemetry, sensor mesh, and predictive models.\n• **Status:** 99.8% Nominal • **Active Incidents:** ${twinState.activeIncidentsCount}\n• **Key Attention:** Terminal B Concourse B2 crowd density and HVAC-03 thermal variance.\n\nYou can ask about assets, incidents, energy analysis, or dependency impacts.`,
+    content: `**TwinOS Operations Intelligence:**\n\n• Connected to real-time Digital Twin operational telemetry and IoT sensor streams.\n• **System Status:** 99.8% Nominal • **Active Incidents:** ${twinState.activeIncidentsCount}\n• **Key Diagnostics:** HVAC-03 thermal variance and Baggage Belt 03 motor bearing friction.\n\nYou can query equipment health, incident states, energy telemetry, or dependency cascades.`,
     actions: [
-      { label: 'View Terminal B in Twin', actionType: 'FOCUS_TWIN', targetId: 'terminal-b' },
-      { label: 'Analyze Dependency Impact', actionType: 'ANALYZE_IMPACT', targetId: 'terminal-b-root' },
+      { label: 'View Assets', actionType: 'VIEW_ASSET', targetId: 'hvac-03' },
+      { label: 'Analyze Dependency Impact', actionType: 'ANALYZE_IMPACT', targetId: 'power-node-b-root' },
     ],
   };
 }

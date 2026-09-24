@@ -13,18 +13,14 @@ import {
   CheckCircle2,
   Clock,
   Zap,
-  ArrowRight,
-  Shield,
-  Layers,
 } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
 import { AIRPORT_DEPENDENCY_EDGES, calculateCascadeImpact } from '@/lib/dependencies/airportGraph';
-import { DependencyNode } from '@/types';
 
 export default function DependenciesPage() {
   const router = useRouter();
   const { dependencyNodes, focusEntity, markers } = useTwinStore();
-  const [selectedNodeId, setSelectedNodeId] = useState<string>('terminal-b-root');
+  const [selectedNodeId, setSelectedNodeId] = useState<string>('power-node-b-root');
   const [isMitigationExecuted, setIsMitigationExecuted] = useState(false);
 
   const selectedNode =
@@ -60,10 +56,10 @@ export default function DependenciesPage() {
           <div>
             <h1 className="text-base font-bold text-[#F4F4F5] flex items-center gap-2">
               <GitFork className="w-4 h-4 text-[#F28C18]" />
-              Infrastructure Dependency & Cascade Impact Analysis
+              Infrastructure Dependency & Cascade Analysis
             </h1>
             <p className="text-[11px] text-[#8B9199]">
-              Asset → Connected Systems → Potential Cascading Failure Propagation
+              Power System → HVAC → Terminal Operations → Subsystems Cascade
             </p>
           </div>
         </div>
@@ -90,7 +86,7 @@ export default function DependenciesPage() {
               <div>
                 <span className="text-xs font-bold text-[#F4F4F5]">Topological Dependency Hierarchy</span>
                 <span className="text-[11px] text-[#8B9199] block mt-0.5">
-                  Select any infrastructure node to trace direct upstream feeds and downstream cascading risks
+                  Select any infrastructure node to evaluate upstream power feed and downstream cascading risk
                 </span>
               </div>
 
@@ -119,96 +115,95 @@ export default function DependenciesPage() {
               <svg className="absolute inset-0 w-full h-full pointer-events-none">
                 <defs>
                   <linearGradient id="edgeGlowDep" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#F28C18" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#EF4444" stopOpacity="0.8" />
+                    <stop offset="0%" stopColor="#F28C18" stopOpacity={0.8} />
+                    <stop offset="100%" stopColor="#EF4444" stopOpacity={0.8} />
                   </linearGradient>
                 </defs>
 
                 <path d="M 120 180 Q 220 150, 310 130" stroke="url(#edgeGlowDep)" strokeWidth="2.5" fill="none" strokeDasharray="6,4" />
-                <path d="M 120 180 Q 220 230, 310 270" stroke="url(#edgeGlowDep)" strokeWidth="2.5" fill="none" strokeDasharray="6,4" />
-                <path d="M 310 130 Q 420 140, 520 180" stroke="url(#edgeGlowDep)" strokeWidth="2.5" fill="none" strokeDasharray="6,4" />
-                <path d="M 310 270 Q 420 240, 520 180" stroke="url(#edgeGlowDep)" strokeWidth="2.5" fill="none" strokeDasharray="6,4" />
-                <path d="M 520 180 Q 580 260, 640 310" stroke="#F59E0B" strokeWidth="2" fill="none" />
-                <path d="M 310 130 Q 340 70, 480 70" stroke="#38BDF8" strokeWidth="1.5" fill="none" />
+                <path d="M 120 180 Q 220 250, 310 300" stroke="#38BDF8" strokeWidth="2" fill="none" />
+                <path d="M 310 130 Q 430 140, 520 160" stroke="url(#edgeGlowDep)" strokeWidth="2.5" fill="none" strokeDasharray="6,4" />
+                <path d="M 310 130 Q 430 240, 520 260" stroke="#F59E0B" strokeWidth="2" fill="none" />
+                <path d="M 520 160 Q 590 190, 640 220" stroke="#10B981" strokeWidth="1.5" fill="none" />
               </svg>
 
               {/* Positioned Interactive Nodes */}
               <div className="relative w-full h-full">
-                {/* Node 1: Terminal B Root */}
+                {/* Node 1: Power Substation Root */}
                 <button
-                  onClick={() => setSelectedNodeId('terminal-b-root')}
-                  style={{ left: '60px', top: '140px' }}
-                  className={`absolute p-3 rounded-2xl border backdrop-blur-xl transition-all duration-200 cursor-pointer text-left ${
-                    selectedNodeId === 'terminal-b-root'
-                      ? 'bg-red-500/25 border-red-500 scale-105 z-20'
-                      : 'bg-[#181D26] border-red-500/40 hover:scale-102 z-10'
+                  onClick={() => setSelectedNodeId('power-node-b-root')}
+                  style={{ left: '50px', top: '140px' }}
+                  className={`absolute p-3.5 rounded-2xl border backdrop-blur-xl transition-all duration-200 cursor-pointer text-left ${
+                    selectedNodeId === 'power-node-b-root'
+                      ? 'bg-[#F28C18]/25 border-[#F28C18] scale-105 z-20 shadow-card'
+                      : 'bg-[#181D26] border-white/15 hover:scale-102 z-10'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-xs font-bold text-[#F4F4F5]">Terminal B Hub</span>
+                    <Zap className="w-4 h-4 text-[#F28C18]" />
+                    <span className="text-xs font-bold text-[#F4F4F5]">Main Substation (Primary Grid)</span>
                   </div>
-                  <span className="text-[10px] text-[#8B9199] block">Risk: 88% • Critical</span>
+                  <span className="text-[10px] text-emerald-400 block">Health: 95% • Optimal</span>
                 </button>
 
-                {/* Node 2: Security Checkpoint B */}
-                <button
-                  onClick={() => setSelectedNodeId('sec-checkpoint-b')}
-                  style={{ left: '260px', top: '90px' }}
-                  className={`absolute p-3 rounded-2xl border backdrop-blur-xl transition-all duration-200 cursor-pointer text-left ${
-                    selectedNodeId === 'sec-checkpoint-b'
-                      ? 'bg-red-500/25 border-red-500 scale-105 z-20'
-                      : 'bg-[#181D26] border-red-500/40 hover:scale-102 z-10'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-red-400" />
-                    <span className="text-xs font-bold text-[#F4F4F5]">Security Checkpoint B</span>
-                  </div>
-                  <span className="text-[10px] text-[#8B9199] block">Queue Delay: +28 min</span>
-                </button>
-
-                {/* Node 3: HVAC Unit 03 */}
+                {/* Node 2: HVAC Chiller Unit 03 */}
                 <button
                   onClick={() => setSelectedNodeId('hvac-03-node')}
-                  style={{ left: '260px', top: '240px' }}
-                  className={`absolute p-3 rounded-2xl border backdrop-blur-xl transition-all duration-200 cursor-pointer text-left ${
+                  style={{ left: '260px', top: '90px' }}
+                  className={`absolute p-3.5 rounded-2xl border backdrop-blur-xl transition-all duration-200 cursor-pointer text-left ${
                     selectedNodeId === 'hvac-03-node'
-                      ? 'bg-amber-500/25 border-amber-500 scale-105 z-20'
+                      ? 'bg-amber-500/25 border-amber-500 scale-105 z-20 shadow-card'
                       : 'bg-[#181D26] border-amber-500/40 hover:scale-102 z-10'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="w-2 h-2 rounded-full bg-amber-400" />
-                    <span className="text-xs font-bold text-[#F4F4F5]">HVAC Unit 03</span>
+                    <span className="text-xs font-bold text-[#F4F4F5]">HVAC Chiller Unit 03</span>
                   </div>
                   <span className="text-[10px] text-[#8B9199] block">Temp: 29.2°C • 145 kW</span>
                 </button>
 
-                {/* Node 4: Passenger Zone B2 */}
+                {/* Node 3: Terminal B Power Dist */}
                 <button
-                  onClick={() => setSelectedNodeId('passenger-zone-b2')}
-                  style={{ left: '460px', top: '150px' }}
-                  className={`absolute p-3 rounded-2xl border backdrop-blur-xl transition-all duration-200 cursor-pointer text-left ${
-                    selectedNodeId === 'passenger-zone-b2'
-                      ? 'bg-red-500/25 border-red-500 scale-105 z-20'
-                      : 'bg-[#181D26] border-red-500/40 hover:scale-102 z-10'
+                  onClick={() => setSelectedNodeId('terminal-b-power-dist')}
+                  style={{ left: '260px', top: '260px' }}
+                  className={`absolute p-3.5 rounded-2xl border backdrop-blur-xl transition-all duration-200 cursor-pointer text-left ${
+                    selectedNodeId === 'terminal-b-power-dist'
+                      ? 'bg-sky-500/25 border-sky-500 scale-105 z-20 shadow-card'
+                      : 'bg-[#181D26] border-white/15 hover:scale-102 z-10'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-xs font-bold text-[#F4F4F5]">Passenger Zone B2</span>
+                    <span className="w-2 h-2 rounded-full bg-sky-400" />
+                    <span className="text-xs font-bold text-[#F4F4F5]">Terminal B Power Busbar</span>
                   </div>
-                  <span className="text-[10px] text-[#8B9199] block">Crowd Density: 2.8/m²</span>
+                  <span className="text-[10px] text-[#8B9199] block">Load: 1,250 kW • Normal</span>
+                </button>
+
+                {/* Node 4: Terminal B Concourse */}
+                <button
+                  onClick={() => setSelectedNodeId('terminal-b-concourse')}
+                  style={{ left: '460px', top: '120px' }}
+                  className={`absolute p-3.5 rounded-2xl border backdrop-blur-xl transition-all duration-200 cursor-pointer text-left ${
+                    selectedNodeId === 'terminal-b-concourse'
+                      ? 'bg-amber-500/25 border-amber-500 scale-105 z-20 shadow-card'
+                      : 'bg-[#181D26] border-amber-500/40 hover:scale-102 z-10'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="w-2 h-2 rounded-full bg-amber-400" />
+                    <span className="text-xs font-bold text-[#F4F4F5]">Terminal B Operations</span>
+                  </div>
+                  <span className="text-[10px] text-[#8B9199] block">Gates B1-B8 Facilities</span>
                 </button>
 
                 {/* Node 5: Baggage Conveyor 03 */}
                 <button
                   onClick={() => setSelectedNodeId('baggage-03-dep')}
-                  style={{ left: '560px', top: '270px' }}
-                  className={`absolute p-3 rounded-2xl border backdrop-blur-xl transition-all duration-200 cursor-pointer text-left ${
+                  style={{ left: '460px', top: '230px' }}
+                  className={`absolute p-3.5 rounded-2xl border backdrop-blur-xl transition-all duration-200 cursor-pointer text-left ${
                     selectedNodeId === 'baggage-03-dep'
-                      ? 'bg-amber-500/25 border-amber-500 scale-105 z-20'
+                      ? 'bg-amber-500/25 border-amber-500 scale-105 z-20 shadow-card'
                       : 'bg-[#181D26] border-amber-500/40 hover:scale-102 z-10'
                   }`}
                 >
@@ -216,24 +211,24 @@ export default function DependenciesPage() {
                     <span className="w-2 h-2 rounded-full bg-amber-400" />
                     <span className="text-xs font-bold text-[#F4F4F5]">Baggage Belt 03</span>
                   </div>
-                  <span className="text-[10px] text-[#8B9199] block">Health: 76%</span>
+                  <span className="text-[10px] text-[#8B9199] block">Friction 4.2 mm/s • Warning</span>
                 </button>
 
-                {/* Node 6: Optical Sensor B2 */}
+                {/* Node 6: Escalator Bank 04 */}
                 <button
-                  onClick={() => setSelectedNodeId('cctv-b2-node')}
-                  style={{ left: '440px', top: '40px' }}
+                  onClick={() => setSelectedNodeId('escalator-04-node')}
+                  style={{ left: '570px', top: '180px' }}
                   className={`absolute p-3 rounded-2xl border backdrop-blur-xl transition-all duration-200 cursor-pointer text-left ${
-                    selectedNodeId === 'cctv-b2-node'
-                      ? 'bg-sky-500/25 border-sky-500 scale-105 z-20'
-                      : 'bg-[#181D26] border-sky-500/40 hover:scale-102 z-10'
+                    selectedNodeId === 'escalator-04-node'
+                      ? 'bg-emerald-500/25 border-emerald-500 scale-105 z-20 shadow-card'
+                      : 'bg-[#181D26] border-emerald-500/40 hover:scale-102 z-10'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-sky-400" />
-                    <span className="text-xs font-bold text-[#F4F4F5]">Telemetry Sensor B2</span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span className="text-xs font-bold text-[#F4F4F5]">Escalator 04</span>
                   </div>
-                  <span className="text-[10px] text-[#8B9199] block">4K Optical • 98% Health</span>
+                  <span className="text-[10px] text-[#8B9199] block">Transit Duty 68% • Optimal</span>
                 </button>
               </div>
             </div>
@@ -241,10 +236,10 @@ export default function DependenciesPage() {
             {/* Bottom Status bar */}
             <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between text-xs">
               <span className="text-[#8B9199]">
-                Active Traverse Path: <strong className="text-[#F4F4F5]">{impactResult.impactPath.length} Cascaded Systems</strong>
+                Active Traverse Path: <strong className="text-[#F4F4F5]">{impactResult.impactPath.length} Connected Subsystems</strong>
               </span>
               <span className="text-[#F28C18] font-bold font-mono">
-                Projected System Delay: +{impactResult.cascadingDelayMinutes} mins
+                Cascade Delay Propagation: +{impactResult.cascadingDelayMinutes} mins
               </span>
             </div>
           </div>
@@ -264,9 +259,9 @@ export default function DependenciesPage() {
               </div>
 
               {/* Selected Node Header */}
-              <div className="p-3.5 rounded-xl bg-red-950/20 border border-red-500/30 mb-4">
-                <span className="text-[10px] font-mono text-red-400 block uppercase font-bold">
-                  Root Component
+              <div className="p-3.5 rounded-xl bg-[#F28C18]/10 border border-[#F28C18]/30 mb-4">
+                <span className="text-[10px] font-mono text-[#F28C18] block uppercase font-bold">
+                  Selected Infrastructure Component
                 </span>
                 <span className="text-sm font-bold text-[#F4F4F5] block mt-0.5">
                   {selectedNode.name}
@@ -280,7 +275,7 @@ export default function DependenciesPage() {
               <div className="space-y-2.5 text-xs">
                 <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
                   <span className="text-[#8B9199]">Risk Rating</span>
-                  <span className="text-sm font-bold text-red-400">
+                  <span className="text-sm font-bold text-[#F28C18]">
                     {impactResult.riskRating} ({impactResult.systemRiskScore}%)
                   </span>
                 </div>
@@ -345,7 +340,7 @@ export default function DependenciesPage() {
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4" />
-                    <span>Execute AI Recommendation</span>
+                    <span>Execute Prescriptive Action</span>
                   </>
                 )}
               </button>

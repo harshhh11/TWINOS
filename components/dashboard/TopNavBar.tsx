@@ -5,9 +5,9 @@ import {
   Search,
   Bell,
   CloudSun,
-  ShieldCheck,
 } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
+import { LeftSidebar } from '@/components/dashboard/LeftSidebar';
 
 interface TopNavBarProps {
   onOpenNotifications?: () => void;
@@ -35,11 +35,15 @@ export function TopNavBar({ onOpenNotifications }: TopNavBarProps) {
     <div className="w-full flex flex-col z-30 select-none">
       {/* Top Main Navigation Bar */}
       <header className="w-full flex items-center justify-between gap-4 px-6 pt-3 pb-1 bg-transparent">
-        {/* 1. Global Command Search Field (⌘K) */}
-        <div className="flex-1 max-w-lg">
+        {/* Left: Side Navbar Trigger & Search Field */}
+        <div className="flex items-center gap-3 flex-1 max-w-xl">
+          {/* Side Navbar Trigger (Drawer) */}
+          <LeftSidebar />
+
+          {/* Global Command Search Field (⌘K) */}
           <button
             onClick={() => setSearchOpen(true)}
-            className="w-full flex items-center justify-between px-4 py-2 bg-[#0D1014]/90 backdrop-blur-xl hover:bg-[#151A21] border border-white/[0.08] hover:border-white/20 rounded-2xl text-xs text-[#8B9199] transition-all cursor-pointer group shadow-card"
+            className="flex-1 flex items-center justify-between px-4 py-2.5 bg-[#0D1014]/90 backdrop-blur-xl hover:bg-[#151A21] border border-white/[0.08] hover:border-white/20 rounded-2xl text-xs text-[#8B9199] transition-all cursor-pointer group shadow-card"
           >
             <div className="flex items-center gap-2.5">
               <Search className="w-3.5 h-3.5 text-[#8B9199] group-hover:text-[#F4F4F5]" />
@@ -53,7 +57,7 @@ export function TopNavBar({ onOpenNotifications }: TopNavBarProps) {
           </button>
         </div>
 
-        {/* 2. Utility & Status Controls */}
+        {/* Right: Utility & Status Controls */}
         <div className="flex items-center gap-4">
           {/* Time & Date */}
           <div className="hidden sm:flex flex-col text-right leading-tight">
@@ -65,7 +69,7 @@ export function TopNavBar({ onOpenNotifications }: TopNavBarProps) {
           <div className="hidden md:flex items-center gap-2 text-left leading-tight pl-2 border-l border-white/10">
             <CloudSun className="w-4 h-4 text-[#8B9199]" />
             <div className="flex flex-col">
-              <span className="text-[10px] text-[#8B9199] font-medium">Terminal Weather</span>
+              <span className="text-[10px] text-[#8B9199] font-medium">Airport Weather</span>
               <span className="text-xs font-bold text-[#F4F4F5]">29°C • Nominal</span>
             </div>
           </div>

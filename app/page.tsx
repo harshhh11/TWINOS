@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { LeftSidebar } from '@/components/dashboard/LeftSidebar';
 import { TopNavBar } from '@/components/dashboard/TopNavBar';
 import { TopStatusPills } from '@/components/dashboard/TopStatusPills';
 import { BottomCommandDock } from '@/components/dashboard/BottomCommandDock';
@@ -38,39 +37,31 @@ export default function MasterDashboardPage() {
       {/* ========================================================================= */}
       {/* 3. UNIFIED TRANSLUCENT ENTERPRISE COMMAND OVERLAY                         */}
       {/* ========================================================================= */}
-      <div className="relative z-20 w-full h-full p-3 flex gap-3 overflow-hidden pointer-events-none">
-        {/* Left Fixed Floating Navigation Sidebar */}
-        <div className="pointer-events-auto h-full shrink-0">
-          <LeftSidebar />
+      <div className="relative z-20 w-full h-full p-3 flex flex-col justify-between overflow-hidden pointer-events-none">
+        {/* Top Layer: Navigation Bar with Side Drawer Trigger, Search & Time */}
+        <div className="pointer-events-auto shrink-0">
+          <TopNavBar onOpenNotifications={() => setIsNotificationsOpen(!isNotificationsOpen)} />
+          <NotificationCenter
+            isOpen={isNotificationsOpen}
+            onClose={() => setIsNotificationsOpen(false)}
+          />
         </div>
 
-        {/* Main Command Center Viewport */}
-        <div className="relative flex-1 h-full flex flex-col justify-between overflow-hidden min-h-0">
-          {/* Top Layer: Navigation Bar + Search & Time */}
-          <div className="pointer-events-auto shrink-0">
-            <TopNavBar onOpenNotifications={() => setIsNotificationsOpen(!isNotificationsOpen)} />
-            <NotificationCenter
-              isOpen={isNotificationsOpen}
-              onClose={() => setIsNotificationsOpen(false)}
-            />
+        {/* Central Area: Open 3D Viewport with Right Side Status Rail */}
+        <div className="relative flex-1 flex items-center justify-end px-6 pointer-events-none">
+          {/* Vertically Stacked Status Rail on the Right Side */}
+          <div className="pointer-events-auto">
+            <TopStatusPills layout="vertical" />
           </div>
+        </div>
 
-          {/* Central Area: Open 3D Viewport with Right Side Status Rail */}
-          <div className="relative flex-1 flex items-center justify-end px-6 pointer-events-none">
-            {/* Vertically Stacked Status Rail on the Right Side */}
-            <div className="pointer-events-auto">
-              <TopStatusPills layout="vertical" />
-            </div>
-          </div>
+        {/* Contextual Entity Inspection Card (appears on landmark/asset click) */}
+        <ContextualEntityModal />
 
-          {/* Contextual Entity Inspection Card (appears on landmark/asset click) */}
-          <ContextualEntityModal />
-
-          {/* Bottom Layer: Clean 4-Card Command Dock (Monitoring | Alerts | Asset Health | Energy) */}
-          <div className="px-6 pb-2 pointer-events-none shrink-0">
-            <div className="pointer-events-auto w-full">
-              <BottomCommandDock />
-            </div>
+        {/* Bottom Layer: Clean 4-Card Command Dock (Monitoring | Alerts | Asset Health | Energy) */}
+        <div className="px-6 pb-2 pointer-events-none shrink-0">
+          <div className="pointer-events-auto w-full">
+            <BottomCommandDock />
           </div>
         </div>
       </div>

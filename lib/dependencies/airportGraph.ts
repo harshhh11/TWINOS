@@ -4,52 +4,39 @@ export interface GraphLink {
   source: string;
   target: string;
   relationship: string;
-  bandwidthKwh?: number;
   criticality: 'CRITICAL' | 'HIGH' | 'MEDIUM';
 }
 
 export const AIRPORT_DEPENDENCY_EDGES: GraphLink[] = [
   {
-    source: 'terminal-b-root',
-    target: 'sec-checkpoint-b',
-    relationship: 'Passenger Ingress Gateway',
-    criticality: 'CRITICAL',
-  },
-  {
-    source: 'terminal-b-root',
+    source: 'power-node-b-root',
     target: 'hvac-03-node',
-    relationship: 'Climate Control Zone',
+    relationship: '11kV High-Voltage Primary Feeder',
     criticality: 'HIGH',
   },
   {
-    source: 'sec-checkpoint-b',
-    target: 'passenger-zone-b2',
-    relationship: 'Airside Concourse Flow',
-    criticality: 'CRITICAL',
-  },
-  {
-    source: 'sec-checkpoint-b',
-    target: 'cctv-b2-node',
-    relationship: 'Visual Surveillance Telemetry',
+    source: 'power-node-b-root',
+    target: 'terminal-b-power-dist',
+    relationship: 'Main Terminal Substation Busbar',
     criticality: 'HIGH',
   },
   {
     source: 'hvac-03-node',
-    target: 'passenger-zone-b2',
-    relationship: 'Air Quality & Thermal Regulation',
+    target: 'terminal-b-concourse',
+    relationship: 'Chilled Water & Air Flow Distribution',
     criticality: 'HIGH',
   },
   {
     source: 'hvac-03-node',
-    target: 'power-node-b-dep',
-    relationship: 'Electric Feeder (145 kW)',
+    target: 'baggage-03-dep',
+    relationship: 'Mechanical Equipment Room Cooling',
     criticality: 'MEDIUM',
   },
   {
-    source: 'passenger-zone-b2',
-    target: 'baggage-03-dep',
-    relationship: 'Luggage Transfer Sortation',
-    criticality: 'HIGH',
+    source: 'terminal-b-concourse',
+    target: 'escalator-04-node',
+    relationship: 'Passenger Concourse Transit Circuit',
+    criticality: 'MEDIUM',
   },
 ];
 
@@ -97,10 +84,10 @@ export function calculateCascadeImpact(
 
         const targetNode = nodes.find((n) => n.id === edge.target);
         if (targetNode) {
-          totalDelay += targetNode.cascadeDelayMinutes * 0.6; // cascading multiplier
-          if (targetNode.type === 'zone' || targetNode.type === 'passenger_flow') {
+          totalDelay += targetNode.cascadeDelayMinutes * 0.5;
+          if (targetNode.type === 'zone' || targetNode.type === 'system') {
             affectedZones.push(targetNode.name);
-          } else if (targetNode.type === 'asset' || targetNode.type === 'system') {
+          } else if (targetNode.type === 'asset' || targetNode.type === 'power_node') {
             affectedAssets.push(targetNode.name);
           }
         }
@@ -117,13 +104,13 @@ export function calculateCascadeImpact(
     cascadingDelayMinutes: Math.round(totalDelay),
     systemRiskScore: riskScore,
     riskRating,
-    affectedZones: affectedZones.length > 0 ? affectedZones : ['Terminal B - Zone B2', 'Concourse B Gate Corridor'],
-    affectedAssets: affectedAssets.length > 0 ? affectedAssets : ['HVAC Unit 03', 'Security Checkpoint B', 'Baggage Belt 03'],
+    affectedZones: affectedZones.length > 0 ? affectedZones : ['Terminal B Concourse', 'Zone B2 Operations'],
+    affectedAssets: affectedAssets.length > 0 ? affectedAssets : ['HVAC Unit 03', 'Baggage Conveyor 03', 'Escalator Bank 04'],
     recommendation: {
-      primaryAction: 'Open Security Checkpoint C to divert 40% passenger traffic from B2 corridor.',
-      secondaryAction: 'Increase HVAC Unit 03 airflow rate by 15% to maintain indoor air quality standard.',
-      estimatedReliefPercent: 40,
-      timeframeMinutes: 15,
+      primaryAction: 'Rebalance 35% chilled water flow to Auxiliary Chiller Bank 4 to normalize HVAC operating temperature.',
+      secondaryAction: 'Initiate scheduled bearing lubrication on Baggage Conveyor 03 drive assembly.',
+      estimatedReliefPercent: 45,
+      timeframeMinutes: 20,
     },
     impactPath,
   };

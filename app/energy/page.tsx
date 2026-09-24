@@ -7,14 +7,8 @@ import {
   ArrowLeft,
   Zap,
   TrendingDown,
-  TrendingUp,
   Box,
   Cpu,
-  Sparkles,
-  CheckCircle2,
-  Leaf,
-  Sun,
-  Battery,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -50,7 +44,6 @@ const MAJOR_CONSUMING_ASSETS = [
 export default function EnergyPage() {
   const router = useRouter();
   const { focusEntity } = useTwinStore();
-  const [isPeakShavingActive, setIsPeakShavingActive] = useState(false);
 
   const handleLocateSubstation = () => {
     focusEntity('energy-hub', [-16, 1.2, 14]);

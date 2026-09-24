@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getTerminalPrediction } from '@/lib/prediction/predictionEngine';
+import { getAssetDegradationPrediction } from '@/lib/prediction/predictionEngine';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const occupancyParam = searchParams.get('occupancy');
-  const isHighCrowd = searchParams.get('highCrowd') === 'true';
+  const loadParam = searchParams.get('load');
+  const isHighLoad = searchParams.get('highLoad') === 'true';
 
-  const occupancy = occupancyParam ? parseInt(occupancyParam, 10) : 88;
-  const prediction = getTerminalPrediction(occupancy, isHighCrowd);
+  const load = loadParam ? parseInt(loadParam, 10) : 78;
+  const prediction = getAssetDegradationPrediction(load, isHighLoad);
 
   return NextResponse.json({
     success: true,

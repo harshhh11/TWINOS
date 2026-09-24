@@ -8,7 +8,6 @@ import {
   Building,
   Cpu,
   AlertTriangle,
-  Video,
   ArrowRight,
 } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
@@ -16,7 +15,7 @@ import { useTwinStore } from '@/lib/twin/twinStateStore';
 interface SearchResultItem {
   id: string;
   title: string;
-  category: 'Building' | 'Asset' | 'Incident' | 'Camera';
+  category: 'Building' | 'Asset' | 'Incident';
   subtitle: string;
   targetId: string;
   coords?: [number, number, number];
@@ -24,7 +23,7 @@ interface SearchResultItem {
 }
 
 export function GlobalSearchModal() {
-  const { isSearchOpen, setSearchOpen, markers, assets, incidents, cameraFeeds, focusEntity } =
+  const { isSearchOpen, setSearchOpen, markers, assets, incidents, focusEntity } =
     useTwinStore();
   const [query, setQuery] = useState('');
   const router = useRouter();
@@ -71,14 +70,6 @@ export function GlobalSearchModal() {
       targetId: i.locationId,
       coords: i.coordinates,
       route: '/incidents',
-    })),
-    ...cameraFeeds.map((c) => ({
-      id: `cam-${c.id}`,
-      title: `${c.name} (${c.code})`,
-      category: 'Camera' as const,
-      subtitle: `${c.locationName} • ${c.currentCrowdCount} People Detected`,
-      targetId: c.locationId,
-      route: '/live-monitoring',
     })),
   ];
 
@@ -141,7 +132,6 @@ export function GlobalSearchModal() {
                     {item.category === 'Building' && <Building className="w-3.5 h-3.5" />}
                     {item.category === 'Asset' && <Cpu className="w-3.5 h-3.5" />}
                     {item.category === 'Incident' && <AlertTriangle className="w-3.5 h-3.5 text-[#EF4444]" />}
-                    {item.category === 'Camera' && <Video className="w-3.5 h-3.5 text-[#38BDF8]" />}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-xs font-semibold text-[#F2F3F5] group-hover:text-[#F28C18] transition-colors">

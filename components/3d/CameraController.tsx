@@ -7,26 +7,13 @@ import * as THREE from 'three';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
 
 export function CameraController() {
-  const { cameraTarget, cameraPosition, is2DView } = useTwinStore();
+  const { cameraTarget, cameraPosition } = useTwinStore();
   const controlsRef = useRef<any>(null);
   const { camera } = useThree();
 
   const targetLookAt = useRef(new THREE.Vector3(0, 0, 0));
   const desiredCamPos = useRef(new THREE.Vector3(28, 36, 42));
   const isTransitioning = useRef(false);
-
-  // Switch between 3D perspective and top-down 2D orthographic-like view
-  useEffect(() => {
-    if (is2DView) {
-      desiredCamPos.current.set(0, 65, 0.1);
-      targetLookAt.current.set(0, 0, 0);
-      isTransitioning.current = true;
-    } else {
-      desiredCamPos.current.set(28, 36, 42);
-      targetLookAt.current.set(0, 0, 0);
-      isTransitioning.current = true;
-    }
-  }, [is2DView]);
 
   // When target changes, smoothly fly to entity
   useEffect(() => {
@@ -71,7 +58,7 @@ export function CameraController() {
       ref={controlsRef}
       enableDamping
       dampingFactor={0.06}
-      maxPolarAngle={is2DView ? 0.05 : Math.PI / 2.15}
+      maxPolarAngle={Math.PI / 2.15}
       minDistance={6}
       maxDistance={120}
       rotateSpeed={0.8}

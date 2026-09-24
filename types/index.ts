@@ -1,15 +1,3 @@
-export type EnvironmentType = 'airport' | 'campus' | 'smart_city' | 'industrial' | 'hospital';
-
-export type TwinLayerType = 
-  | 'buildings' 
-  | 'flights' 
-  | 'people' 
-  | 'security' 
-  | 'energy' 
-  | 'assets' 
-  | 'environment' 
-  | 'incidents';
-
 export type SeverityLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
 export type IncidentStatus = 
@@ -22,7 +10,7 @@ export type IncidentStatus =
 export interface Incident {
   id: string;
   title: string;
-  type: 'CROWD' | 'SECURITY' | 'FIRE' | 'SMOKE' | 'EQUIPMENT' | 'ENERGY' | 'WATER' | 'ENVIRONMENT';
+  type: 'EQUIPMENT' | 'POWER' | 'HVAC' | 'TELEMETRY' | 'OPERATIONS' | 'SECURITY';
   severity: SeverityLevel;
   locationId: string;
   locationName: string;
@@ -41,11 +29,9 @@ export type AssetCategory =
   | 'ELEVATOR' 
   | 'ESCALATOR' 
   | 'BAGGAGE' 
-  | 'PUMP' 
-  | 'GENERATOR' 
-  | 'TRANSFORMER' 
-  | 'CCTV' 
-  | 'POWER';
+  | 'POWER' 
+  | 'RADAR' 
+  | 'LIGHTING';
 
 export interface Asset {
   id: string;
@@ -64,49 +50,10 @@ export interface Asset {
   powerKw: number;
 }
 
-export interface BoundingBoxDetection {
-  id: string;
-  label: 'PERSON' | 'CROWD' | 'RESTRICTED_ACCESS' | 'SMOKE' | 'BAGGAGE' | 'VEHICLE';
-  confidence: number;
-  // Percentage coordinates [x, y, width, height] from 0 to 100
-  box: [number, number, number, number];
-}
-
-export interface CameraFeed {
-  id: string;
-  name: string;
-  code: string;
-  locationId: string;
-  locationName: string;
-  isLive: boolean;
-  timestamp: string;
-  resolution: string;
-  fps: number;
-  currentCrowdCount: number;
-  currentQueueMinutes: number;
-  status: 'NORMAL' | 'WARNING' | 'CRITICAL';
-  detections: BoundingBoxDetection[];
-  streamUrl?: string;
-  thumbnailUrl?: string;
-}
-
-export interface AIEvent {
-  id: string;
-  type: 'CROWD' | 'SECURITY' | 'FIRE' | 'SMOKE' | 'EQUIPMENT' | 'ENERGY' | 'WATER' | 'ENVIRONMENT';
-  locationId: string;
-  locationName: string;
-  severity: SeverityLevel;
-  confidence: number;
-  timestamp: string;
-  affectedAssets: string[];
-  description: string;
-  sourceCameraId?: string;
-}
-
 export interface DependencyNode {
   id: string;
   name: string;
-  type: 'zone' | 'building' | 'asset' | 'system' | 'passenger_flow' | 'power_node' | 'sensor';
+  type: 'zone' | 'building' | 'asset' | 'system' | 'power_node' | 'sensor';
   status: 'NORMAL' | 'WARNING' | 'CRITICAL';
   riskScore: number;
   healthPercent: number;
@@ -127,7 +74,7 @@ export interface PredictionPoint {
 
 export interface CopilotAction {
   label: string;
-  actionType: 'FOCUS_TWIN' | 'ANALYZE_IMPACT' | 'VIEW_ASSET' | 'RESOLVE_INCIDENT' | 'VIEW_CAMERA';
+  actionType: 'FOCUS_TWIN' | 'ANALYZE_IMPACT' | 'VIEW_ASSET' | 'RESOLVE_INCIDENT';
   targetId: string;
 }
 
@@ -142,11 +89,10 @@ export interface CopilotMessage {
 export interface SpatialMarker {
   id: string;
   name: string;
-  type: 'building' | 'runway' | 'atc' | 'parking' | 'security' | 'asset';
-  status: 'Normal' | 'Warning' | 'High Crowd' | 'Critical' | 'Operational';
+  type: 'building' | 'runway' | 'atc' | 'asset';
+  status: 'Normal' | 'Warning' | 'Critical' | 'Operational';
   statusColor: 'green' | 'orange' | 'red' | 'blue';
   occupancyPercent?: number;
-  passengerCount?: number;
   riskLevel?: 'Low' | 'Medium' | 'High';
   activeIncidents?: number;
   energyKwh?: number;
