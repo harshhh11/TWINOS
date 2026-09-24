@@ -7,21 +7,21 @@ import {
   Send,
   Sparkles,
   ArrowRight,
-  Layers,
+  GitFork,
   Box,
   Cpu,
-  Video,
+  Zap,
 } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
 import { answerTwinOSQuery } from '@/lib/ai/copilotService';
 import { CopilotAction } from '@/types';
 
 const SUGGESTED_PROMPTS = [
-  'Why is Terminal B congested?',
+  'Which assets require attention?',
   'What incidents are currently active?',
-  'Which assets are at high risk?',
-  'What is causing the peak energy usage?',
-  'Summarize the current airport status',
+  'Why is energy consumption increasing?',
+  'What systems are affected by this asset?',
+  "Summarize today's operational issues.",
 ];
 
 export function AskTwinOSFloating() {
@@ -75,7 +75,7 @@ export function AskTwinOSFloating() {
         actions: response.actions,
       });
       setIsTyping(false);
-    }, 450);
+    }, 400);
   };
 
   const handleActionClick = (action: CopilotAction) => {
@@ -84,38 +84,37 @@ export function AskTwinOSFloating() {
       if (targetMarker) {
         focusEntity(targetMarker.id, targetMarker.position);
       }
+      router.push('/');
     } else if (action.actionType === 'ANALYZE_IMPACT') {
-      router.push('/impact-analysis');
+      router.push('/dependencies');
     } else if (action.actionType === 'VIEW_ASSET') {
       router.push('/assets');
-    } else if (action.actionType === 'VIEW_CAMERA') {
-      router.push('/live-monitoring');
     }
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-96 max-h-[580px] h-[520px] bg-[#111418] border border-[#262B31] rounded-2xl shadow-card flex flex-col overflow-hidden pointer-events-auto select-none">
+    <div className="fixed bottom-6 right-6 z-50 w-96 max-h-[580px] h-[520px] bg-[#0D1014] border border-white/[0.12] rounded-2xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto select-none backdrop-blur-2xl">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#262B31] bg-[#14181D]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-[#12161E]">
         <div className="flex items-center gap-2.5">
-          {/* Amber Orb Icon */}
-          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#9A4B00] via-[#F28C18] to-[#FFD188] flex items-center justify-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-white/60 blur-[0.5px] -mt-1 -ml-1" />
+          {/* Muted Orange Orb Icon */}
+          <div className="w-6 h-6 rounded-lg bg-[#F28C18]/20 border border-[#F28C18]/40 flex items-center justify-center text-[#F28C18]">
+            <Sparkles className="w-3.5 h-3.5" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xs font-bold text-[#F2F3F5] tracking-wide flex items-center gap-1">
-              Ask TwinOS <span className="text-[9px] text-[#F28C18] font-mono">AI</span>
+            <span className="text-xs font-bold text-[#F4F4F5] tracking-wide flex items-center gap-1">
+              TwinOS AI Copilot
             </span>
-            <span className="text-[9px] text-[#10B981] flex items-center gap-1">
-              <span className="w-1 h-1 rounded-full bg-[#10B981]" />
-              Digital Twin Telemetry Connected
+            <span className="text-[9px] text-emerald-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Connected to Digital Twin Telemetry
             </span>
           </div>
         </div>
 
         <button
           onClick={() => setCopilotOpen(false)}
-          className="p-1 rounded text-[#8D939B] hover:text-[#F2F3F5] hover:bg-[#1C2128] transition-colors cursor-pointer"
+          className="p-1 rounded text-[#8B9199] hover:text-[#F4F4F5] hover:bg-white/5 transition-colors cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
@@ -131,8 +130,8 @@ export function AskTwinOSFloating() {
             <div
               className={`max-w-[90%] p-3 rounded-xl leading-relaxed whitespace-pre-wrap ${
                 msg.role === 'user'
-                  ? 'bg-[#1C2128] text-[#F2F3F5] border border-[#262B31]'
-                  : 'bg-[#14181D] text-[#F2F3F5]/90 border border-[#262B31]'
+                  ? 'bg-[#1D1711] text-[#F4F4F5] border border-[#F28C18]/30'
+                  : 'bg-[#12161E] text-[#F4F4F5]/90 border border-white/[0.08]'
               }`}
             >
               {msg.content}
@@ -145,16 +144,13 @@ export function AskTwinOSFloating() {
                   <button
                     key={i}
                     onClick={() => handleActionClick(act)}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#1C2128] hover:bg-[#252B35] border border-[#262B31] text-[#F2F3F5] text-[10px] font-medium transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[#F4F4F5] text-[10px] font-medium transition-colors cursor-pointer"
                   >
                     {act.actionType === 'FOCUS_TWIN' && <Box className="w-3 h-3 text-[#F28C18]" />}
-                    {act.actionType === 'ANALYZE_IMPACT' && (
-                      <Layers className="w-3 h-3 text-[#F28C18]" />
-                    )}
+                    {act.actionType === 'ANALYZE_IMPACT' && <GitFork className="w-3 h-3 text-[#F28C18]" />}
                     {act.actionType === 'VIEW_ASSET' && <Cpu className="w-3 h-3 text-[#F28C18]" />}
-                    {act.actionType === 'VIEW_CAMERA' && <Video className="w-3 h-3 text-[#F28C18]" />}
                     <span>{act.label}</span>
-                    <ArrowRight className="w-2.5 h-2.5 text-[#8D939B]" />
+                    <ArrowRight className="w-2.5 h-2.5 text-[#8B9199]" />
                   </button>
                 ))}
               </div>
@@ -163,7 +159,7 @@ export function AskTwinOSFloating() {
         ))}
 
         {isTyping && (
-          <div className="flex items-center gap-1.5 p-2 rounded-lg bg-[#14181D] border border-[#262B31] w-16">
+          <div className="flex items-center gap-1.5 p-2 rounded-lg bg-[#12161E] border border-white/[0.08] w-16">
             <span className="w-1.5 h-1.5 rounded-full bg-[#F28C18] animate-bounce" />
             <span className="w-1.5 h-1.5 rounded-full bg-[#F28C18] animate-bounce [animation-delay:0.15s]" />
             <span className="w-1.5 h-1.5 rounded-full bg-[#F28C18] animate-bounce [animation-delay:0.3s]" />
@@ -173,12 +169,12 @@ export function AskTwinOSFloating() {
       </div>
 
       {/* Suggested Quick Prompts */}
-      <div className="px-3 py-1.5 bg-[#14181D] border-t border-[#262B31] flex gap-1.5 overflow-x-auto no-scrollbar">
+      <div className="px-3 py-2 bg-[#12161E] border-t border-white/[0.08] flex gap-1.5 overflow-x-auto no-scrollbar">
         {SUGGESTED_PROMPTS.map((prompt, i) => (
           <button
             key={i}
             onClick={() => handleSend(prompt)}
-            className="shrink-0 px-2 py-0.5 rounded bg-[#1C2128] hover:bg-[#252B35] text-[#8D939B] hover:text-[#F2F3F5] text-[9px] font-medium transition-colors cursor-pointer border border-[#262B31]"
+            className="shrink-0 px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[#8B9199] hover:text-[#F4F4F5] text-[10px] font-medium transition-colors cursor-pointer border border-white/5"
           >
             {prompt}
           </button>
@@ -186,7 +182,7 @@ export function AskTwinOSFloating() {
       </div>
 
       {/* Input Box */}
-      <div className="p-2.5 border-t border-[#262B31] bg-[#111418]">
+      <div className="p-2.5 border-t border-white/[0.08] bg-[#0D1014]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -198,13 +194,13 @@ export function AskTwinOSFloating() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about Twin status, incidents, assets..."
-            className="flex-1 px-3 py-1.5 bg-[#14181D] border border-[#262B31] rounded-lg text-xs text-[#F2F3F5] placeholder-[#626870] focus:outline-none focus:border-[#F28C18] transition-colors"
+            placeholder="Ask about Twin status, incidents, assets, energy..."
+            className="flex-1 px-3 py-1.5 bg-[#12161E] border border-white/[0.08] rounded-xl text-xs text-[#F4F4F5] placeholder-[#626870] focus:outline-none focus:border-[#F28C18] transition-colors"
           />
           <button
             type="submit"
             disabled={!input.trim()}
-            className="p-2 rounded-lg bg-[#F28C18] hover:bg-[#E07D10] disabled:opacity-40 text-[#0B0D0F] font-bold transition-colors cursor-pointer"
+            className="p-2 rounded-xl bg-[#F28C18] hover:bg-[#ff9a2e] disabled:opacity-30 text-black font-bold transition-colors cursor-pointer"
           >
             <Send className="w-3.5 h-3.5" />
           </button>

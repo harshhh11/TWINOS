@@ -4,17 +4,14 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { LeftSidebar } from '@/components/dashboard/LeftSidebar';
 import { TopNavBar } from '@/components/dashboard/TopNavBar';
-import { HeroHeadline } from '@/components/dashboard/HeroHeadline';
-import { TopKpiCards } from '@/components/dashboard/TopKpiCards';
-import { LiveCameraFeedCard } from '@/components/dashboard/LiveCameraFeedCard';
-import { AiAlertsCard } from '@/components/dashboard/AiAlertsCard';
-import { WhatIfSimulatorCard } from '@/components/dashboard/WhatIfSimulatorCard';
+import { TopStatusPills } from '@/components/dashboard/TopStatusPills';
 import { CompassControlWidget } from '@/components/dashboard/CompassControlWidget';
-import { AirportLayerManager } from '@/components/dashboard/AirportLayerManager';
-import { BottomAnalyticsDock } from '@/components/dashboard/BottomAnalyticsDock';
+import { BottomCommandDock } from '@/components/dashboard/BottomCommandDock';
 import { SpatialLandmarkPins } from '@/components/dashboard/SpatialLandmarkPins';
 import { ContextualEntityModal } from '@/components/3d/ContextualEntityModal';
 import { NotificationCenter } from '@/components/shared/NotificationCenter';
+import { AskTwinOSFloating } from '@/components/copilot/AskTwinOSFloating';
+import { GlobalSearchModal } from '@/components/shared/GlobalSearchModal';
 
 // Dynamically import 3D Scene with ssr: false for high-performance WebGL
 const AirportTwinScene = dynamic(
@@ -28,29 +25,29 @@ export default function MasterDashboardPage() {
   return (
     <main className="relative w-screen h-screen overflow-hidden font-sans select-none bg-[#080A0D]">
       {/* ========================================================================= */}
-      {/* 1. THE HERO ENVIRONMENT: Fullscreen Airport Digital Twin Backdrop */}
+      {/* 1. THE HERO ENVIRONMENT: Fullscreen Airport Digital Twin 3D Viewport      */}
       {/* ========================================================================= */}
       <div className="absolute inset-0 z-0">
         <AirportTwinScene />
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. SPATIAL LANDMARK PINS (Anchored to physical runways, terminal, tower) */}
+      {/* 2. CLEAN SPATIAL LANDMARK PINS (Anchored to physical assets in 3D space)  */}
       {/* ========================================================================= */}
       <SpatialLandmarkPins />
 
       {/* ========================================================================= */}
-      {/* 3. UNIFIED TRANSLUCENT ENTERPRISE UI OVERLAY */}
+      {/* 3. UNIFIED TRANSLUCENT ENTERPRISE COMMAND OVERLAY                         */}
       {/* ========================================================================= */}
       <div className="relative z-20 w-full h-full p-3 flex gap-3 overflow-hidden pointer-events-none">
-        {/* Left Fixed Floating Sidebar */}
+        {/* Left Fixed Floating Navigation Sidebar */}
         <div className="pointer-events-auto h-full shrink-0">
           <LeftSidebar />
         </div>
 
-        {/* Main Dashboard Viewport */}
+        {/* Main Command Center Viewport */}
         <div className="relative flex-1 h-full flex flex-col justify-between overflow-hidden min-h-0">
-          {/* Top Layer: Category Switcher, Search, Utilities, Time & Weather */}
+          {/* Top Layer: Navigation Bar + Search & Time */}
           <div className="pointer-events-auto shrink-0">
             <TopNavBar onOpenNotifications={() => setIsNotificationsOpen(!isNotificationsOpen)} />
             <NotificationCenter
@@ -59,48 +56,45 @@ export default function MasterDashboardPage() {
             />
           </div>
 
-          {/* Upper Middle Layer: Hero Title & Top KPI Cards (pr-[295px] leaves dedicated space for right rail) */}
-          <div className="px-5 pt-0.5 pr-[295px] flex items-start justify-between pointer-events-none shrink-0">
+          {/* Upper Status Row: 4 Clean Status Indicators (System Status, Alerts, Asset Health, Energy) */}
+          <div className="px-6 pt-1 flex items-center justify-between pointer-events-none shrink-0">
             <div className="pointer-events-auto">
-              <HeroHeadline />
+              <TopStatusPills />
             </div>
-            <div className="pointer-events-auto">
-              <TopKpiCards />
+
+            {/* Subtle View Mode Badge */}
+            <div className="pointer-events-auto hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#0D1014]/85 backdrop-blur-md border border-white/[0.08] text-[11px] text-[#8B9199]">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[#F4F4F5] font-semibold">Airport Digital Twin</span>
+              <span>• Real-Time Synchronized</span>
             </div>
           </div>
 
-          {/* Central Layer: Open Airfield Viewport + 3D Compass Dock + Right Rail */}
-          <div className="relative flex-1 min-h-[140px] flex items-start justify-end px-5 pointer-events-none pt-0.5">
-            {/* 3D Compass & Controls Floating Dock */}
-            <div className="pointer-events-auto mr-2.5 self-center">
+          {/* Central Layer: Spacious 3D Airfield Viewport + 3D Compass & Controls */}
+          <div className="relative flex-1 flex items-center justify-end px-6 pointer-events-none">
+            {/* 3D Compass & Controls Floating Widget */}
+            <div className="pointer-events-auto">
               <CompassControlWidget />
             </div>
-
-            {/* Right Information Rail */}
-            <div className="flex flex-col gap-1.5 shrink-0 pointer-events-auto">
-              <LiveCameraFeedCard />
-              <AiAlertsCard />
-              <WhatIfSimulatorCard />
-            </div>
           </div>
 
-          {/* Contextual Entity Inspection Card (appears on landmark click) */}
+          {/* Contextual Entity Inspection Card (appears on landmark/asset click) */}
           <ContextualEntityModal />
 
-          {/* Bottom Layer: Centered Layer Bar & 5-Card Analytics Dock */}
-          <div className="px-5 pb-1 flex flex-col gap-1.5 pointer-events-none shrink-0">
-            {/* Floating 3D Layer Selector Bar */}
-            <div className="flex items-center justify-center pointer-events-auto">
-              <AirportLayerManager />
-            </div>
-
-            {/* Bottom 5-Card Analytics Dock */}
+          {/* Bottom Layer: Clean 4-Card Command Dock (Monitoring | Alerts | Asset Health | Energy) */}
+          <div className="px-6 pb-2 pointer-events-none shrink-0">
             <div className="pointer-events-auto w-full">
-              <BottomAnalyticsDock />
+              <BottomCommandDock />
             </div>
           </div>
         </div>
       </div>
+
+      {/* Global AI Copilot Interactive Drawer */}
+      <AskTwinOSFloating />
+
+      {/* Global Command Search (⌘K) */}
+      <GlobalSearchModal />
     </main>
   );
 }

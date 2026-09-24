@@ -14,13 +14,15 @@ import {
   Zap,
   Filter,
   ArrowRight,
+  GitFork,
+  TrendingUp,
 } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
-import { Asset, AssetCategory } from '@/types';
+import { Asset } from '@/types';
 
 export default function AssetsPage() {
   const router = useRouter();
-  const { assets, focusEntity, markers } = useTwinStore();
+  const { assets, focusEntity } = useTwinStore();
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(assets[0] || null);
 
@@ -34,25 +36,25 @@ export default function AssetsPage() {
   };
 
   return (
-    <div className="w-screen h-screen overflow-y-auto bg-twin-bg text-white font-sans select-none flex flex-col">
+    <div className="w-screen h-screen overflow-y-auto bg-[#080A0D] text-[#F4F4F5] font-sans select-none flex flex-col">
       {/* Top Header */}
-      <header className="px-8 py-4 border-b border-white/10 bg-[#12161E]/80 backdrop-blur-xl flex items-center justify-between sticky top-0 z-30 shadow-glass">
+      <header className="px-8 py-4 border-b border-white/[0.08] bg-[#0D1014]/90 backdrop-blur-xl flex items-center justify-between sticky top-0 z-30 shadow-card">
         <div className="flex items-center gap-4">
           <Link
             href="/"
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white transition-all"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-[#F4F4F5] transition-all"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Dashboard</span>
           </Link>
 
           <div>
-            <h1 className="text-base font-bold text-white flex items-center gap-2">
-              <Cpu className="w-4 h-4 text-twin-orange" />
-              Infrastructure Asset Intelligence & Health Telemetry
+            <h1 className="text-base font-bold text-[#F4F4F5] flex items-center gap-2">
+              <Cpu className="w-4 h-4 text-[#F28C18]" />
+              Infrastructure Asset Inventory & Telemetry
             </h1>
-            <p className="text-[11px] text-white/50">
-              Predictive Maintenance • Thermal Diagnostics • Failure Risk Scoring
+            <p className="text-[11px] text-[#8B9199]">
+              Physical Assets Registry • Health Diagnostics • Interconnected 3D Localization
             </p>
           </div>
         </div>
@@ -65,8 +67,8 @@ export default function AssetsPage() {
               onClick={() => setSelectedCategory(cat)}
               className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
                 selectedCategory === cat
-                  ? 'bg-twin-orange text-white shadow-orange-glow font-bold'
-                  : 'text-white/60 hover:text-white'
+                  ? 'bg-[#F28C18] text-black font-bold shadow-sm'
+                  : 'text-[#8B9199] hover:text-[#F4F4F5]'
               }`}
             >
               {cat}
@@ -78,18 +80,18 @@ export default function AssetsPage() {
       {/* Main Grid */}
       <div className="flex-1 p-8 grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto w-full">
         {/* ========================================================================= */}
-        {/* LEFT 2 COLUMNS: ASSET REGISTRY TABLE */}
+        {/* LEFT 2 COLUMNS: ASSET REGISTRY TABLE                                      */}
         {/* ========================================================================= */}
         <div className="lg:col-span-2 flex flex-col gap-3">
-          <div className="bg-[#12161E]/80 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-glass">
+          <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl overflow-hidden shadow-card">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-white/10 bg-white/[0.02] text-white/50 text-[10px] uppercase font-mono tracking-wider">
+                <tr className="border-b border-white/[0.08] bg-white/[0.02] text-[#8B9199] text-[10px] uppercase font-mono tracking-wider">
                   <th className="py-3 px-4">Asset ID / Name</th>
                   <th className="py-3 px-3">Location & Zone</th>
                   <th className="py-3 px-3">Health Score</th>
                   <th className="py-3 px-3">Failure Risk</th>
-                  <th className="py-3 px-3">Temperature</th>
+                  <th className="py-3 px-3">Operating Temp</th>
                   <th className="py-3 px-3 text-right">Actions</th>
                 </tr>
               </thead>
@@ -101,20 +103,20 @@ export default function AssetsPage() {
                     <tr
                       key={asset.id}
                       onClick={() => setSelectedAsset(asset)}
-                      className={`hover:bg-white/[0.04] transition-colors cursor-pointer ${
-                        isSelected ? 'bg-orange-500/10' : ''
+                      className={`hover:bg-white/[0.03] transition-colors cursor-pointer ${
+                        isSelected ? 'bg-[#F28C18]/10' : ''
                       }`}
                     >
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-twin-orange shrink-0">
+                          <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-[#F28C18] shrink-0">
                             <Cpu className="w-3.5 h-3.5" />
                           </div>
                           <div>
-                            <span className="font-bold text-white block leading-snug">
+                            <span className="font-bold text-[#F4F4F5] block leading-snug">
                               {asset.name}
                             </span>
-                            <span className="text-[10px] font-mono text-white/40">
+                            <span className="text-[10px] font-mono text-[#8B9199]">
                               {asset.id.toUpperCase()}
                             </span>
                           </div>
@@ -122,8 +124,8 @@ export default function AssetsPage() {
                       </td>
 
                       <td className="py-3.5 px-3">
-                        <span className="text-white/80 block">{asset.location}</span>
-                        <span className="text-[10px] text-white/40">{asset.zone}</span>
+                        <span className="text-[#F4F4F5]/90 block">{asset.location}</span>
+                        <span className="text-[10px] text-[#8B9199]">{asset.zone}</span>
                       </td>
 
                       <td className="py-3.5 px-3">
@@ -165,7 +167,7 @@ export default function AssetsPage() {
                       </td>
 
                       <td className="py-3.5 px-3">
-                        <span className="text-white/90 font-mono">{asset.temperature}°C</span>
+                        <span className="text-[#F4F4F5] font-mono">{asset.temperature}°C</span>
                       </td>
 
                       <td className="py-3.5 px-3 text-right">
@@ -174,7 +176,7 @@ export default function AssetsPage() {
                             e.stopPropagation();
                             handleLocateInTwin(asset);
                           }}
-                          className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-twin-orange hover:text-orange-400 text-[11px] font-medium transition-colors inline-flex items-center gap-1"
+                          className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[#F28C18] text-[11px] font-medium transition-colors inline-flex items-center gap-1 cursor-pointer"
                         >
                           <Box className="w-3 h-3" />
                           <span>Twin</span>
@@ -189,45 +191,45 @@ export default function AssetsPage() {
         </div>
 
         {/* ========================================================================= */}
-        {/* RIGHT COLUMN: ASSET TELEMETRY & DIAGNOSTICS */}
+        {/* RIGHT COLUMN: ASSET TELEMETRY & INTERCONNECTED SHORTCUTS                  */}
         {/* ========================================================================= */}
         <div className="flex flex-col gap-4">
           {selectedAsset ? (
-            <div className="bg-[#12161E]/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-glass flex flex-col justify-between">
+            <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">
+                <div className="flex items-center justify-between border-b border-white/[0.08] pb-3 mb-4">
+                  <span className="text-xs font-bold text-[#F4F4F5] uppercase tracking-wider">
                     Equipment Telemetry
                   </span>
-                  <span className="text-[10px] font-mono text-twin-orange">
+                  <span className="text-[10px] font-mono text-[#F28C18]">
                     {selectedAsset.category}
                   </span>
                 </div>
 
-                <h2 className="text-sm font-bold text-white mb-1">{selectedAsset.name}</h2>
-                <span className="text-[11px] text-white/50 block mb-4">
+                <h2 className="text-sm font-bold text-[#F4F4F5] mb-1">{selectedAsset.name}</h2>
+                <span className="text-[11px] text-[#8B9199] block mb-4">
                   {selectedAsset.location} • {selectedAsset.zone}
                 </span>
 
                 <div className="grid grid-cols-2 gap-2 text-xs mb-4">
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
-                    <span className="text-white/40 block text-[10px]">Health Score</span>
-                    <span className="text-lg font-bold text-white">{selectedAsset.healthScore}%</span>
+                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                    <span className="text-[#8B9199] block text-[10px]">Health Score</span>
+                    <span className="text-lg font-bold text-[#F4F4F5]">{selectedAsset.healthScore}%</span>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
-                    <span className="text-white/40 block text-[10px]">Operating Temp</span>
-                    <span className="text-lg font-bold text-white">{selectedAsset.temperature}°C</span>
+                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                    <span className="text-[#8B9199] block text-[10px]">Operating Temp</span>
+                    <span className="text-lg font-bold text-[#F4F4F5]">{selectedAsset.temperature}°C</span>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
-                    <span className="text-white/40 block text-[10px]">Failure Risk</span>
+                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                    <span className="text-[#8B9199] block text-[10px]">Failure Risk</span>
                     <span className="text-lg font-bold text-amber-400">{selectedAsset.failureRisk}%</span>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
-                    <span className="text-white/40 block text-[10px]">Maintenance</span>
-                    <span className="text-lg font-bold text-white">
+                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                    <span className="text-[#8B9199] block text-[10px]">Maintenance</span>
+                    <span className="text-lg font-bold text-[#F4F4F5]">
                       Due in {selectedAsset.maintenanceDaysDue}d
                     </span>
                   </div>
@@ -236,31 +238,57 @@ export default function AssetsPage() {
                 {/* Energy & Load specs */}
                 <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 mb-4 text-xs space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-white/50">Electrical Load:</span>
-                    <span className="font-mono text-white">{selectedAsset.powerKw} kW</span>
+                    <span className="text-[#8B9199]">Electrical Power Draw:</span>
+                    <span className="font-mono text-[#F4F4F5]">{selectedAsset.powerKw} kW</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/50">Operational Duty Cycle:</span>
-                    <span className="font-mono text-white">{selectedAsset.usagePercent}%</span>
+                    <span className="text-[#8B9199]">Operational Duty Cycle:</span>
+                    <span className="font-mono text-[#F4F4F5]">{selectedAsset.usagePercent}%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/50">Last Inspection:</span>
-                    <span className="font-mono text-white">{selectedAsset.lastInspection}</span>
+                    <span className="text-[#8B9199]">Last Certified Inspection:</span>
+                    <span className="font-mono text-[#F4F4F5]">{selectedAsset.lastInspection}</span>
                   </div>
+                </div>
+
+                {/* Interconnected shortcuts */}
+                <div className="space-y-1.5 mb-4">
+                  <span className="text-[10px] text-[#8B9199] font-medium block">Interconnected Workflows:</span>
+                  <Link
+                    href="/dependencies"
+                    className="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-[#F4F4F5] flex items-center justify-between transition-colors"
+                  >
+                    <span className="flex items-center gap-2">
+                      <GitFork className="w-3.5 h-3.5 text-[#F28C18]" />
+                      Analyze System Dependencies
+                    </span>
+                    <ArrowRight className="w-3 h-3 text-[#8B9199]" />
+                  </Link>
+
+                  <Link
+                    href="/predictions"
+                    className="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-[#F4F4F5] flex items-center justify-between transition-colors"
+                  >
+                    <span className="flex items-center gap-2">
+                      <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+                      View Degradation Forecast
+                    </span>
+                    <ArrowRight className="w-3 h-3 text-[#8B9199]" />
+                  </Link>
                 </div>
               </div>
 
               {/* Action Button */}
               <button
                 onClick={() => handleLocateInTwin(selectedAsset)}
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 text-white font-bold text-xs shadow-orange-glow transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-2.5 px-4 rounded-xl bg-[#F28C18] hover:bg-[#ff9a2e] text-black font-bold text-xs shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <Box className="w-4 h-4" />
                 <span>Locate Asset in 3D Digital Twin</span>
               </button>
             </div>
           ) : (
-            <div className="p-8 text-center text-white/40 text-xs">Select an asset to view telemetry</div>
+            <div className="p-8 text-center text-[#8B9199] text-xs">Select an asset to view telemetry</div>
           )}
         </div>
       </div>
