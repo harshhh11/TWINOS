@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Bell, X, AlertTriangle, ShieldCheck, ArrowRight, Check } from 'lucide-react';
+import { Bell, X, ArrowRight } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
 
 interface NotificationCenterProps {
@@ -16,15 +16,15 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-16 right-6 z-40 w-88 bg-[#12161E]/95 backdrop-blur-2xl border border-white/15 rounded-2xl shadow-2xl p-4 select-none pointer-events-auto animate-in fade-in slide-in-from-top-3 duration-200">
-      <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-2.5">
+    <div className="absolute top-16 right-6 z-40 w-92 bg-white/95 backdrop-blur-2xl border border-[#E2E8F0] rounded-3xl shadow-2xl p-4.5 select-none pointer-events-auto animate-in fade-in slide-in-from-top-3 duration-200">
+      <div className="flex items-center justify-between border-b border-[#F1F5F9] pb-3 mb-3">
         <div className="flex items-center gap-2">
-          <Bell className="w-4 h-4 text-twin-orange" />
-          <h3 className="text-xs font-bold text-white tracking-wide">Notifications & Alerts</h3>
+          <Bell className="w-4 h-4 text-[#EA580C]" />
+          <h3 className="text-xs font-bold text-[#0F172A] tracking-tight">Notifications & Alerts</h3>
         </div>
         <button
           onClick={onClose}
-          className="p-1 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-colors"
+          className="p-1 rounded-full text-[#94A3B8] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
@@ -34,43 +34,43 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
         {incidents.map((inc) => (
           <div
             key={inc.id}
-            className={`p-3 rounded-xl border text-xs transition-all ${
+            className={`p-3.5 rounded-2xl border text-xs transition-all ${
               inc.status === 'RESOLVED'
-                ? 'bg-white/[0.02] border-white/5 opacity-60'
+                ? 'bg-[#F8FAFC] border-[#E2E8F0] opacity-60'
                 : inc.severity === 'HIGH'
-                ? 'bg-red-950/30 border-red-500/30'
-                : 'bg-amber-950/20 border-amber-500/30'
+                ? 'bg-[#FEF2F2] border-[#FEE2E2]'
+                : 'bg-[#FFFBEB] border-[#FEF3C7]'
             }`}
           >
             <div className="flex items-start justify-between gap-2">
-              <span className="font-semibold text-white/95 leading-tight">{inc.title}</span>
-              <span className="text-[10px] text-white/40 shrink-0">{inc.timestamp}</span>
+              <span className="font-bold text-[#0F172A] leading-tight">{inc.title}</span>
+              <span className="text-[10px] text-[#94A3B8] font-medium shrink-0">{inc.timestamp}</span>
             </div>
 
-            <p className="text-[11px] text-white/60 mt-1 leading-snug">{inc.recommendation}</p>
+            <p className="text-[11px] text-[#64748B] mt-1 leading-snug">{inc.recommendation}</p>
 
-            <div className="mt-2.5 flex items-center justify-between pt-1 border-t border-white/5">
-              <span className="text-[10px] font-mono text-twin-orange">{inc.locationName}</span>
+            <div className="mt-2.5 flex items-center justify-between pt-2 border-t border-[#E2E8F0]/60">
+              <span className="text-[10px] font-mono font-bold text-[#EA580C]">{inc.locationName}</span>
               <button
                 onClick={() => {
                   focusEntity(inc.locationId, inc.coordinates);
                   onClose();
                 }}
-                className="text-[10px] font-bold text-white/80 hover:text-white flex items-center gap-1 hover:underline cursor-pointer"
+                className="text-[11px] font-bold text-[#2563EB] hover:text-[#1D4ED8] flex items-center gap-1 cursor-pointer"
               >
                 <span>View in Twin</span>
-                <ArrowRight className="w-2.5 h-2.5" />
+                <ArrowRight className="w-3 h-3" />
               </button>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between">
+      <div className="mt-3 pt-3 border-t border-[#F1F5F9] flex items-center justify-between">
         <Link
           href="/incidents"
           onClick={onClose}
-          className="text-xs font-medium text-twin-orange hover:underline"
+          className="text-xs font-bold text-[#EA580C] hover:text-[#C2410C]"
         >
           Manage all incidents →
         </Link>

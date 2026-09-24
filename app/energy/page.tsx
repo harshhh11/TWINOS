@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -13,8 +13,6 @@ import {
 import {
   AreaChart,
   Area,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -51,24 +49,24 @@ export default function EnergyPage() {
   };
 
   return (
-    <div className="w-screen h-screen overflow-y-auto bg-[#080A0D] text-[#F4F4F5] font-sans select-none flex flex-col">
+    <div className="w-screen min-h-screen bg-[#F0F4F8] text-[#0F172A] font-sans select-none flex flex-col">
       {/* Top Header */}
-      <header className="px-8 py-4 border-b border-white/[0.08] bg-[#0D1014]/90 backdrop-blur-xl flex items-center justify-between sticky top-0 z-30 shadow-card">
+      <header className="px-8 py-4 border-b border-[#E2E8F0] bg-white sticky top-0 z-30 shadow-xs flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
             href="/"
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-[#F4F4F5] transition-all"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] text-xs font-bold text-[#0F172A] transition-all"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <ArrowLeft className="w-4 h-4 text-[#EA580C]" />
             <span>Dashboard</span>
           </Link>
 
           <div>
-            <h1 className="text-base font-bold text-[#F4F4F5] flex items-center gap-2">
-              <Zap className="w-4 h-4 text-[#F28C18]" />
+            <h1 className="text-base font-extrabold text-[#0F172A] flex items-center gap-2">
+              <Zap className="w-4 h-4 text-[#EA580C]" />
               Infrastructure Energy & Grid Telemetry
             </h1>
-            <p className="text-[11px] text-[#8B9199]">
+            <p className="text-[11px] text-[#64748B]">
               Real-Time Power Draw • Historical Consumption Profiles • Major Load Distribution
             </p>
           </div>
@@ -77,9 +75,9 @@ export default function EnergyPage() {
         {/* Action Button */}
         <button
           onClick={handleLocateSubstation}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-[#F4F4F5] transition-all cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] text-xs font-bold text-[#0F172A] transition-all cursor-pointer shadow-2xs"
         >
-          <Box className="w-3.5 h-3.5 text-[#F28C18]" />
+          <Box className="w-4 h-4 text-[#EA580C]" />
           <span>Locate Energy Substation in Twin</span>
         </button>
       </header>
@@ -88,68 +86,68 @@ export default function EnergyPage() {
       <div className="flex-1 p-8 max-w-7xl mx-auto w-full space-y-6">
         {/* 1. Energy Metrics KPI Row */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4 shadow-card">
-            <span className="text-[11px] text-[#8B9199] font-medium block">Current Energy Draw</span>
+          <div className="bg-white rounded-3xl p-5 border border-[#E2E8F0] shadow-xs">
+            <span className="text-xs text-[#64748B] font-semibold block">Current Energy Draw</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-black text-[#F4F4F5]">24.3</span>
-              <span className="text-xs font-mono text-[#8B9199]">MW</span>
+              <span className="text-2xl font-black text-[#0F172A]">24.3</span>
+              <span className="text-xs font-mono font-bold text-[#64748B]">MW</span>
             </div>
-            <span className="text-[11px] text-emerald-400 font-medium block mt-1 flex items-center gap-1">
-              <TrendingDown className="w-3 h-3" /> 5.2% vs Yesterday
+            <span className="text-xs text-emerald-600 font-semibold block mt-1 flex items-center gap-1">
+              <TrendingDown className="w-3.5 h-3.5" /> 5.2% vs Yesterday
             </span>
           </div>
 
-          <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4 shadow-card">
-            <span className="text-[11px] text-[#8B9199] font-medium block">Total 24h Consumption</span>
+          <div className="bg-white rounded-3xl p-5 border border-[#E2E8F0] shadow-xs">
+            <span className="text-xs text-[#64748B] font-semibold block">Total 24h Consumption</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-black text-[#F4F4F5]">114,840</span>
-              <span className="text-xs font-mono text-[#8B9199]">kWh</span>
+              <span className="text-2xl font-black text-[#0F172A]">114,840</span>
+              <span className="text-xs font-mono font-bold text-[#64748B]">kWh</span>
             </div>
-            <span className="text-[11px] text-[#8B9199] block mt-1">
+            <span className="text-xs text-[#64748B] block mt-1">
               Daily budget: 125,000 kWh
             </span>
           </div>
 
-          <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4 shadow-card">
-            <span className="text-[11px] text-[#8B9199] font-medium block">Renewable Solar Mix</span>
+          <div className="bg-white rounded-3xl p-5 border border-[#E2E8F0] shadow-xs">
+            <span className="text-xs text-[#64748B] font-semibold block">Renewable Solar Mix</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-black text-emerald-400">18.4%</span>
-              <span className="text-xs font-bold text-emerald-400">Active</span>
+              <span className="text-2xl font-black text-emerald-600">18.4%</span>
+              <span className="text-xs font-bold text-emerald-600">Active</span>
             </div>
-            <span className="text-[11px] text-emerald-400 block mt-1">
+            <span className="text-xs text-emerald-600 block mt-1 font-medium">
               Roof PV arrays generating 4.1 MW
             </span>
           </div>
 
-          <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4 shadow-card">
-            <span className="text-[11px] text-[#8B9199] font-medium block">Grid Health Status</span>
+          <div className="bg-white rounded-3xl p-5 border border-[#E2E8F0] shadow-xs">
+            <span className="text-xs text-[#64748B] font-semibold block">Grid Health Status</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-bold text-[#F4F4F5]">Nominal</span>
+              <span className="text-2xl font-black text-[#0F172A]">Nominal</span>
             </div>
-            <span className="text-[11px] text-emerald-400 block mt-1">
+            <span className="text-xs text-emerald-600 block mt-1 font-medium">
               Dual-Feeder Substation Synchronized
             </span>
           </div>
         </div>
 
         {/* 2. Clean Historical & Real-Time Consumption Chart */}
-        <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card">
+        <div className="bg-white rounded-3xl p-6 border border-[#E2E8F0] shadow-xs">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-sm font-bold text-[#F4F4F5] flex items-center gap-2">
-                <Zap className="w-4 h-4 text-[#F28C18]" />
+              <h2 className="text-sm font-extrabold text-[#0F172A] flex items-center gap-2">
+                <Zap className="w-4 h-4 text-[#EA580C]" />
                 Daily Facility Load Curve (Actual MW vs Baseline MW)
               </h2>
-              <p className="text-[11px] text-[#8B9199]">
+              <p className="text-[11px] text-[#64748B]">
                 Hourly grid demand across 24 hours with peak-hour cooling demand variance
               </p>
             </div>
-            <div className="flex items-center gap-4 text-xs font-mono">
-              <span className="flex items-center gap-1.5 text-white/80">
-                <span className="w-3 h-1 bg-[#F28C18] rounded" /> Actual Load
+            <div className="flex items-center gap-4 text-xs font-semibold">
+              <span className="flex items-center gap-1.5 text-[#0F172A]">
+                <span className="w-3 h-1.5 bg-[#EA580C] rounded-full" /> Actual Load
               </span>
-              <span className="flex items-center gap-1.5 text-[#8B9199]">
-                <span className="w-3 h-1 bg-white/20 rounded" /> Baseline
+              <span className="flex items-center gap-1.5 text-[#94A3B8]">
+                <span className="w-3 h-1.5 bg-[#CBD5E1] rounded-full" /> Scheduled Baseline
               </span>
             </div>
           </div>
@@ -159,74 +157,74 @@ export default function EnergyPage() {
               <AreaChart data={ENERGY_TIMELINE} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="energyFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#F28C18" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#F28C18" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="#EA580C" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#EA580C" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="time" stroke="#626870" fontSize={10} tickLine={false} />
-                <YAxis stroke="#626870" fontSize={10} tickLine={false} unit=" MW" />
+                <XAxis dataKey="time" stroke="#94A3B8" fontSize={10} tickLine={false} />
+                <YAxis stroke="#94A3B8" fontSize={10} tickLine={false} unit=" MW" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0D1014',
-                    borderColor: 'rgba(255,255,255,0.1)',
+                    backgroundColor: '#FFFFFF',
+                    borderColor: '#E2E8F0',
                     borderRadius: '12px',
                     fontSize: '11px',
-                    color: '#F4F4F5',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                   }}
                 />
-                <Area type="monotone" dataKey="actual" stroke="#F28C18" strokeWidth={2.5} fill="url(#energyFill)" name="Actual Load (MW)" />
-                <Area type="monotone" dataKey="baseline" stroke="#8B9199" strokeWidth={1.5} strokeDasharray="4 4" fill="transparent" name="Scheduled Baseline (MW)" />
+                <Area type="monotone" dataKey="actual" stroke="#EA580C" strokeWidth={2.5} fill="url(#energyFill)" name="Actual Load (MW)" />
+                <Area type="monotone" dataKey="baseline" stroke="#94A3B8" strokeWidth={1.5} strokeDasharray="4 4" fill="transparent" name="Scheduled Baseline (MW)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* 3. Major Consuming Assets Breakdown Table */}
-        <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card">
-          <div className="flex items-center justify-between mb-4 border-b border-white/[0.08] pb-3">
+        <div className="bg-white rounded-3xl p-6 border border-[#E2E8F0] shadow-xs">
+          <div className="flex items-center justify-between mb-4 border-b border-[#F1F5F9] pb-3">
             <div>
-              <h2 className="text-sm font-bold text-[#F4F4F5]">Major Consuming Assets & Systems</h2>
-              <p className="text-[11px] text-[#8B9199]">
+              <h2 className="text-sm font-extrabold text-[#0F172A]">Major Consuming Assets & Systems</h2>
+              <p className="text-[11px] text-[#64748B]">
                 Distribution of electrical load by category across airport infrastructure
               </p>
             </div>
           </div>
 
-          <div className="divide-y divide-white/5 text-xs">
+          <div className="divide-y divide-[#F1F5F9] text-xs">
             {MAJOR_CONSUMING_ASSETS.map((asset, idx) => (
-              <div key={idx} className="py-3 flex items-center justify-between gap-4">
+              <div key={idx} className="py-3.5 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 min-w-[240px]">
-                  <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-[#F28C18] shrink-0">
-                    <Cpu className="w-3.5 h-3.5" />
+                  <div className="w-8 h-8 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#EA580C] shrink-0">
+                    <Cpu className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="font-bold text-[#F4F4F5] block">{asset.name}</span>
-                    <span className="text-[10px] text-[#8B9199] font-mono">{asset.category}</span>
+                    <span className="font-bold text-[#0F172A] block">{asset.name}</span>
+                    <span className="text-[10px] text-[#64748B] font-mono font-semibold">{asset.category}</span>
                   </div>
                 </div>
 
                 {/* Progress bar */}
                 <div className="flex-1 max-w-xs flex items-center gap-3">
-                  <div className="flex-1 h-2 rounded-full bg-white/10 overflow-hidden">
+                  <div className="flex-1 h-2 rounded-full bg-[#F1F5F9] overflow-hidden">
                     <div
                       style={{ width: `${asset.percentage}%` }}
                       className={`h-full rounded-full ${
-                        asset.status === 'ELEVATED' ? 'bg-amber-400' : 'bg-[#F28C18]'
+                        asset.status === 'ELEVATED' ? 'bg-[#F59E0B]' : 'bg-[#EA580C]'
                       }`}
                     />
                   </div>
-                  <span className="text-xs font-mono font-bold text-[#F4F4F5] w-8">
+                  <span className="text-xs font-mono font-bold text-[#0F172A] w-8">
                     {asset.percentage}%
                   </span>
                 </div>
 
                 <div className="text-right">
-                  <span className="font-mono font-bold text-[#F4F4F5] block">
+                  <span className="font-mono font-bold text-[#0F172A] block">
                     {asset.consumptionKw.toLocaleString()} kW
                   </span>
                   <span
                     className={`text-[10px] font-bold ${
-                      asset.status === 'ELEVATED' ? 'text-amber-400' : 'text-emerald-400'
+                      asset.status === 'ELEVATED' ? 'text-[#D97706]' : 'text-emerald-600'
                     }`}
                   >
                     {asset.status}

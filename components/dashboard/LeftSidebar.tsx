@@ -4,8 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Menu,
-  X,
   Home,
   Box,
   Activity,
@@ -16,7 +14,6 @@ import {
   ShieldAlert,
   Zap,
   Sparkles,
-  GitFork,
   ArrowRight,
 } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
@@ -38,169 +35,116 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Assets', href: '/assets', icon: Cpu },
   { label: 'Incidents', href: '/incidents', icon: ShieldAlert, badge: '1' },
   { label: 'Energy', href: '/energy', icon: Zap },
-  { label: 'Dependencies', href: '/dependencies', icon: GitFork },
+  { label: 'Dependencies', href: '/dependencies', icon: Sparkles },
 ];
 
 export function LeftSidebar() {
   const pathname = usePathname();
-  const { isSidebarOpen, setSidebarOpen, toggleSidebar, setCopilotOpen, incidents } = useTwinStore();
-  const activeIncidents = incidents.filter((i) => i.status !== 'RESOLVED').length;
+  const { setCopilotOpen, incidents } = useTwinStore();
+  const activeAlerts = incidents.filter((i) => i.status !== 'RESOLVED').length;
 
   return (
-    <>
-      {/* 1. Collapsed Floating Trigger Button (Visible when sidebar is closed) */}
-      <div className="pointer-events-auto">
-        <button
-          onClick={toggleSidebar}
-          title="Open Navigation Menu"
-          className="flex items-center gap-2.5 px-3 py-2 rounded-2xl bg-[#0D1014]/92 hover:bg-[#151A21] backdrop-blur-xl border border-white/[0.08] hover:border-[#F28C18]/40 text-[#F4F4F5] transition-all shadow-card group cursor-pointer"
-        >
-          {/* Muted Orange TwinOS Emblem */}
-          <div className="w-7 h-7 rounded-xl bg-[#F28C18] flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105">
+    <aside className="w-[230px] shrink-0 bg-white rounded-3xl p-4 border border-[#E2E8F0] shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between select-none">
+      {/* Top: Logo & Navigation */}
+      <div className="flex flex-col">
+        {/* TwinOS Brand Header */}
+        <Link href="/" className="flex items-center gap-3 px-2 py-1 mb-6 group">
+          <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#EA580C] to-[#C2410C] flex items-center justify-center shadow-md shrink-0">
             <svg
-              className="w-4 h-4 text-black fill-current"
+              className="w-5 h-5 text-white fill-current"
               viewBox="0 0 24 24"
             >
               <path d="M12 2L2 22h5.5l2.2-4.8h4.6l2.2 4.8H22L12 2zm0 6.5l1.6 3.5h-3.2L12 8.5z" />
             </svg>
           </div>
-          <div className="flex flex-col text-left leading-tight pr-1">
-            <span className="text-xs font-bold text-[#F4F4F5] flex items-center gap-1">
-              TwinOS<span className="text-[9px] text-[#F28C18]">™</span>
+          <div className="flex flex-col">
+            <span className="text-lg font-extrabold text-[#0F172A] tracking-tight leading-none flex items-center gap-0.5">
+              TwinOS<span className="text-xs text-[#EA580C] font-bold">™</span>
             </span>
-            <span className="text-[10px] text-[#8B9199]">Menu</span>
+            <span className="text-[10px] font-medium text-[#64748B] leading-tight mt-1">
+              AI Digital Twin<br />for Smarter Infrastructure
+            </span>
           </div>
-          <Menu className="w-4 h-4 text-[#8B9199] group-hover:text-[#F4F4F5] transition-colors ml-1" />
-        </button>
+        </Link>
+
+        {/* Navigation Items */}
+        <nav className="flex flex-col gap-1">
+          {NAV_ITEMS.map((item) => {
+            const isActive =
+              item.href === '/'
+                ? pathname === '/'
+                : pathname.startsWith(item.href);
+            const Icon = item.icon;
+
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all ${
+                  isActive
+                    ? 'bg-[#FFF7ED] text-[#EA580C] border border-[#FFEDD5] shadow-xs'
+                    : 'text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC]'
+                }`}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <Icon
+                    className={`w-4 h-4 shrink-0 transition-colors ${
+                      isActive ? 'text-[#EA580C]' : 'text-[#64748B]'
+                    }`}
+                  />
+                  <span className="truncate">{item.label}</span>
+                </div>
+
+                {item.label === 'Alerts' && activeAlerts > 0 && (
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FEF2F2] text-[#DC2626] border border-[#FEE2E2]">
+                    {activeAlerts}
+                  </span>
+                )}
+                {item.label === 'Incidents' && (
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FEF3C7] text-[#D97706] border border-[#FDE68A]">
+                    1
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
       </div>
 
-      {/* 2. Slide-over Backdrop Overlay */}
-      {isSidebarOpen && (
+      {/* Bottom: AI Copilot Card & Version */}
+      <div className="pt-4 flex flex-col gap-3">
+        {/* Compact AI Copilot Card */}
         <div
-          onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity pointer-events-auto"
-        />
-      )}
-
-      {/* 3. Slide-Out Side Navigation Drawer */}
-      <aside
-        className={`fixed top-0 left-0 bottom-0 z-50 w-[270px] h-full flex flex-col justify-between p-4 bg-[#0D1014]/98 backdrop-blur-2xl border-r border-white/[0.08] shadow-2xl transition-transform duration-300 ease-in-out pointer-events-auto select-none ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        {/* Top Header of Drawer */}
-        <div className="flex flex-col">
-          <div className="flex items-center justify-between pb-4 mb-2 border-b border-white/[0.08]">
-            <Link
-              href="/"
-              onClick={() => setSidebarOpen(false)}
-              className="flex items-center gap-2.5 group"
-            >
-              <div className="w-8 h-8 rounded-xl bg-[#F28C18] flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105">
-                <svg
-                  className="w-4.5 h-4.5 text-black fill-current"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2L2 22h5.5l2.2-4.8h4.6l2.2 4.8H22L12 2zm0 6.5l1.6 3.5h-3.2L12 8.5z" />
-                </svg>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-base font-bold text-[#F4F4F5] leading-none flex items-center gap-0.5">
-                  TwinOS<span className="text-[9px] text-[#F28C18] font-semibold">™</span>
-                </span>
-                <span className="text-[10px] text-[#8B9199] mt-1 font-medium">
-                  Command Center
-                </span>
-              </div>
-            </Link>
-
+          onClick={() => setCopilotOpen(true)}
+          className="p-3.5 rounded-2xl bg-gradient-to-b from-[#F8FAFC] to-[#F1F5F9] border border-[#E2E8F0] hover:border-[#FDBA74] transition-all cursor-pointer group shadow-xs"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#EA580C] to-[#FB923C] flex items-center justify-center shadow-md text-white shrink-0">
+              <Sparkles className="w-4 h-4" />
+            </div>
             <button
-              onClick={() => setSidebarOpen(false)}
-              className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[#8B9199] hover:text-[#F4F4F5] transition-colors cursor-pointer"
+              className="w-6 h-6 rounded-full bg-white border border-[#E2E8F0] flex items-center justify-center text-[#64748B] group-hover:text-[#EA580C] group-hover:border-[#EA580C] transition-colors"
             >
-              <X className="w-4 h-4" />
+              <ArrowRight className="w-3 h-3" />
             </button>
           </div>
-
-          {/* Navigation Links */}
-          <nav className="flex flex-col gap-1 mt-2">
-            {NAV_ITEMS.map((item) => {
-              const isActive =
-                item.href === '/'
-                  ? pathname === '/'
-                  : pathname.startsWith(item.href);
-              const Icon = item.icon;
-
-              return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
-                    isActive
-                      ? 'bg-[#1D1711] text-[#F4F4F5] border-l-2 border-[#F28C18] shadow-sm'
-                      : 'text-[#8B9199] hover:text-[#F4F4F5] hover:bg-[#151A21] border-l-2 border-transparent'
-                  }`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <Icon
-                      className={`w-4 h-4 shrink-0 transition-colors ${
-                        isActive ? 'text-[#F28C18]' : 'text-[#8B9199]'
-                      }`}
-                    />
-                    <span className="truncate text-xs">{item.label}</span>
-                  </div>
-
-                  {item.label === 'Alerts' && activeIncidents > 0 && (
-                    <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                      {activeIncidents}
-                    </span>
-                  )}
-                  {item.label === 'Incidents' && (
-                    <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">
-                      1
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+          <h4 className="text-xs font-bold text-[#0F172A] leading-tight">
+            AI Copilot
+          </h4>
+          <p className="text-[10px] text-[#64748B] mt-0.5 leading-snug">
+            Ask anything about your infrastructure
+          </p>
         </div>
 
-        {/* Bottom Drawer Section */}
-        <div className="pt-3 border-t border-white/[0.08]">
-          <button
-            onClick={() => {
-              setSidebarOpen(false);
-              setCopilotOpen(true);
-            }}
-            className="w-full text-left p-3 rounded-xl bg-[#11151A] hover:bg-[#151A21] border border-white/[0.08] hover:border-[#F28C18]/40 transition-all cursor-pointer group shadow-sm"
-          >
-            <div className="flex items-center gap-2.5 mb-1">
-              <div className="w-6 h-6 rounded-lg bg-[#F28C18]/15 border border-[#F28C18]/30 flex items-center justify-center text-[#F28C18] shrink-0">
-                <Sparkles className="w-3.5 h-3.5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h4 className="text-xs font-semibold text-[#F4F4F5] flex items-center justify-between">
-                  <span>AI Copilot</span>
-                  <ArrowRight className="w-3 h-3 text-[#8B9199] group-hover:text-[#F28C18] transition-colors" />
-                </h4>
-              </div>
-            </div>
-            <p className="text-[10px] text-[#8B9199] leading-tight truncate">
-              Query telemetry & system state
-            </p>
-          </button>
-
-          <div className="mt-3 px-1 flex items-center justify-between text-[10px] text-[#626870] font-mono">
-            <span>TwinOS v2.4 • Airport</span>
-            <span className="flex items-center gap-1 text-emerald-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Live Sync
-            </span>
-          </div>
+        {/* Version Footer */}
+        <div className="px-2 flex items-center justify-between text-[10px] font-medium text-[#94A3B8]">
+          <span>v1.0.0</span>
+          <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Live Sync
+          </span>
         </div>
-      </aside>
-    </>
+      </div>
+    </aside>
   );
 }

@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import {
   ArrowLeft,
-  Box,
   RotateCw,
 } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
@@ -25,7 +24,7 @@ export default function TwinExplorerPage() {
   } = useTwinStore();
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#080A0D] font-sans select-none">
+    <div className="relative w-screen h-screen overflow-hidden bg-[#0B101B] font-sans select-none">
       {/* 3D Scene Hero */}
       <div className="absolute inset-0 z-0">
         <AirportTwinScene />
@@ -36,40 +35,40 @@ export default function TwinExplorerPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0D1014]/90 hover:bg-[#151A21] backdrop-blur-xl border border-white/[0.08] text-xs font-semibold text-[#F4F4F5] transition-all shadow-card"
+            className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/95 hover:bg-white text-[#0F172A] border border-[#E2E8F0] text-xs font-bold transition-all shadow-md"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <ArrowLeft className="w-4 h-4 text-[#EA580C]" />
             <span>Dashboard</span>
           </Link>
 
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] text-xs text-[#8B9199] shadow-card">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-bold text-[#F4F4F5]">3D Digital Twin Explorer</span>
-            <span>• Airport Environment</span>
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/95 backdrop-blur-md border border-[#E2E8F0] text-xs shadow-md">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-extrabold text-[#0F172A]">3D Digital Twin Explorer</span>
+            <span className="text-[#64748B]">• Airport Environment</span>
           </div>
         </div>
 
         {/* Spatial Quick Jumps & Camera Reset */}
-        <div className="flex items-center gap-2 p-1.5 bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-card text-xs">
+        <div className="flex items-center gap-2 p-1.5 bg-white/95 backdrop-blur-md border border-[#E2E8F0] rounded-2xl shadow-md text-xs">
           <button
             onClick={resetCamera}
             title="Reset Camera View"
-            className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-medium text-[#8B9199] hover:text-[#F4F4F5] transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-1.5 rounded-xl bg-[#F8FAFC] hover:bg-[#F1F5F9] text-xs font-semibold text-[#64748B] hover:text-[#0F172A] transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <RotateCw className="w-3.5 h-3.5" />
             <span>Reset View</span>
           </button>
 
-          <div className="w-[1px] h-4 bg-white/10 mx-1" />
+          <div className="w-[1px] h-4 bg-[#E2E8F0] mx-1" />
 
           {markers.map((m) => (
             <button
               key={m.id}
               onClick={() => focusEntity(m.id, m.position)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 selectedMarkerId === m.id
-                  ? 'bg-[#F28C18] text-black font-bold shadow-sm'
-                  : 'text-[#8B9199] hover:text-[#F4F4F5] hover:bg-white/5'
+                  ? 'bg-[#EA580C] text-white font-bold shadow-xs'
+                  : 'text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC]'
               }`}
             >
               {m.name}
@@ -81,9 +80,9 @@ export default function TwinExplorerPage() {
       {/* Selected Entity Modal */}
       <ContextualEntityModal />
 
-      {/* Bottom Subtle Navigation Hint */}
+      {/* Bottom Navigation Hint */}
       <footer className="absolute bottom-6 inset-x-8 z-30 flex justify-center pointer-events-none">
-        <div className="px-4 py-2 rounded-full bg-[#0D1014]/80 backdrop-blur-md border border-white/[0.08] text-[11px] text-[#8B9199] pointer-events-auto">
+        <div className="px-5 py-2.5 rounded-full bg-white/95 backdrop-blur-md border border-[#E2E8F0] text-xs font-medium text-[#64748B] shadow-md pointer-events-auto">
           Left Click + Drag to Rotate • Right Click to Pan • Scroll to Zoom • Click any landmark pin to inspect
         </div>
       </footer>

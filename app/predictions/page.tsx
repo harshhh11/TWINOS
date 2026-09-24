@@ -7,13 +7,8 @@ import {
   ArrowLeft,
   TrendingUp,
   Sparkles,
-  AlertTriangle,
-  Clock,
   CheckCircle2,
   Box,
-  Layers,
-  Zap,
-  Cpu,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
@@ -114,39 +109,39 @@ export default function PredictionsPage() {
     : predictions.filter((p) => p.category === filterCategory);
 
   return (
-    <div className="w-screen h-screen overflow-y-auto bg-[#080A0D] text-[#F4F4F5] font-sans select-none flex flex-col">
+    <div className="w-screen min-h-screen bg-[#F0F4F8] text-[#0F172A] font-sans select-none flex flex-col">
       {/* Top Header */}
-      <header className="px-8 py-4 border-b border-white/[0.08] bg-[#0D1014]/90 backdrop-blur-xl flex items-center justify-between sticky top-0 z-30 shadow-card">
+      <header className="px-8 py-4 border-b border-[#E2E8F0] bg-white sticky top-0 z-30 shadow-xs flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
             href="/"
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-[#F4F4F5] transition-all"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] text-xs font-bold text-[#0F172A] transition-all"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <ArrowLeft className="w-4 h-4 text-[#EA580C]" />
             <span>Dashboard</span>
           </Link>
 
           <div>
-            <h1 className="text-base font-bold text-[#F4F4F5] flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-[#F28C18]" />
+            <h1 className="text-base font-extrabold text-[#0F172A] flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-[#EA580C]" />
               Operational Trend Predictions & Asset Mitigations
             </h1>
-            <p className="text-[11px] text-[#8B9199]">
+            <p className="text-[11px] text-[#64748B]">
               Machine Learning Equipment Degradation Forecasting • Telemetry Projections • Preventative Actions
             </p>
           </div>
         </div>
 
         {/* Category Filters */}
-        <div className="flex items-center gap-1.5 p-1 bg-white/5 border border-white/10 rounded-full text-xs">
+        <div className="flex items-center gap-1.5 p-1 bg-[#F1F5F9] border border-[#E2E8F0] rounded-full text-xs">
           {['ALL', 'DEGRADATION', 'RESOURCE', 'EQUIPMENT', 'INCIDENT'].map((cat) => (
             <button
               key={cat}
               onClick={() => setFilterCategory(cat)}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                 filterCategory === cat
-                  ? 'bg-[#F28C18] text-black font-bold shadow-sm'
-                  : 'text-[#8B9199] hover:text-[#F4F4F5]'
+                  ? 'bg-[#EA580C] text-white font-bold shadow-xs'
+                  : 'text-[#64748B] hover:text-[#0F172A]'
               }`}
             >
               {cat}
@@ -158,21 +153,21 @@ export default function PredictionsPage() {
       {/* Main Grid */}
       <div className="flex-1 p-8 max-w-7xl mx-auto w-full space-y-6">
         {/* Top Summary Banner */}
-        <div className="p-4 rounded-2xl bg-gradient-to-r from-[#1D1711] to-[#12161E] border border-[#F28C18]/30 shadow-card flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#F28C18]/20 border border-[#F28C18]/40 flex items-center justify-center text-[#F28C18]">
+        <div className="p-5 rounded-3xl bg-white border border-[#E2E8F0] shadow-xs flex items-center justify-between">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-2xl bg-[#FFF7ED] border border-[#FFEDD5] flex items-center justify-center text-[#EA580C]">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-[#F4F4F5]">
+              <h2 className="text-sm font-extrabold text-[#0F172A]">
                 {predictions.filter((p) => !p.applied).length} Active Asset & Operational Forecasts Requiring Attention
               </h2>
-              <p className="text-xs text-[#8B9199] mt-0.5">
+              <p className="text-xs text-[#64748B] mt-0.5">
                 TwinOS predictive engine runs forward degradation projections using sensor history and physical telemetry models.
               </p>
             </div>
           </div>
-          <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+          <span className="text-xs font-mono font-bold text-emerald-700 bg-[#ECFDF5] px-3.5 py-1.5 rounded-full border border-[#A7F3D0]">
             Avg Confidence: 87%
           </span>
         </div>
@@ -183,84 +178,84 @@ export default function PredictionsPage() {
             return (
               <div
                 key={pred.id}
-                className={`p-5 rounded-2xl border transition-all flex flex-col justify-between ${
+                className={`p-6 rounded-3xl border transition-all flex flex-col justify-between ${
                   pred.applied
-                    ? 'bg-[#0D1014]/60 border-emerald-500/30'
-                    : 'bg-[#0D1014]/90 hover:bg-[#12161E] border-white/[0.08] shadow-card'
+                    ? 'bg-[#F8FAFC] border-emerald-300'
+                    : 'bg-white hover:shadow-md border-[#E2E8F0] shadow-xs'
                 }`}
               >
                 <div>
                   {/* Category & Confidence Badge */}
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white/5 text-[#F28C18] border border-white/10">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#FFF7ED] text-[#EA580C] border border-[#FFEDD5]">
                       {pred.category}
                     </span>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-emerald-400">
+                      <span className="text-xs font-bold text-emerald-600">
                         {pred.confidence}% Confidence
                       </span>
-                      <span className="text-[10px] text-[#8B9199] font-mono">
+                      <span className="text-xs text-[#94A3B8] font-mono">
                         {pred.timeframe}
                       </span>
                     </div>
                   </div>
 
                   {/* Title & Location */}
-                  <h3 className="text-sm font-bold text-[#F4F4F5] mb-1">
+                  <h3 className="text-sm font-extrabold text-[#0F172A] mb-1">
                     {pred.title}
                   </h3>
-                  <span className="text-xs text-[#8B9199] block mb-3 font-medium">
+                  <span className="text-xs text-[#64748B] block mb-3 font-medium">
                     Location: {pred.location}
                   </span>
 
                   {/* Expected Impact */}
-                  <div className="p-3 rounded-xl bg-red-950/20 border border-red-500/20 mb-3 text-xs">
-                    <span className="text-[10px] font-bold text-red-400 uppercase block mb-1 font-mono">
+                  <div className="p-3.5 rounded-2xl bg-[#FEF2F2] border border-[#FEE2E2] mb-3 text-xs">
+                    <span className="text-[10px] font-bold text-[#DC2626] uppercase block mb-1 font-mono">
                       Expected Operational Impact
                     </span>
-                    <p className="text-[11px] text-white/80 leading-relaxed">
+                    <p className="text-xs text-[#7F1D1D] leading-relaxed">
                       {pred.expectedImpact}
                     </p>
                   </div>
 
                   {/* Recommended Action */}
-                  <div className="p-3 rounded-xl bg-[#F28C18]/10 border border-[#F28C18]/25 mb-4 text-xs">
-                    <span className="text-[10px] font-bold text-[#F28C18] uppercase block mb-1 font-mono">
+                  <div className="p-3.5 rounded-2xl bg-[#FFF7ED] border border-[#FFEDD5] mb-4 text-xs">
+                    <span className="text-[10px] font-bold text-[#EA580C] uppercase block mb-1 font-mono">
                       Recommended Preventive Action
                     </span>
-                    <p className="text-[11px] text-[#F4F4F5] font-medium leading-relaxed">
+                    <p className="text-xs text-[#9A3412] font-semibold leading-relaxed">
                       {pred.recommendedAction}
                     </p>
                   </div>
                 </div>
 
                 {/* Card Bottom Actions */}
-                <div className="flex items-center justify-between pt-3 border-t border-white/5 gap-3">
+                <div className="flex items-center justify-between pt-3.5 border-t border-[#F1F5F9] gap-3">
                   <button
                     onClick={() => handleLocateInTwin(pred)}
-                    className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-[#8B9199] hover:text-[#F4F4F5] font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
+                    className="px-3.5 py-2 rounded-2xl bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] text-xs text-[#0F172A] font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
                   >
-                    <Box className="w-3.5 h-3.5 text-[#F28C18]" />
+                    <Box className="w-4 h-4 text-[#EA580C]" />
                     <span>View in Twin</span>
                   </button>
 
                   <button
                     onClick={() => handleApplyAction(pred.id)}
                     disabled={pred.applied}
-                    className={`flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                    className={`flex-1 py-2.5 px-4 rounded-2xl font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer ${
                       pred.applied
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : 'bg-[#F28C18] hover:bg-[#ff9a2e] text-black shadow-sm'
+                        ? 'bg-[#ECFDF5] text-emerald-700 border border-[#A7F3D0]'
+                        : 'bg-[#EA580C] hover:bg-[#C2410C] text-white shadow-xs'
                     }`}
                   >
                     {pred.applied ? (
                       <>
-                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <CheckCircle2 className="w-4 h-4" />
                         <span>Mitigation Applied ✓</span>
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-3.5 h-3.5" />
+                        <Sparkles className="w-4 h-4" />
                         <span>Dispatch Preventive Action</span>
                       </>
                     )}
