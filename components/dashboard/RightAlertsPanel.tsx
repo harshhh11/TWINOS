@@ -17,11 +17,9 @@ export function RightAlertsPanel() {
   return (
     <div className="w-full lg:w-[320px] shrink-0 flex flex-col gap-4 select-none">
       {/* CARD 1: ALERTS */}
-      <div className="bg-white rounded-3xl p-4 border border-[#E2E8F0] shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col">
-        <div className="flex items-center justify-between mb-3.5 pb-2 border-b border-[#F1F5F9]">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-extrabold text-[#0F172A]">AI Alerts</h3>
-          </div>
+      <div className="glass-panel rounded-[24px] p-4 flex flex-col shadow-sm">
+        <div className="flex items-center justify-between mb-3.5 pb-2 border-b border-slate-200/60">
+          <h3 className="text-sm font-extrabold text-[#10233F]">AI Alerts</h3>
           <Link
             href="/alerts"
             className="text-xs font-bold text-[#2563EB] hover:text-[#1D4ED8] flex items-center gap-1 transition-colors"
@@ -34,13 +32,13 @@ export function RightAlertsPanel() {
         {/* Alerts List */}
         <div className="flex flex-col gap-2.5">
           {/* Alert 1 */}
-          <div className="p-2.5 rounded-2xl bg-[#FEF2F2] border border-[#FEE2E2] flex items-start justify-between gap-2.5">
+          <div className="p-2.5 rounded-2xl bg-white/70 border border-red-100 flex items-start justify-between gap-2.5 transition-all hover:bg-white/90">
             <div className="flex items-start gap-2.5">
-              <div className="w-6 h-6 rounded-lg bg-[#DC2626] text-white flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-6 h-6 rounded-lg bg-[#D94A4A] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
                 <AlertTriangle className="w-3.5 h-3.5" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-[#0F172A]">High crowd density</h4>
+                <h4 className="text-xs font-bold text-[#10233F]">High crowd density</h4>
                 <p className="text-[11px] text-[#64748B]">Terminal B</p>
               </div>
             </div>
@@ -48,13 +46,13 @@ export function RightAlertsPanel() {
           </div>
 
           {/* Alert 2 */}
-          <div className="p-2.5 rounded-2xl bg-[#FFFBEB] border border-[#FEF3C7] flex items-start justify-between gap-2.5">
+          <div className="p-2.5 rounded-2xl bg-white/70 border border-amber-100 flex items-start justify-between gap-2.5 transition-all hover:bg-white/90">
             <div className="flex items-start gap-2.5">
-              <div className="w-6 h-6 rounded-lg bg-[#D97706] text-white flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-6 h-6 rounded-lg bg-[#E6A11A] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
                 <AlertTriangle className="w-3.5 h-3.5" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-[#0F172A]">Unusual movement</h4>
+                <h4 className="text-xs font-bold text-[#10233F]">Unusual movement</h4>
                 <p className="text-[11px] text-[#64748B]">Restricted Zone</p>
               </div>
             </div>
@@ -62,13 +60,13 @@ export function RightAlertsPanel() {
           </div>
 
           {/* Alert 3 */}
-          <div className="p-2.5 rounded-2xl bg-[#FFFBEB] border border-[#FEF3C7] flex items-start justify-between gap-2.5">
+          <div className="p-2.5 rounded-2xl bg-white/70 border border-amber-100 flex items-start justify-between gap-2.5 transition-all hover:bg-white/90">
             <div className="flex items-start gap-2.5">
-              <div className="w-6 h-6 rounded-lg bg-[#D97706] text-white flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-6 h-6 rounded-lg bg-[#E6A11A] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
                 <AlertTriangle className="w-3.5 h-3.5" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-[#0F172A]">Baggage belt slowdown</h4>
+                <h4 className="text-xs font-bold text-[#10233F]">Baggage belt slowdown</h4>
                 <p className="text-[11px] text-[#64748B]">Terminal A</p>
               </div>
             </div>
@@ -76,13 +74,13 @@ export function RightAlertsPanel() {
           </div>
 
           {/* Alert 4 */}
-          <div className="p-2.5 rounded-2xl bg-[#F0FDF4] border border-[#DCFCE7] flex items-start justify-between gap-2.5">
+          <div className="p-2.5 rounded-2xl bg-white/70 border border-emerald-100 flex items-start justify-between gap-2.5 transition-all hover:bg-white/90">
             <div className="flex items-start gap-2.5">
-              <div className="w-6 h-6 rounded-lg bg-[#16A34A] text-white flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-6 h-6 rounded-lg bg-[#18A875] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
                 <CheckCircle2 className="w-3.5 h-3.5" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-[#0F172A]">No anomalies</h4>
+                <h4 className="text-xs font-bold text-[#10233F]">No anomalies</h4>
                 <p className="text-[11px] text-[#64748B]">All systems</p>
               </div>
             </div>
@@ -92,13 +90,13 @@ export function RightAlertsPanel() {
       </div>
 
       {/* CARD 2: AI RECOMMENDATION */}
-      <div className="bg-white rounded-3xl p-4 border border-[#E2E8F0] shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col">
-        <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#F1F5F9]">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-[#EA580C] to-[#FB923C] flex items-center justify-center text-white shadow-xs">
+      <div className="glass-panel rounded-[24px] p-4 flex flex-col shadow-sm">
+        <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200/60">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-xl bg-[#F26A21] flex items-center justify-center text-white shadow-xs">
               <Sparkles className="w-4 h-4" />
             </div>
-            <h3 className="text-sm font-extrabold text-[#0F172A]">AI Recommendation</h3>
+            <h3 className="text-sm font-extrabold text-[#10233F]">AI Recommendation</h3>
           </div>
         </div>
 
@@ -109,12 +107,12 @@ export function RightAlertsPanel() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setCopilotOpen(true)}
-            className="flex-1 py-2.5 px-4 rounded-2xl bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] text-xs font-bold text-[#0F172A] flex items-center justify-center gap-2 transition-colors cursor-pointer group"
+            className="flex-1 py-2.5 px-4 rounded-2xl bg-white/90 hover:bg-white border border-slate-200/80 text-xs font-bold text-[#10233F] flex items-center justify-center gap-2 transition-all cursor-pointer group shadow-2xs"
           >
-            <span>Ask Copilot</span>
-            <ArrowRight className="w-3.5 h-3.5 text-[#EA580C] group-hover:translate-x-0.5 transition-transform" />
+            <span>Execute Action</span>
+            <ArrowRight className="w-3.5 h-3.5 text-[#F26A21] group-hover:translate-x-0.5 transition-transform" />
           </button>
-          <button className="w-9 h-9 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] transition-colors">
+          <button className="w-9 h-9 rounded-2xl bg-white/90 border border-slate-200/80 flex items-center justify-center text-[#64748B] hover:text-[#10233F] transition-colors shadow-2xs">
             <MoreVertical className="w-4 h-4" />
           </button>
         </div>

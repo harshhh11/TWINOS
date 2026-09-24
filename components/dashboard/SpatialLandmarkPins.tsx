@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Users, AlertTriangle, Zap, Building2, Car } from 'lucide-react';
+import { Users, AlertTriangle } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
 
 interface LandmarkPin {
@@ -28,7 +28,7 @@ const LANDMARK_PINS: LandmarkPin[] = [
     id: 'terminal-a',
     name: 'Terminal A',
     subtitle: '72% Occupancy',
-    subtitleColor: 'text-[#F97316]',
+    subtitleColor: 'text-[#F26A21]',
     iconType: 'terminal-a',
     coords: [-10, 2.5, 6],
     positionStyle: { left: '46%', top: '40%' },
@@ -55,7 +55,7 @@ const LANDMARK_PINS: LandmarkPin[] = [
     id: 'parking',
     name: 'Parking',
     subtitle: '68% Occupied',
-    subtitleColor: 'text-[#64748B]',
+    subtitleColor: 'text-[#94A3B8]',
     iconType: 'parking',
     coords: [-16, 1.2, 14],
     positionStyle: { left: '68%', top: '60%' },
@@ -75,34 +75,34 @@ export function SpatialLandmarkPins() {
             key={pin.id}
             onClick={() => focusEntity(pin.id, pin.coords)}
             style={{ left: pin.positionStyle.left, top: pin.positionStyle.top }}
-            className={`absolute -translate-x-1/2 -translate-y-1/2 flex items-center gap-2 px-3 py-1.5 rounded-2xl cursor-pointer pointer-events-auto transition-all shadow-md group backdrop-blur-md ${
+            className={`absolute -translate-x-1/2 -translate-y-1/2 flex items-center gap-2.5 px-3 py-1.5 rounded-2xl cursor-pointer pointer-events-auto transition-all shadow-md group ${
               isSelected
-                ? 'bg-[#0F172A] border-2 border-[#EA580C] text-white scale-105'
-                : 'bg-[#0F172A]/85 hover:bg-[#0F172A] border border-white/20 hover:border-white/40 text-white'
+                ? 'bg-[#10233F] border-2 border-[#F26A21] text-white scale-105 shadow-lg'
+                : 'glass-dark-tag hover:bg-[#10233F] text-white hover:scale-102'
             }`}
           >
             {pin.iconType === 'runway' && (
-              <div className="w-4.5 h-4.5 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+              <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
                 <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
               </div>
             )}
             {pin.iconType === 'terminal-a' && (
-              <div className="w-4.5 h-4.5 rounded-full bg-orange-500/20 flex items-center justify-center text-[#F97316] shrink-0">
+              <div className="w-5 h-5 rounded-full bg-orange-500/20 flex items-center justify-center text-[#F26A21] shrink-0">
                 <Users className="w-3 h-3" />
               </div>
             )}
             {pin.iconType === 'atc' && (
-              <div className="w-4.5 h-4.5 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+              <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
                 <span className="w-2 h-2 rounded-full bg-[#10B981]" />
               </div>
             )}
             {pin.iconType === 'terminal-b' && (
-              <div className="w-4.5 h-4.5 rounded-full bg-red-500/20 flex items-center justify-center text-[#EF4444] shrink-0">
+              <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center text-[#EF4444] shrink-0">
                 <AlertTriangle className="w-3 h-3 animate-pulse" />
               </div>
             )}
             {pin.iconType === 'parking' && (
-              <div className="w-4.5 h-4.5 rounded-full bg-slate-500/20 flex items-center justify-center text-[#94A3B8] shrink-0">
+              <div className="w-5 h-5 rounded-full bg-slate-500/30 flex items-center justify-center text-[#94A3B8] shrink-0">
                 <span className="text-[10px] font-black text-white">P</span>
               </div>
             )}

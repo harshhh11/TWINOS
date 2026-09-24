@@ -12,30 +12,30 @@ interface AirportTwinSceneProps {
 export function AirportTwinScene({ className = '' }: AirportTwinSceneProps) {
   return (
     <div className={`relative w-full h-full select-none overflow-hidden ${className}`}>
-      {/* High-Resolution Cinematic Airport Aerial Dusk Backdrop with Subtle Drone Hover */}
+      {/* High-Resolution Cinematic Airport Aerial Backdrop */}
       <div 
-        className="absolute -inset-4 bg-cover bg-center transition-all duration-700 animate-[droneHover_28s_ease-in-out_infinite]"
+        className="absolute -inset-2 bg-cover bg-center transition-all duration-700 animate-[droneHover_32s_ease-in-out_infinite]"
         style={{ backgroundImage: 'url(/airport-backdrop.jpg)' }}
       >
-        {/* Subtle dusk atmospheric depth vignette around edges so UI cards pop */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#080A0D]/90 via-transparent to-[#080A0D]/50 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#080A0D]/60 via-transparent to-[#080A0D]/40 pointer-events-none" />
+        {/* Soft, gentle atmospheric vignette so airport stays bright, vibrant, and realistic */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#10233F]/30 via-transparent to-[#F5F7FA]/20 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/35 via-transparent to-white/10 pointer-events-none" />
       </div>
 
-      {/* Living Digital Twin Animation Mockup (ATC Beacons, Radar Sweep, Aircraft Transit, Road Traffic) */}
+      {/* Living Digital Twin Animation Mockup (ATC Beacons, Radar Sweep, Aircraft Transit, Apron Flow) */}
       <AirportMockupAnimation />
 
       {/* Embedded CSS for Drone Hover Float */}
       <style jsx>{`
         @keyframes droneHover {
           0% {
-            transform: scale(1.02) translate(0px, 0px);
+            transform: scale(1.01) translate(0px, 0px);
           }
           50% {
-            transform: scale(1.045) translate(-8px, -5px);
+            transform: scale(1.03) translate(-6px, -4px);
           }
           100% {
-            transform: scale(1.02) translate(0px, 0px);
+            transform: scale(1.01) translate(0px, 0px);
           }
         }
       `}</style>
@@ -50,18 +50,17 @@ export function AirportTwinScene({ className = '' }: AirportTwinSceneProps) {
         }}
         dpr={[1, 2]}
       >
-        {/* Ambient Dusk Lighting */}
-        <ambientLight color="#CBD5E1" intensity={0.8} />
+        {/* Ambient Lighting */}
+        <ambientLight color="#FFFFFF" intensity={1.1} />
         
-        {/* Directional Sunset / Apron Floodlights */}
+        {/* Directional Sun / Apron Lighting */}
         <directionalLight
           position={[30, 45, 25]}
-          intensity={1.0}
-          color="#FFE8D6"
+          intensity={1.2}
+          color="#FFF3E0"
         />
 
         <Suspense fallback={null}>
-          {/* Smooth Orbit & Tilt Controls */}
           <CameraController />
         </Suspense>
       </Canvas>

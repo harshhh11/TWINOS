@@ -38,25 +38,25 @@ export function TopNavBar({ onOpenNotifications }: TopNavBarProps) {
       {/* Left: Environment Badge & Command Search */}
       <div className="flex items-center gap-3 flex-1 max-w-2xl">
         {/* Single Demonstration Environment Badge (Airport) */}
-        <div className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-full border border-[#E2E8F0] shadow-xs shrink-0">
-          <div className="w-5 h-5 rounded-full bg-[#FFF7ED] flex items-center justify-center text-[#EA580C]">
+        <div className="flex items-center gap-2.5 px-4 py-2.5 glass-pill rounded-full shadow-sm shrink-0">
+          <div className="w-5 h-5 rounded-full bg-[#F26A21]/15 flex items-center justify-center text-[#F26A21]">
             <Plane className="w-3.5 h-3.5" />
           </div>
-          <span className="text-xs font-bold text-[#0F172A]">Airport</span>
+          <span className="text-xs font-bold text-[#10233F]">Airport</span>
         </div>
 
         {/* Global Search Pill Bar (⌘K) */}
         <button
           onClick={() => setSearchOpen(true)}
-          className="flex-1 flex items-center justify-between px-5 py-2.5 bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-full text-xs text-[#64748B] transition-all cursor-pointer group shadow-xs"
+          className="flex-1 flex items-center justify-between px-5 py-2.5 glass-pill hover:bg-white/90 rounded-full text-xs text-[#64748B] transition-all cursor-pointer group shadow-sm"
         >
           <div className="flex items-center gap-2.5">
-            <Search className="w-3.5 h-3.5 text-[#94A3B8] group-hover:text-[#0F172A]" />
-            <span className="text-xs text-[#64748B] group-hover:text-[#0F172A]">
+            <Search className="w-3.5 h-3.5 text-[#94A3B8] group-hover:text-[#10233F]" />
+            <span className="text-xs text-[#64748B] group-hover:text-[#10233F]">
               Search buildings, assets, incidents...
             </span>
           </div>
-          <kbd className="px-2 py-0.5 rounded-md bg-[#F1F5F9] border border-[#E2E8F0] text-[10px] text-[#64748B] font-mono">
+          <kbd className="px-2 py-0.5 rounded-md bg-white/80 border border-slate-200 text-[10px] text-[#64748B] font-mono shadow-2xs">
             ⌘K
           </kbd>
         </button>
@@ -67,15 +67,15 @@ export function TopNavBar({ onOpenNotifications }: TopNavBarProps) {
         {/* Time & Date */}
         <div className="hidden lg:flex flex-col text-right leading-tight">
           <span className="text-[10px] font-medium text-[#64748B]">{currentDate}</span>
-          <span className="text-sm font-extrabold text-[#0F172A] tracking-tight">{currentTime}</span>
+          <span className="text-sm font-extrabold text-[#10233F] tracking-tight">{currentTime}</span>
         </div>
 
         {/* Weather Indicator */}
-        <div className="hidden sm:flex items-center gap-2 text-left leading-tight pl-3 border-l border-[#E2E8F0]">
-          <CloudSun className="w-4 h-4 text-[#EA580C]" />
+        <div className="hidden sm:flex items-center gap-2 text-left leading-tight pl-3 border-l border-slate-200/80">
+          <CloudSun className="w-4 h-4 text-[#F26A21]" />
           <div className="flex flex-col">
             <span className="text-[10px] text-[#64748B] font-medium">Mumbai</span>
-            <span className="text-xs font-bold text-[#0F172A]">29°C Partly Cloudy</span>
+            <span className="text-xs font-bold text-[#10233F]">29°C Partly Cloudy</span>
           </div>
         </div>
 
@@ -85,25 +85,25 @@ export function TopNavBar({ onOpenNotifications }: TopNavBarProps) {
           <button
             onClick={() => setIsDarkMode(!isDarkMode)}
             title="Theme Toggle"
-            className="w-9 h-9 rounded-full bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] transition-all cursor-pointer shadow-xs"
+            className="w-9 h-9 rounded-full glass-pill hover:bg-white/90 flex items-center justify-center text-[#64748B] hover:text-[#10233F] transition-all cursor-pointer shadow-xs"
           >
-            {isDarkMode ? <Moon className="w-4 h-4 text-[#EA580C]" /> : <Sun className="w-4 h-4 text-[#EA580C]" />}
+            {isDarkMode ? <Moon className="w-4 h-4 text-[#F26A21]" /> : <Sun className="w-4 h-4 text-[#F26A21]" />}
           </button>
 
           {/* Notifications Bell */}
           <button
             onClick={onOpenNotifications}
             title="Notifications"
-            className="relative w-9 h-9 rounded-full bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] transition-all cursor-pointer shadow-xs"
+            className="relative w-9 h-9 rounded-full glass-pill hover:bg-white/90 flex items-center justify-center text-[#64748B] hover:text-[#10233F] transition-all cursor-pointer shadow-xs"
           >
-            <Bell className="w-4 h-4" />
+            <Bell className="w-4 h-4 text-[#10233F]" />
             {unreadAlerts > 0 && (
-              <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#EF4444] ring-2 ring-white" />
+              <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#D94A4A] ring-2 ring-white" />
             )}
           </button>
 
           {/* Profile Avatar */}
-          <div className="w-9 h-9 rounded-full bg-[#0F172A] text-white flex items-center justify-center text-xs font-bold shadow-xs cursor-pointer">
+          <div className="w-9 h-9 rounded-full bg-[#10233F] text-white flex items-center justify-center text-xs font-bold shadow-xs cursor-pointer border border-white/40">
             H
           </div>
         </div>
