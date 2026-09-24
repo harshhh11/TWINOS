@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import { LeftSidebar } from '@/components/dashboard/LeftSidebar';
 import { TopNavBar } from '@/components/dashboard/TopNavBar';
 import { TopStatusPills } from '@/components/dashboard/TopStatusPills';
-import { CompassControlWidget } from '@/components/dashboard/CompassControlWidget';
 import { BottomCommandDock } from '@/components/dashboard/BottomCommandDock';
 import { SpatialLandmarkPins } from '@/components/dashboard/SpatialLandmarkPins';
 import { ContextualEntityModal } from '@/components/3d/ContextualEntityModal';
@@ -70,13 +69,8 @@ export default function MasterDashboardPage() {
             </div>
           </div>
 
-          {/* Central Layer: Spacious 3D Airfield Viewport + 3D Compass & Controls */}
-          <div className="relative flex-1 flex items-center justify-end px-6 pointer-events-none">
-            {/* 3D Compass & Controls Floating Widget */}
-            <div className="pointer-events-auto">
-              <CompassControlWidget />
-            </div>
-          </div>
+          {/* Central Layer: Spacious Unobstructed 3D Airfield Viewport */}
+          <div className="relative flex-1 pointer-events-none" />
 
           {/* Contextual Entity Inspection Card (appears on landmark/asset click) */}
           <ContextualEntityModal />
