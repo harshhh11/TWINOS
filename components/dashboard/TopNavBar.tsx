@@ -4,9 +4,13 @@ import React, { useState, useEffect } from 'react';
 import {
   Search,
   Bell,
+  Plane,
+  Building2,
+  Building,
+  Factory,
+  Hospital,
   Sun,
   Moon,
-  Plane,
   CloudSun,
 } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
@@ -15,9 +19,17 @@ interface TopNavBarProps {
   onOpenNotifications?: () => void;
 }
 
+const ENVIRONMENTS = [
+  { id: 'airport', label: 'Airport', icon: Plane },
+  { id: 'campus', label: 'Campus', icon: Building2 },
+  { id: 'smart-city', label: 'Smart City', icon: Building },
+  { id: 'industrial', label: 'Industrial', icon: Factory },
+  { id: 'hospital', label: 'Hospital', icon: Hospital },
+];
+
 export function TopNavBar({ onOpenNotifications }: TopNavBarProps) {
   const { setSearchOpen, incidents } = useTwinStore();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [activeEnv, setActiveEnv] = useState('airport');
   const [currentTime, setCurrentTime] = useState('04:26 PM');
   const [currentDate, setCurrentDate] = useState('Mon, 23 Sep 2026');
 
@@ -34,21 +46,39 @@ export function TopNavBar({ onOpenNotifications }: TopNavBarProps) {
   }, []);
 
   return (
-    <header className="w-full flex items-center justify-between gap-4 select-none">
-      {/* Left: Environment Badge & Command Search */}
-      <div className="flex items-center gap-3 flex-1 max-w-2xl">
-        {/* Single Demonstration Environment Badge (Airport) */}
-        <div className="flex items-center gap-2.5 px-4 py-2.5 glass-pill rounded-full shadow-sm shrink-0">
-          <div className="w-5 h-5 rounded-full bg-[#F26A21]/15 flex items-center justify-center text-[#F26A21]">
-            <Plane className="w-3.5 h-3.5" />
-          </div>
-          <span className="text-xs font-bold text-[#10233F]">Airport</span>
-        </div>
+    <header className="w-full flex items-center justify-between gap-4 select-none mb-1">
+      {/* 1. Left Environment Selector Tabs */}
+      <div className="flex items-center gap-1.5 p-1.5 glass-pill rounded-full shadow-sm">
+        {ENVIRONMENTS.map((env) => {
+          const Icon = env.icon;
+          const isSelected = activeEnv === env.id;
 
-        {/* Global Search Pill Bar (⌘K) */}
+          return (
+            <button
+              key={env.id}
+              onClick={() => setActiveEnv(env.id)}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                isSelected
+                  ? 'bg-white text-[#10233F] shadow-sm border border-slate-200/60'
+                  : 'text-[#64748B] hover:text-[#10233F] hover:bg-white/40'
+              }`}
+            >
+              <Icon
+                className={`w-3.5 h-3.5 ${
+                  isSelected ? 'text-[#F26A21]' : 'text-[#64748B]'
+                }`}
+              />
+              <span>{env.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 2. Center Search Command Bar */}
+      <div className="flex-1 max-w-md">
         <button
           onClick={() => setSearchOpen(true)}
-          className="flex-1 flex items-center justify-between px-5 py-2.5 glass-pill hover:bg-white/90 rounded-full text-xs text-[#64748B] transition-all cursor-pointer group shadow-sm"
+          className="w-full flex items-center justify-between px-4 py-2 glass-pill hover:bg-white/90 rounded-full text-xs text-[#64748B] transition-all cursor-pointer group shadow-sm"
         >
           <div className="flex items-center gap-2.5">
             <Search className="w-3.5 h-3.5 text-[#94A3B8] group-hover:text-[#10233F]" />
@@ -62,16 +92,16 @@ export function TopNavBar({ onOpenNotifications }: TopNavBarProps) {
         </button>
       </div>
 
-      {/* Right: Date/Time, Weather & Utility Controls */}
-      <div className="flex items-center gap-4">
-        {/* Time & Date */}
-        <div className="hidden lg:flex flex-col text-right leading-tight">
+      {/* 3. Right: Date/Time, Weather & Profile Controls */}
+      <div className="flex items-center gap-3">
+        {/* Date and Time */}
+        <div className="hidden xl:flex flex-col text-right leading-tight">
           <span className="text-[10px] font-medium text-[#64748B]">{currentDate}</span>
-          <span className="text-sm font-extrabold text-[#10233F] tracking-tight">{currentTime}</span>
+          <span className="text-sm font-black text-[#10233F] tracking-tight">{currentTime}</span>
         </div>
 
         {/* Weather Indicator */}
-        <div className="hidden sm:flex items-center gap-2 text-left leading-tight pl-3 border-l border-slate-200/80">
+        <div className="hidden lg:flex items-center gap-2 text-left leading-tight pl-3 border-l border-slate-200/80">
           <CloudSun className="w-4 h-4 text-[#F26A21]" />
           <div className="flex flex-col">
             <span className="text-[10px] text-[#64748B] font-medium">Mumbai</span>
@@ -79,31 +109,30 @@ export function TopNavBar({ onOpenNotifications }: TopNavBarProps) {
           </div>
         </div>
 
-        {/* Action Controls */}
+        {/* Theme, Notification and Avatar Controls */}
         <div className="flex items-center gap-2">
-          {/* Light / Dark Mode Toggle */}
+          {/* Day / Night Theme Toggle */}
           <button
-            onClick={() => setIsDarkMode(!isDarkMode)}
             title="Theme Toggle"
-            className="w-9 h-9 rounded-full glass-pill hover:bg-white/90 flex items-center justify-center text-[#64748B] hover:text-[#10233F] transition-all cursor-pointer shadow-xs"
+            className="w-8 h-8 rounded-full glass-pill hover:bg-white flex items-center justify-center text-[#F26A21] transition-all cursor-pointer shadow-2xs"
           >
-            {isDarkMode ? <Moon className="w-4 h-4 text-[#F26A21]" /> : <Sun className="w-4 h-4 text-[#F26A21]" />}
+            <Sun className="w-4 h-4" />
           </button>
 
-          {/* Notifications Bell */}
+          {/* Notifications */}
           <button
             onClick={onOpenNotifications}
             title="Notifications"
-            className="relative w-9 h-9 rounded-full glass-pill hover:bg-white/90 flex items-center justify-center text-[#64748B] hover:text-[#10233F] transition-all cursor-pointer shadow-xs"
+            className="relative w-8 h-8 rounded-full glass-pill hover:bg-white flex items-center justify-center text-[#10233F] transition-all cursor-pointer shadow-2xs"
           >
-            <Bell className="w-4 h-4 text-[#10233F]" />
+            <Bell className="w-4 h-4" />
             {unreadAlerts > 0 && (
-              <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#D94A4A] ring-2 ring-white" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#D94A4A] ring-2 ring-white" />
             )}
           </button>
 
-          {/* Profile Avatar */}
-          <div className="w-9 h-9 rounded-full bg-[#10233F] text-white flex items-center justify-center text-xs font-bold shadow-xs cursor-pointer border border-white/40">
+          {/* User Avatar */}
+          <div className="w-8 h-8 rounded-full bg-[#10233F] text-white flex items-center justify-center text-xs font-bold shadow-2xs cursor-pointer border border-white/40">
             H
           </div>
         </div>
