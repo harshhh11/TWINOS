@@ -3,87 +3,115 @@
 @tailwind utilities;
 
 :root {
-  --background: #F5F7FA;
-  --foreground: #10233F;
-  --primary-navy: #10233F;
+  --background: #080D16;
+  --foreground: #F8FAFC;
+  --primary-navy: #080D16;
   --accent-orange: #F26A21;
-  --success-green: #18A875;
-  --warning-amber: #E6A11A;
-  --danger-red: #D94A4A;
-  --card-glass: rgba(255, 255, 255, 0.76);
-  --card-glass-hover: rgba(255, 255, 255, 0.88);
-  --card-border: rgba(255, 255, 255, 0.75);
+  --accent-orange-hover: #EA580C;
+  --success-green: #10B981;
+  --warning-amber: #F59E0B;
+  --danger-red: #EF4444;
+  --info-blue: #0284C7;
+  --card-glass: rgba(16, 23, 36, 0.75);
+  --card-glass-hover: rgba(22, 31, 48, 0.85);
+  --card-border: rgba(255, 255, 255, 0.08);
+}
+
+html {
+  color-scheme: dark;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: #F8FAFC;
+  background-color: #080D16;
   font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   user-select: none;
 }
 
-/* Glassmorphism primitives */
+/* Dark Enterprise Glassmorphism primitives */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.76);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  box-shadow: 0 8px 32px 0 rgba(16, 35, 63, 0.06), 0 1px 3px 0 rgba(16, 35, 63, 0.03);
+  background: rgba(13, 20, 34, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.45), 0 1px 3px 0 rgba(0, 0, 0, 0.25);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.74);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 6px 24px 0 rgba(16, 35, 63, 0.05), 0 1px 2px 0 rgba(16, 35, 63, 0.03);
+  background: rgba(16, 23, 36, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.4);
 }
 
 .glass-card-solid {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 4px 20px 0 rgba(16, 35, 63, 0.05);
+  background: rgba(15, 22, 35, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.5);
 }
 
 .glass-pill {
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 4px 16px 0 rgba(16, 35, 63, 0.04);
+  background: rgba(16, 23, 36, 0.8);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* Floating overlay glass over aerial backdrop */
+.glass-overlay-card {
+  background: rgba(10, 16, 28, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+.glass-overlay-light {
+  background: rgba(16, 24, 38, 0.85);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.4);
 }
 
 .glass-dark-tag {
-  background: rgba(16, 35, 63, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25);
+  background: rgba(11, 18, 30, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.4);
 }
 
-/* Subtle, clean enterprise scrollbar */
+/* Dark enterprise scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: #080D16;
 }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #1E293B;
   border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #334155;
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+/* Copilot Glowing Bronze 3D Sphere */
+.copilot-sphere {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #FFB077 0%, #F26A21 35%, #B3440C 70%, #4D1A04 100%);
+  box-shadow:
+    inset -4px -4px 10px rgba(0, 0, 0, 0.6),
+    inset 4px 4px 10px rgba(255, 255, 255, 0.45),
+    0 0 20px rgba(242, 106, 33, 0.5),
+    0 0 40px rgba(242, 106, 33, 0.25);
 }

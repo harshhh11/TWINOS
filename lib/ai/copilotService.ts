@@ -16,15 +16,18 @@ export function answerTwinOSQuery(
 ): CopilotResponse {
   const q = query.toLowerCase();
 
-  // 1. "Which assets require attention?"
+  // 1. "Show abnormal assets" / "Which assets require attention?"
   if (
+    q.includes('abnormal assets') ||
+    q.includes('show abnormal') ||
     q.includes('which assets') ||
     q.includes('assets require attention') ||
+    q.includes('which systems require attention') ||
     q.includes('asset attention') ||
     q.includes('degraded assets')
   ) {
     return {
-      content: `**Assets Requiring Attention:**\n\n1. ⚠️ **HVAC Air Handler 03 (Terminal B):** Health **78%**, Temp **29.2°C**, Failure Risk **14%**. Thermal load elevated. Filter replacement and bearing lubrication scheduled.\n2. ⚠️ **High-Speed Baggage Carousel Belt 03 (Terminal A):** Health **76%**, Temp **31.8°C**, Failure Risk **22%**. Increased bearing vibration detected on sensor B-03.\n\nAll other primary assets (Elevators Bank 1, Power Substation B, Escalator 04) are operating in optimal status (>88% health).`,
+      content: `**Infrastructure Assets Flagged for Attention:**\n\n1. ⚠️ **HVAC Chiller Unit 03 (Terminal B):** Health **78%**, Temp **29.2°C**, Failure Risk **14%**. Elevated thermal variance in refrigerant coil loop. Preventative lubrication scheduled.\n2. ⚠️ **Baggage Conveyor Belt 03 (Terminal A):** Health **76%**, Temp **31.8°C**, Harmonic Vibration **4.2 mm/s**. Bearing friction spike detected on motor drive B03.\n\nAll other primary assets (Power Substation Primary, Elevators Bank 1, Optical Network Mesh) are operating in nominal status (>92% health).`,
       actions: [
         { label: 'Inspect HVAC-03', actionType: 'VIEW_ASSET', targetId: 'hvac-03' },
         { label: 'Inspect Baggage Belt 03', actionType: 'VIEW_ASSET', targetId: 'baggage-03' },
@@ -32,7 +35,40 @@ export function answerTwinOSQuery(
     };
   }
 
-  // 2. "What incidents are currently active?"
+  // 2. "Explain the latest anomaly"
+  if (
+    q.includes('explain the latest anomaly') ||
+    q.includes('latest anomaly') ||
+    q.includes('explain anomaly') ||
+    q.includes('thermal anomaly')
+  ) {
+    return {
+      content: `**Latest Operational Anomaly Diagnostic:**\n\n• **Anomaly ID:** ANOM-2026-041\n• **Location:** Terminal B South Mechanical Bay (HVAC-04 / Chiller Unit 03)\n• **Telemetry Reading:** Coil loop temperature reached **29.2°C** with **145 kW** continuous power draw (+23.0% localized stress).\n• **Baseline Tolerance:** Nominal range is 21.0°C - 24.5°C.\n• **Downstream Risk:** Terminal B Concourse climate regulation efficiency degrades by 18% if unaddressed.\n• **Prescriptive Action:** Shift 35% thermal cooling load to Auxiliary Chiller 04 and dispatch maintenance inspection.`,
+      actions: [
+        { label: 'Locate in 3D Twin', actionType: 'FOCUS_TWIN', targetId: 'terminal-b' },
+        { label: 'Inspect HVAC Telemetry', actionType: 'VIEW_ASSET', targetId: 'hvac-03' },
+      ],
+    };
+  }
+
+  // 3. "Show dependency impact" / "What systems are affected?"
+  if (
+    q.includes('show dependency impact') ||
+    q.includes('dependency impact') ||
+    q.includes('what systems are affected') ||
+    q.includes('affected by this asset') ||
+    q.includes('cascade')
+  ) {
+    return {
+      content: `**Infrastructure Dependency Hierarchy & Cascade Analysis:**\n\n\`\`\`\nMain Power Substation (Primary 11kV Grid Feed)\n   │\n   ├── HVAC Chiller Unit 03 (Elevated: 29.2°C)\n   │      └── Terminal B Concourse (Thermal Load Risk)\n   │\n   ├── Baggage Conveyor System (Friction Alert: 31.8°C)\n   │      └── Terminal A Logistics & Reclaim Hall\n   │\n   └── Terminal B Power Busbar (Normal: 1,250 kW)\n          └── Escalator Bank 04 (Optimal)\n\`\`\`\n\n**Calculated Impact:** Upstream substation voltage fluctuation propagates downstream to HVAC cooling loops and baggage transfer drives. Cascading delay mitigation: **+20 minutes**.`,
+      actions: [
+        { label: 'Open Dependency Graph', actionType: 'ANALYZE_IMPACT', targetId: 'power-node-b-root' },
+        { label: 'View In 3D Twin', actionType: 'FOCUS_TWIN', targetId: 'energy-hub' },
+      ],
+    };
+  }
+
+  // 4. "What incidents are currently active?"
   if (
     q.includes('incidents are currently active') ||
     q.includes('active incidents') ||
@@ -47,7 +83,7 @@ export function answerTwinOSQuery(
     };
   }
 
-  // 3. "Why is energy consumption increasing?"
+  // 5. "Why is energy consumption increasing?"
   if (
     q.includes('why is energy') ||
     q.includes('energy consumption increasing') ||
@@ -55,7 +91,7 @@ export function answerTwinOSQuery(
     q.includes('power consumption')
   ) {
     return {
-      content: `**Energy Telemetry Analysis:**\n\n• **Current Terminal Load:** ${twinState.energyKwh.toLocaleString()} kWh (24.3 MW instantaneous)\n• **Primary Factor:** HVAC chiller power draw accounts for **42%** of total facility energy load.\n• **Secondary Load:** Baggage logistics systems operating at peak throughput, consuming 4,860 kWh/hr.\n• **Status:** System running within stable operational envelope without grid overload.`,
+      content: `**Energy Telemetry Analysis:**\n\n• **Current Terminal Load:** ${twinState.energyKwh.toLocaleString()} kWh (24.3 MW instantaneous)\n• **Primary Factor:** HVAC chiller power draw accounts for **28%** of total facility energy load.\n• **Secondary Load:** Terminal buildings base load consumes 13,130 kWh (54%).\n• **Status:** System running within stable operational envelope without grid overload (-5% vs baseline budget).`,
       actions: [
         { label: 'Inspect Substation', actionType: 'FOCUS_TWIN', targetId: 'energy-hub' },
         { label: 'Inspect HVAC Telemetry', actionType: 'VIEW_ASSET', targetId: 'hvac-03' },
@@ -63,23 +99,7 @@ export function answerTwinOSQuery(
     };
   }
 
-  // 4. "What systems are affected by this asset?"
-  if (
-    q.includes('what systems are affected') ||
-    q.includes('affected by this asset') ||
-    q.includes('dependency') ||
-    q.includes('cascade')
-  ) {
-    return {
-      content: `**Dependency Hierarchy Mapping (Power Substation B → Downstream Assets):**\n\n\`\`\`\nPower Substation B (Primary 11kV Grid Feed)\n   │\n   ├── HVAC Air Handler 03 (Elevated Temp: 29.2°C)\n   │      └── Terminal B Operations\n   │\n   ├── Baggage Conveyor System (Friction Alert: 31.8°C)\n   │      └── Logistics & Ground Baggage Flow\n   │\n   └── Concourse Escalator 04 (Optimal)\n\`\`\`\n\n**Impact Assessment:** Power supply fluctuations cascade directly into HVAC cooling loops and baggage transfer motors.`,
-      actions: [
-        { label: 'Open Dependency Graph', actionType: 'ANALYZE_IMPACT', targetId: 'power-node-b-root' },
-        { label: 'Inspect Assets', actionType: 'VIEW_ASSET', targetId: 'power-node-b-root' },
-      ],
-    };
-  }
-
-  // 5. "Summarize today's operational issues."
+  // 6. "Summarize today's operational issues."
   if (
     q.includes('summarize today') ||
     q.includes('operational issues') ||

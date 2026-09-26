@@ -60,7 +60,7 @@ export function GlobalSearchModal() {
       subtitle: `${a.location} • Health: ${a.healthScore}% • Temp: ${a.temperature}°C`,
       targetId: a.id,
       coords: a.coordinates,
-      route: '/assets',
+      route: '/monitoring',
     })),
     ...incidents.map((i) => ({
       id: `incident-${i.id}`,
@@ -69,7 +69,7 @@ export function GlobalSearchModal() {
       subtitle: `${i.locationName} • Severity: ${i.severity} • ${i.status}`,
       targetId: i.locationId,
       coords: i.coordinates,
-      route: '/incidents',
+      route: '/monitoring',
     })),
   ];
 
@@ -93,22 +93,22 @@ export function GlobalSearchModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-lg bg-white border border-[#E2E8F0] rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-150">
+      <div className="w-full max-w-lg bg-[#0C121E]/95 backdrop-blur-2xl border border-white/[0.1] rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col text-white">
         {/* Search Input Bar */}
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-[#E2E8F0]">
-          <Search className="w-4 h-4 text-[#EA580C] shrink-0" />
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.08]">
+          <Search className="w-4 h-4 text-[#F26A21] shrink-0" />
           <input
             autoFocus
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search buildings, assets (e.g. HVAC-03), incidents..."
-            className="flex-1 bg-transparent text-xs text-[#0F172A] placeholder-[#94A3B8] focus:outline-none"
+            placeholder="Search assets, buildings, systems..."
+            className="flex-1 bg-transparent text-xs text-white placeholder-gray-500 focus:outline-none"
           />
           <button
             onClick={() => setSearchOpen(false)}
-            className="p-1.5 rounded-full text-[#94A3B8] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
+            className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/[0.08] transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -117,7 +117,7 @@ export function GlobalSearchModal() {
         {/* Results List */}
         <div className="max-h-72 overflow-y-auto p-3 flex flex-col gap-1.5">
           {filteredItems.length === 0 ? (
-            <div className="py-8 text-center text-xs text-[#64748B]">
+            <div className="py-8 text-center text-xs text-gray-500">
               No matching twin infrastructure items found.
             </div>
           ) : (
@@ -125,27 +125,27 @@ export function GlobalSearchModal() {
               <button
                 key={item.id}
                 onClick={() => handleSelect(item)}
-                className="w-full flex items-center justify-between p-2.5 rounded-2xl hover:bg-[#F8FAFC] border border-transparent hover:border-[#E2E8F0] transition-colors text-left group cursor-pointer"
+                className="w-full flex items-center justify-between p-2.5 rounded-2xl hover:bg-white/[0.06] border border-transparent hover:border-white/[0.08] transition-colors text-left group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-[#F8FAFC] group-hover:bg-[#FFF7ED] flex items-center justify-center text-[#64748B] group-hover:text-[#EA580C] transition-colors">
+                  <div className="w-8 h-8 rounded-xl bg-white/[0.04] group-hover:bg-[#F26A21]/20 flex items-center justify-center text-gray-400 group-hover:text-[#F26A21] transition-colors">
                     {item.category === 'Building' && <Building className="w-4 h-4" />}
                     {item.category === 'Asset' && <Cpu className="w-4 h-4" />}
-                    {item.category === 'Incident' && <AlertTriangle className="w-4 h-4 text-[#EF4444]" />}
+                    {item.category === 'Incident' && <AlertTriangle className="w-4 h-4 text-red-400" />}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-xs font-bold text-[#0F172A] group-hover:text-[#EA580C] transition-colors">
+                    <span className="text-xs font-bold text-white group-hover:text-[#F26A21] transition-colors">
                       {item.title}
                     </span>
-                    <span className="text-[11px] text-[#64748B]">{item.subtitle}</span>
+                    <span className="text-[11px] text-gray-400">{item.subtitle}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase font-mono font-bold text-[#94A3B8]">
+                  <span className="text-[10px] uppercase font-mono font-bold text-gray-500">
                     {item.category}
                   </span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#94A3B8] group-hover:text-[#0F172A] transition-colors" />
+                  <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-white transition-colors" />
                 </div>
               </button>
             ))
@@ -153,7 +153,7 @@ export function GlobalSearchModal() {
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3 border-t border-[#E2E8F0] bg-[#F8FAFC] flex items-center justify-between text-[11px] text-[#64748B]">
+        <div className="px-5 py-3 border-t border-white/[0.08] bg-white/[0.02] flex items-center justify-between text-[11px] text-gray-400">
           <span>Select to focus camera in 3D Twin</span>
           <span>ESC to close</span>
         </div>

@@ -89,10 +89,16 @@ export interface CopilotMessage {
 export interface SpatialMarker {
   id: string;
   name: string;
-  type: 'building' | 'runway' | 'atc' | 'asset';
-  status: 'Normal' | 'Warning' | 'Critical' | 'Operational';
-  statusColor: 'green' | 'orange' | 'red' | 'blue';
+  type: 'building' | 'runway' | 'atc' | 'asset' | 'parking' | 'cargo';
+  status: 'Normal' | 'Warning' | 'Critical' | 'Operational' | 'Attention';
+  statusColor: 'green' | 'orange' | 'red' | 'blue' | 'amber';
   occupancyPercent?: number;
+  assetHealthPercent?: number;
+  activeAlertsCount?: number;
+  dependenciesCount?: number;
+  energyUsagePercent?: number;
+  relatedAssetsCount?: number;
+  predictedCongestionMin?: number;
   riskLevel?: 'Low' | 'Medium' | 'High';
   activeIncidents?: number;
   energyKwh?: number;

@@ -113,31 +113,31 @@ export default function AlertsPage() {
   });
 
   return (
-    <div className="w-screen min-h-screen bg-[#F0F4F8] text-[#0F172A] font-sans select-none flex flex-col">
+    <div className="w-screen min-h-screen bg-[#080B10] text-[#F8FAFC] font-sans select-none flex flex-col">
       {/* Top Header */}
-      <header className="px-8 py-4 border-b border-[#E2E8F0] bg-white sticky top-0 z-30 shadow-xs flex items-center justify-between">
+      <header className="px-8 py-4 border-b border-white/[0.08] bg-[#0C121E]/95 backdrop-blur-2xl sticky top-0 z-30 shadow-lg flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
             href="/"
-            className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] text-xs font-bold text-[#0F172A] transition-all"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-bold text-white transition-all"
           >
-            <ArrowLeft className="w-4 h-4 text-[#EA580C]" />
+            <ArrowLeft className="w-4 h-4 text-[#F26A21]" />
             <span>Dashboard</span>
           </Link>
 
           <div>
-            <h1 className="text-base font-extrabold text-[#0F172A] flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-[#EA580C]" />
-              Alerts & Anomaly Detection Center
+            <h1 className="text-base font-extrabold text-white flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-[#F26A21]" />
+              Alerts & Operational Notifications
             </h1>
-            <p className="text-[11px] text-[#64748B]">
+            <p className="text-[11px] text-gray-400">
               Real-Time Statistical Anomalies • Critical Operational Notifications • Fast Resolution Lifecycle
             </p>
           </div>
         </div>
 
         {/* Severity Filter Chips */}
-        <div className="flex items-center gap-1.5 p-1 bg-[#F1F5F9] border border-[#E2E8F0] rounded-full text-xs">
+        <div className="flex items-center gap-1.5 p-1 bg-white/[0.04] border border-white/[0.08] rounded-full text-xs">
           {[
             { id: 'ALL', label: 'All Alerts' },
             { id: 'CRITICAL', label: 'Critical' },
@@ -149,8 +149,8 @@ export default function AlertsPage() {
               onClick={() => setActiveFilter(f.id as any)}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                 activeFilter === f.id
-                  ? 'bg-[#EA580C] text-white font-bold shadow-xs'
-                  : 'text-[#64748B] hover:text-[#0F172A]'
+                  ? 'bg-[#F26A21] text-white font-bold shadow-[0_2px_10px_rgba(242,106,33,0.4)]'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               {f.label}
@@ -169,14 +169,14 @@ export default function AlertsPage() {
           return (
             <div
               key={item.id}
-              className={`p-5 rounded-3xl border transition-all ${
+              className={`p-5 rounded-3xl border transition-all bg-[#0C121E]/95 backdrop-blur-2xl shadow-md ${
                 isResolved
-                  ? 'bg-[#F8FAFC] border-[#E2E8F0] opacity-75'
+                  ? 'border-white/[0.04] opacity-60'
                   : isCritical
-                  ? 'bg-white border-[#FEE2E2] shadow-xs'
+                  ? 'border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.08)]'
                   : isWarning
-                  ? 'bg-white border-[#FEF3C7] shadow-xs'
-                  : 'bg-white border-[#E2E8F0] shadow-xs'
+                  ? 'border-amber-500/30'
+                  : 'border-white/[0.08]'
               }`}
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-2">
@@ -184,10 +184,10 @@ export default function AlertsPage() {
                   <div
                     className={`w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 ${
                       isCritical
-                        ? 'bg-[#FEF2F2] text-[#DC2626]'
+                        ? 'bg-red-500/20 text-red-400'
                         : isWarning
-                        ? 'bg-[#FFFBEB] text-[#D97706]'
-                        : 'bg-[#ECFDF5] text-[#059669]'
+                        ? 'bg-amber-500/20 text-amber-400'
+                        : 'bg-emerald-500/20 text-emerald-400'
                     }`}
                   >
                     <AlertTriangle className="w-5 h-5" />
@@ -198,20 +198,20 @@ export default function AlertsPage() {
                       <span
                         className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
                           isCritical
-                            ? 'bg-[#FEF2F2] text-[#DC2626] border border-[#FEE2E2]'
+                            ? 'bg-red-500/20 text-red-400 border border-red-500/30'
                             : isWarning
-                            ? 'bg-[#FFFBEB] text-[#D97706] border border-[#FEF3C7]'
-                            : 'bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]'
+                            ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                            : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                         }`}
                       >
                         {item.severity}
                       </span>
-                      <span className="text-[10px] text-[#64748B] font-mono uppercase font-bold">
+                      <span className="text-[10px] text-gray-400 font-mono uppercase font-bold">
                         {item.type}
                       </span>
-                      <span className="text-[10px] text-[#94A3B8]">• {item.time}</span>
+                      <span className="text-[10px] text-gray-500">• {item.time}</span>
                     </div>
-                    <h3 className="text-sm font-extrabold text-[#0F172A] mt-0.5">{item.title}</h3>
+                    <h3 className="text-sm font-extrabold text-white mt-0.5">{item.title}</h3>
                   </div>
                 </div>
 
@@ -220,10 +220,10 @@ export default function AlertsPage() {
                   <span
                     className={`text-xs font-bold px-3 py-1 rounded-full ${
                       item.status === 'RESOLVED'
-                        ? 'bg-[#DCFCE7] text-[#16A34A] border border-[#BBF7D0]'
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                         : item.status === 'ACKNOWLEDGED'
-                        ? 'bg-[#EFF6FF] text-[#2563EB] border border-[#DBEAFE]'
-                        : 'bg-[#FEE2E2] text-[#DC2626] border border-[#FECACA]'
+                        ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30'
+                        : 'bg-red-500/20 text-red-400 border border-red-500/30'
                     }`}
                   >
                     {item.status}
@@ -233,21 +233,21 @@ export default function AlertsPage() {
 
               {/* Details & Pattern */}
               <div className="pl-12 space-y-2 text-xs">
-                <div className="text-[#64748B]">
-                  <strong className="text-[#0F172A]">Affected System:</strong> {item.affectedSystem}
+                <div className="text-gray-400">
+                  <strong className="text-white">Affected System:</strong> {item.affectedSystem}
                 </div>
                 {item.anomalyPattern && (
-                  <div className="text-xs text-[#334155] bg-[#F8FAFC] p-3 rounded-2xl border border-[#E2E8F0] font-medium">
-                    <strong className="text-[#EA580C]">Detected Pattern:</strong> {item.anomalyPattern}
+                  <div className="text-xs text-gray-300 bg-white/[0.03] p-3 rounded-2xl border border-white/[0.06] font-medium">
+                    <strong className="text-[#F26A21]">Detected Pattern:</strong> {item.anomalyPattern}
                   </div>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div className="pl-12 mt-4 pt-3 border-t border-[#F1F5F9] flex items-center justify-between flex-wrap gap-2 text-xs">
+              <div className="pl-12 mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between flex-wrap gap-2 text-xs">
                 <button
                   onClick={() => handleLocateInTwin(item)}
-                  className="text-[#EA580C] hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                  className="text-[#F26A21] hover:underline font-bold flex items-center gap-1 cursor-pointer"
                 >
                   <Box className="w-4 h-4" />
                   <span>Highlight in 3D Twin</span>
@@ -257,7 +257,7 @@ export default function AlertsPage() {
                   {item.status === 'NEW' && (
                     <button
                       onClick={() => handleAcknowledge(item.id)}
-                      className="px-3.5 py-1.5 rounded-2xl bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] text-xs font-bold text-[#0F172A] transition-colors cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-xs font-bold text-white transition-colors cursor-pointer"
                     >
                       Acknowledge
                     </button>
@@ -266,7 +266,7 @@ export default function AlertsPage() {
                   {item.status !== 'RESOLVED' && (
                     <button
                       onClick={() => handleResolve(item.id)}
-                      className="px-4 py-1.5 rounded-2xl bg-[#DCFCE7] hover:bg-[#BBF7D0] border border-[#86EFAC] text-emerald-800 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                      className="px-4 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
                     >
                       <Check className="w-3.5 h-3.5" />
                       <span>Mark Resolved</span>

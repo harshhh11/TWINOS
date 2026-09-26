@@ -6,7 +6,7 @@ import { AskTwinOSFloating } from '@/components/copilot/AskTwinOSFloating';
 export const metadata: Metadata = {
   title: 'TwinOS™ — AI Digital Twin for Smarter Infrastructure',
   description:
-    'TwinOS creates a live digital representation of physical infrastructure and uses AI to detect, predict and understand what is happening across the environment.',
+    'TwinOS creates a live digital representation of physical infrastructure with real-time monitoring, analytics, and operational predictions.',
 };
 
 export default function RootLayout({
@@ -15,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="light">
-      <body className="bg-[#F0F4F8] text-[#0F172A] antialiased min-h-screen">
+    <html lang="en" className="dark">
+      <body className="bg-[#080D16] text-[#F8FAFC] antialiased min-h-screen selection:bg-[#F26A21]/30 selection:text-white">
         {children}
         <GlobalSearchModal />
         <AskTwinOSFloating />

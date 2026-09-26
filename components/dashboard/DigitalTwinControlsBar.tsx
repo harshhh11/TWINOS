@@ -3,66 +3,49 @@
 import React, { useState } from 'react';
 import {
   Layers,
-  Plane,
-  Users,
-  Shield,
-  Zap,
-  Building,
-  Globe,
-  Compass,
+  ChevronDown,
+  Settings,
   Plus,
   Minus,
+  Compass,
 } from 'lucide-react';
+import { useTwinStore } from '@/lib/twin/twinStateStore';
 
-const LAYERS = [
-  { id: 'buildings', label: 'Buildings', color: 'bg-[#10B981]' },
-  { id: 'flights', label: 'Flights', color: 'bg-[#3B82F6]' },
-  { id: 'people-flow', label: 'People Flow', color: 'bg-[#3B82F6]' },
-  { id: 'security', label: 'Security', color: 'bg-[#EF4444]' },
-  { id: 'energy', label: 'Energy', color: 'bg-[#F59E0B]' },
-  { id: 'assets', label: 'Assets', color: 'bg-[#6B7280]' },
-  { id: 'environment', label: 'Environment', color: 'bg-[#06B6D4]' },
+const APPROVED_LAYERS = [
+  { id: 'buildings', label: 'Buildings', dotColor: 'bg-emerald-400' },
+  { id: 'assets', label: 'Assets', dotColor: 'bg-sky-400' },
+  { id: 'energy', label: 'Energy', dotColor: 'bg-amber-400' },
+  { id: 'incidents', label: 'Incidents', dotColor: 'bg-red-500' },
 ];
 
 export function DigitalTwinControlsBar() {
-  const [activeLayers, setActiveLayers] = useState<string[]>([
-    'buildings',
-    'flights',
-    'people-flow',
-    'security',
-    'energy',
-    'assets',
-    'environment',
-  ]);
-
-  const toggleLayer = (layerId: string) => {
-    setActiveLayers((prev) =>
-      prev.includes(layerId) ? prev.filter((l) => l !== layerId) : [...prev, layerId]
-    );
-  };
+  const { activeLayers, toggleLayer } = useTwinStore();
 
   return (
-    <div className="flex items-center gap-2 p-1.5 glass-card-solid rounded-full shadow-lg select-none text-xs">
-      <div className="flex items-center gap-1.5 px-3 py-1 text-xs font-bold text-[#10233F]">
+    <div className="flex items-center gap-2 select-none text-xs">
+      {/* Layers Dropdown Pill */}
+      <div className="flex items-center gap-2 px-3.5 py-1.5 bg-[#0B1220]/90 hover:bg-[#121B2E] backdrop-blur-md rounded-xl border border-white/[0.12] text-white font-semibold cursor-pointer shadow-lg transition-all">
         <Layers className="w-3.5 h-3.5 text-[#F26A21]" />
         <span>Layers</span>
-        <span className="text-[#94A3B8]">→</span>
+        <ChevronDown className="w-3 h-3 text-gray-400 ml-0.5" />
       </div>
 
-      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-        {LAYERS.map((layer) => {
-          const isSelected = activeLayers.includes(layer.id);
+      {/* Layer Filters */}
+      <div className="flex items-center gap-1.5">
+        {APPROVED_LAYERS.map((layer) => {
+          const isSelected = activeLayers[layer.id as keyof typeof activeLayers] ?? true;
+
           return (
             <button
               key={layer.id}
-              onClick={() => toggleLayer(layer.id)}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer whitespace-nowrap ${
+              onClick={() => toggleLayer(layer.id as any)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer backdrop-blur-md border shadow-md ${
                 isSelected
-                  ? 'bg-white text-[#10233F] shadow-2xs border border-slate-200/60'
-                  : 'text-[#64748B] hover:bg-white/50'
+                  ? 'bg-[#0B1220]/90 text-white border-white/[0.14]'
+                  : 'bg-[#0B1220]/50 text-gray-500 border-white/[0.05] hover:text-gray-300'
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${layer.color}`} />
+              <span className={`w-2 h-2 rounded-full ${layer.dotColor} ${isSelected ? 'opacity-100' : 'opacity-40'}`} />
               <span>{layer.label}</span>
             </button>
           );
@@ -73,50 +56,67 @@ export function DigitalTwinControlsBar() {
 }
 
 export function MapFloatingTools() {
+  const { resetCamera } = useTwinStore();
+  const [is3D, setIs3D] = useState(true);
+
   return (
-    <div className="flex flex-col gap-1.5 glass-card-solid rounded-2xl p-1.5 shadow-lg select-none text-xs">
-      {/* Compass Needle */}
+    <div className="flex flex-col items-center gap-1 bg-[#0B1220]/90 backdrop-blur-md rounded-2xl p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.5)] select-none text-xs border border-white/[0.12]">
+      {/* North Compass Indicator */}
       <button
-        title="Compass"
-        className="w-8 h-8 rounded-xl bg-white hover:bg-[#F8FAFC] flex items-center justify-center text-[#64748B] hover:text-[#10233F] transition-all shadow-2xs cursor-pointer relative"
+        onClick={resetCamera}
+        title="Compass / Align North"
+        className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] flex items-center justify-center transition-all cursor-pointer"
       >
-        <div className="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center">
-          <div className="w-0.5 h-3 bg-gradient-to-t from-slate-400 to-[#EF4444] rounded-full" />
+        <div className="flex flex-col items-center justify-center leading-none">
+          <span className="text-[10px] font-black text-red-500">N</span>
+          <div className="w-1.5 h-2 bg-gradient-to-b from-red-500 to-gray-400 rounded-full" />
         </div>
       </button>
 
-      {/* 2D Mode */}
+      {/* 2D / 3D Mode Toggle */}
+      <div className="flex flex-col bg-white/[0.04] rounded-xl p-0.5 border border-white/[0.06]">
+        <button
+          onClick={() => setIs3D(true)}
+          className={`w-7 h-6 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center justify-center ${
+            is3D ? 'bg-white/20 text-white' : 'text-gray-400 hover:text-white'
+          }`}
+        >
+          3D
+        </button>
+        <button
+          onClick={() => setIs3D(false)}
+          className={`w-7 h-6 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center justify-center ${
+            !is3D ? 'bg-white/20 text-white' : 'text-gray-400 hover:text-white'
+          }`}
+        >
+          2D
+        </button>
+      </div>
+
+      {/* Settings Gear */}
       <button
-        title="2D / 3D Mode"
-        className="w-8 h-8 rounded-xl bg-white hover:bg-[#F8FAFC] flex items-center justify-center text-[11px] font-extrabold text-[#10233F] transition-all cursor-pointer shadow-2xs"
+        title="Settings"
+        className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] flex items-center justify-center text-gray-400 hover:text-white transition-all cursor-pointer"
       >
-        2D
+        <Settings className="w-3.5 h-3.5" />
       </button>
 
-      <div className="w-full h-[1px] bg-slate-200/80 my-0.5" />
+      <div className="w-5 h-[1px] bg-white/[0.08] my-0.5" />
 
       {/* Zoom In */}
       <button
         title="Zoom In"
-        className="w-8 h-8 rounded-xl bg-white hover:bg-[#F8FAFC] flex items-center justify-center text-[#64748B] hover:text-[#10233F] transition-all cursor-pointer shadow-2xs"
+        className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] flex items-center justify-center text-gray-300 hover:text-white transition-all cursor-pointer"
       >
-        <Plus className="w-4 h-4" />
+        <Plus className="w-3.5 h-3.5" />
       </button>
 
       {/* Zoom Out */}
       <button
         title="Zoom Out"
-        className="w-8 h-8 rounded-xl bg-white hover:bg-[#F8FAFC] flex items-center justify-center text-[#64748B] hover:text-[#10233F] transition-all cursor-pointer shadow-2xs"
+        className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] flex items-center justify-center text-gray-300 hover:text-white transition-all cursor-pointer"
       >
-        <Minus className="w-4 h-4" />
-      </button>
-
-      {/* Layers Icon */}
-      <button
-        title="Layers"
-        className="w-8 h-8 rounded-xl bg-white hover:bg-[#F8FAFC] flex items-center justify-center text-[#64748B] hover:text-[#10233F] transition-all cursor-pointer shadow-2xs"
-      >
-        <Layers className="w-4 h-4 text-[#10233F]" />
+        <Minus className="w-3.5 h-3.5" />
       </button>
     </div>
   );

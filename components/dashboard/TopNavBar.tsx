@@ -1,39 +1,28 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  Search,
-  Bell,
-  Plane,
-  Building2,
-  Building,
-  Factory,
-  Hospital,
-  Sun,
-  Moon,
-  CloudSun,
-} from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Search, Bell } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
 
 interface TopNavBarProps {
   onOpenNotifications?: () => void;
 }
 
-const ENVIRONMENTS = [
-  { id: 'airport', label: 'Airport', icon: Plane },
-  { id: 'campus', label: 'Campus', icon: Building2 },
-  { id: 'smart-city', label: 'Smart City', icon: Building },
-  { id: 'industrial', label: 'Industrial', icon: Factory },
-  { id: 'hospital', label: 'Hospital', icon: Hospital },
+const NAV_ITEMS = [
+  { label: 'Dashboard', href: '/' },
+  { label: 'Digital Twin', href: '/twin' },
+  { label: 'Monitoring', href: '/monitoring' },
+  { label: 'Analytics', href: '/analytics' },
+  { label: 'Predictions', href: '/predictions' },
 ];
 
 export function TopNavBar({ onOpenNotifications }: TopNavBarProps) {
-  const { setSearchOpen, incidents } = useTwinStore();
-  const [activeEnv, setActiveEnv] = useState('airport');
+  const pathname = usePathname();
+  const { setSearchOpen } = useTwinStore();
   const [currentTime, setCurrentTime] = useState('04:26 PM');
-  const [currentDate, setCurrentDate] = useState('Mon, 23 Sep 2026');
-
-  const unreadAlerts = incidents.filter((i) => i.status !== 'RESOLVED').length;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -46,95 +35,101 @@ export function TopNavBar({ onOpenNotifications }: TopNavBarProps) {
   }, []);
 
   return (
-    <header className="w-full flex items-center justify-between gap-4 select-none mb-1">
-      {/* 1. Left Environment Selector Tabs */}
-      <div className="flex items-center gap-1.5 p-1.5 glass-pill rounded-full shadow-sm">
-        {ENVIRONMENTS.map((env) => {
-          const Icon = env.icon;
-          const isSelected = activeEnv === env.id;
+    <header className="w-full flex items-center justify-between gap-4 select-none mb-2 z-30">
+      {/* 1. Left: Minimal Brand Pill */}
+      <Link
+        href="/"
+        className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#111722]/70 hover:bg-[#151D2B]/90 backdrop-blur-xl border border-white/[0.08] shadow-[0_4px_20px_rgba(0,0,0,0.35)] transition-all cursor-pointer group shrink-0"
+      >
+        <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#FF7A1A] to-[#E55310] flex items-center justify-center shadow-[0_2px_8px_rgba(242,106,33,0.4)]">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="text-white">
+            <path
+              d="M12 2L3 7V17L12 22L21 17V7L12 2Z"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M12 22V12M12 12L21 7M12 12L3 7"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+        <span className="text-xs font-extrabold text-white tracking-tight">
+          TwinOS<span className="text-[10px] text-[#F26A21]">™</span>
+        </span>
+        <span className="text-[10px] text-gray-400 font-mono hidden sm:inline">• Airport</span>
+      </Link>
+
+      {/* 2. Center: Floating Pill Capsule Navbar (Inspired by Reference Design) */}
+      <nav className="flex items-center gap-1 p-1 bg-[#111722]/80 backdrop-blur-2xl border border-white/[0.08] rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+        {NAV_ITEMS.map((item) => {
+          const isActive = item.href === '/' ? pathname === '/' : pathname === item.href;
 
           return (
-            <button
-              key={env.id}
-              onClick={() => setActiveEnv(env.id)}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                isSelected
-                  ? 'bg-white text-[#10233F] shadow-sm border border-slate-200/60'
-                  : 'text-[#64748B] hover:text-[#10233F] hover:bg-white/40'
-              }`}
-            >
-              <Icon
-                className={`w-3.5 h-3.5 ${
-                  isSelected ? 'text-[#F26A21]' : 'text-[#64748B]'
+            <Link key={item.href} href={item.href} className="relative">
+              <span
+                className={`relative z-10 block px-4 py-1.5 rounded-full text-xs transition-colors duration-200 cursor-pointer ${
+                  isActive
+                    ? 'text-white font-semibold'
+                    : 'text-gray-400 hover:text-gray-200 font-medium'
                 }`}
-              />
-              <span>{env.label}</span>
-            </button>
+              >
+                {item.label}
+              </span>
+              {isActive && (
+                <motion.div
+                  layoutId="activeNavPill"
+                  className="absolute inset-0 bg-white/[0.14] border border-white/[0.12] rounded-full shadow-[0_2px_12px_rgba(0,0,0,0.3)]"
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                />
+              )}
+            </Link>
           );
         })}
-      </div>
+      </nav>
 
-      {/* 2. Center Search Command Bar */}
-      <div className="flex-1 max-w-md">
+      {/* 3. Right: Status & Utilities Capsule */}
+      <div className="flex items-center gap-2 shrink-0">
+        {/* Telemetry Status & Time Pill */}
+        <div className="hidden md:flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#111722]/70 backdrop-blur-xl border border-white/[0.08] text-xs shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[11px] font-medium text-emerald-400">Live Sync</span>
+          </div>
+          <span className="text-gray-600">|</span>
+          <span className="text-[11px] font-mono text-gray-300">{currentTime}</span>
+        </div>
+
+        {/* Search Command Trigger */}
         <button
           onClick={() => setSearchOpen(true)}
-          className="w-full flex items-center justify-between px-4 py-2 glass-pill hover:bg-white/90 rounded-full text-xs text-[#64748B] transition-all cursor-pointer group shadow-sm"
+          title="Search infrastructure (⌘K)"
+          className="w-8 h-8 rounded-full bg-[#111722]/70 hover:bg-[#151D2B]/90 backdrop-blur-xl border border-white/[0.08] flex items-center justify-center text-gray-400 hover:text-white transition-all cursor-pointer shadow-sm"
         >
-          <div className="flex items-center gap-2.5">
-            <Search className="w-3.5 h-3.5 text-[#94A3B8] group-hover:text-[#10233F]" />
-            <span className="text-xs text-[#64748B] group-hover:text-[#10233F]">
-              Search buildings, assets, incidents...
-            </span>
-          </div>
-          <kbd className="px-2 py-0.5 rounded-md bg-white/80 border border-slate-200 text-[10px] text-[#64748B] font-mono shadow-2xs">
-            ⌘K
-          </kbd>
+          <Search className="w-3.5 h-3.5" />
         </button>
-      </div>
 
-      {/* 3. Right: Date/Time, Weather & Profile Controls */}
-      <div className="flex items-center gap-3">
-        {/* Date and Time */}
-        <div className="hidden xl:flex flex-col text-right leading-tight">
-          <span className="text-[10px] font-medium text-[#64748B]">{currentDate}</span>
-          <span className="text-sm font-black text-[#10233F] tracking-tight">{currentTime}</span>
-        </div>
+        {/* Notifications Bell */}
+        <button
+          onClick={onOpenNotifications}
+          title="Alerts"
+          className="relative w-8 h-8 rounded-full bg-[#111722]/70 hover:bg-[#151D2B]/90 backdrop-blur-xl border border-white/[0.08] flex items-center justify-center text-gray-400 hover:text-white transition-all cursor-pointer shadow-sm"
+        >
+          <Bell className="w-3.5 h-3.5" />
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#F26A21]" />
+        </button>
 
-        {/* Weather Indicator */}
-        <div className="hidden lg:flex items-center gap-2 text-left leading-tight pl-3 border-l border-slate-200/80">
-          <CloudSun className="w-4 h-4 text-[#F26A21]" />
-          <div className="flex flex-col">
-            <span className="text-[10px] text-[#64748B] font-medium">Mumbai</span>
-            <span className="text-xs font-bold text-[#10233F]">29°C Partly Cloudy</span>
-          </div>
-        </div>
-
-        {/* Theme, Notification and Avatar Controls */}
-        <div className="flex items-center gap-2">
-          {/* Day / Night Theme Toggle */}
-          <button
-            title="Theme Toggle"
-            className="w-8 h-8 rounded-full glass-pill hover:bg-white flex items-center justify-center text-[#F26A21] transition-all cursor-pointer shadow-2xs"
-          >
-            <Sun className="w-4 h-4" />
-          </button>
-
-          {/* Notifications */}
-          <button
-            onClick={onOpenNotifications}
-            title="Notifications"
-            className="relative w-8 h-8 rounded-full glass-pill hover:bg-white flex items-center justify-center text-[#10233F] transition-all cursor-pointer shadow-2xs"
-          >
-            <Bell className="w-4 h-4" />
-            {unreadAlerts > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#D94A4A] ring-2 ring-white" />
-            )}
-          </button>
-
-          {/* User Avatar */}
-          <div className="w-8 h-8 rounded-full bg-[#10233F] text-white flex items-center justify-center text-xs font-bold shadow-2xs cursor-pointer border border-white/40">
-            H
-          </div>
+        {/* Operator Profile Avatar */}
+        <div
+          title="Lead Operator"
+          className="w-8 h-8 rounded-full bg-[#1E293B] border border-white/15 text-white flex items-center justify-center text-xs font-bold shadow-md cursor-pointer hover:border-white/30 transition-all"
+        >
+          H
         </div>
       </div>
     </header>

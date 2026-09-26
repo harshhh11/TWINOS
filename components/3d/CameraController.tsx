@@ -12,7 +12,7 @@ export function CameraController() {
   const { camera } = useThree();
 
   const targetLookAt = useRef(new THREE.Vector3(0, 0, 0));
-  const desiredCamPos = useRef(new THREE.Vector3(28, 36, 42));
+  const desiredCamPos = useRef(new THREE.Vector3(0, 48, 65));
   const isTransitioning = useRef(false);
 
   // When target changes, smoothly fly to entity
@@ -23,9 +23,9 @@ export function CameraController() {
         desiredCamPos.current.set(cameraPosition[0], cameraPosition[1], cameraPosition[2]);
       } else {
         desiredCamPos.current.set(
-          cameraTarget[0] + 10,
-          cameraTarget[1] + 12,
-          cameraTarget[2] + 14
+          cameraTarget[0] + 12,
+          cameraTarget[1] + 14,
+          cameraTarget[2] + 16
         );
       }
       isTransitioning.current = true;
@@ -45,8 +45,8 @@ export function CameraController() {
 
       // Check if close enough to finish transition
       if (
-        camera.position.distanceTo(desiredCamPos.current) < 0.2 &&
-        controlsRef.current.target.distanceTo(targetLookAt.current) < 0.2
+        camera.position.distanceTo(desiredCamPos.current) < 0.25 &&
+        controlsRef.current.target.distanceTo(targetLookAt.current) < 0.25
       ) {
         isTransitioning.current = false;
       }
@@ -57,10 +57,10 @@ export function CameraController() {
     <OrbitControls
       ref={controlsRef}
       enableDamping
-      dampingFactor={0.06}
+      dampingFactor={0.07}
       maxPolarAngle={Math.PI / 2.15}
       minDistance={6}
-      maxDistance={120}
+      maxDistance={240}
       rotateSpeed={0.8}
       zoomSpeed={1.0}
     />

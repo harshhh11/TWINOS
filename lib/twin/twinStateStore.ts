@@ -59,28 +59,86 @@ interface TwinStoreState {
   setCopilotOpen: (open: boolean) => void;
   addCopilotMessage: (message: Omit<CopilotMessage, 'id' | 'timestamp'>) => void;
 
+  // Operational Layers System
+  activeLayers: {
+    buildings: boolean;
+    assets: boolean;
+    operations: boolean;
+    energy: boolean;
+    incidents: boolean;
+    dependencies: boolean;
+  };
+  toggleLayer: (layer: keyof TwinStoreState['activeLayers']) => void;
+  setLayer: (layer: keyof TwinStoreState['activeLayers'], enabled: boolean) => void;
+
   // Search Modal
   isSearchOpen: boolean;
   setSearchOpen: (open: boolean) => void;
 }
+
+const PRESET_VIEWPOINTS: Record<string, { target: [number, number, number]; position: [number, number, number] }> = {
+  'terminal-a': { target: [-25, 3, -2], position: [-38, 18, 14] },
+  'terminal-b': { target: [2, 3, 10], position: [-12, 19, 26] },
+  'terminal-c': { target: [35, 4, -22], position: [26, 22, -8] },
+  'terminal-d': { target: [40, 3, 12], position: [48, 17, 28] },
+  'runway-1': { target: [-5, 0.4, -45], position: [-15, 26, -55] },
+  'runway-2': { target: [0, 0.4, 55], position: [10, 26, 68] },
+  'atc-tower': { target: [-4, 18, -12], position: [2, 28, -20] },
+  'energy-hub': { target: [-45, 2, 35], position: [-54, 15, 48] },
+  'parking': { target: [-28, 2, 25], position: [-36, 17, 38] },
+  'cargo-hub': { target: [48, 2, -45], position: [56, 17, -36] },
+};
 
 export const useTwinStore = create<TwinStoreState>((set, get) => ({
   isSidebarOpen: false,
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
   setSidebarOpen: (open) => set({ isSidebarOpen: open }),
 
-  cameraTarget: null,
-  cameraPosition: null,
+  activeLayers: {
+    buildings: true,
+    assets: true,
+    operations: true,
+    energy: true,
+    incidents: true,
+    dependencies: false,
+  },
+  toggleLayer: (layer) =>
+    set((state) => ({
+      activeLayers: {
+        ...state.activeLayers,
+        [layer]: !state.activeLayers[layer],
+      },
+    })),
+  setLayer: (layer, enabled) =>
+    set((state) => ({
+      activeLayers: {
+        ...state.activeLayers,
+        [layer]: enabled,
+      },
+    })),
+
+  cameraTarget: [0, 0, 0],
+  cameraPosition: [0, 48, 65],
   selectedMarkerId: null,
   selectedAssetId: null,
   selectedIncidentId: null,
 
-  focusEntity: (id, coords) =>
-    set({
-      selectedMarkerId: id,
-      cameraTarget: coords,
-      cameraPosition: [coords[0] + 12, coords[1] + 14, coords[2] + 16],
-    }),
+  focusEntity: (id, coords) => {
+    const preset = PRESET_VIEWPOINTS[id];
+    if (preset) {
+      set({
+        selectedMarkerId: id,
+        cameraTarget: preset.target,
+        cameraPosition: preset.position,
+      });
+    } else {
+      set({
+        selectedMarkerId: id,
+        cameraTarget: coords,
+        cameraPosition: [coords[0] + 12, coords[1] + 14, coords[2] + 16],
+      });
+    }
+  },
 
   resetCamera: () =>
     set({
@@ -88,7 +146,7 @@ export const useTwinStore = create<TwinStoreState>((set, get) => ({
       selectedAssetId: null,
       selectedIncidentId: null,
       cameraTarget: [0, 0, 0],
-      cameraPosition: [28, 36, 42],
+      cameraPosition: [0, 48, 65],
     }),
 
   markers: INITIAL_SPATIAL_MARKERS,
