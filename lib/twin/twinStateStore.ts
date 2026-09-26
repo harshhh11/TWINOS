@@ -33,6 +33,7 @@ import {
 import {
   INITIAL_TERMINAL_CROWD_STATES,
   INITIAL_CROWD_AUDIT_LOG,
+  CROWD_TIMELINE_SNAPSHOTS,
 } from '@/lib/crowd/crowdData';
 import {
   createDefaultGateB14Incident,
@@ -149,6 +150,12 @@ interface TwinStoreState {
   setCrowdTimelineIndex: (idx: number) => void;
   isCrowdPlayback: boolean;
   setIsCrowdPlayback: (playback: boolean) => void;
+  isFlowRedirected: boolean;
+  setIsFlowRedirected: (redirected: boolean) => void;
+  isLayerPassengers: boolean;
+  isLayerHeatmap: boolean;
+  isLayerAircraft: boolean;
+  toggleCrowdLayer: (layer: 'passengers' | 'heatmap' | 'aircraft') => void;
   crowdAuditTrail: CrowdAuditEntry[];
   executeCrowdLaneOpen: (zoneId: string, lanesToAdd?: number, adminName?: string) => void;
   executeCrowdRedirectFlow: (fromZoneId: string, toZoneId: string, adminName?: string) => void;
@@ -782,55 +789,104 @@ export const useTwinStore = create<TwinStoreState>((set, get) => ({
 
   crowdTerminals: INITIAL_TERMINAL_CROWD_STATES,
   crowdTimelineIndex: 5, // 13:00 (LIVE)
-  setCrowdTimelineIndex: (idx) => set({ crowdTimelineIndex: idx }),
+  setCrowdTimelineIndex: (idx) => {
+    const snapshot = CROWD_TIMELINE_SNAPSHOTS[idx];
+    if (!snapshot) {
+      set({ crowdTimelineIndex: idx });
+      return;
+    }
+    const terminals = { ...get().crowdTerminals };
+    Object.entries(snapshot.terminals).forEach(([termId, snapVal]) => {
+      const termSnap = snapVal as { occupancyPercent: number; pressureScore: number; status: string };
+      if (terminals[termId]) {
+        terminals[termId] = {
+          ...terminals[termId],
+          occupancyPercent: termSnap.occupancyPercent,
+          pressureScore: termSnap.pressureScore,
+          status: termSnap.status as CrowdZoneStatus,
+        };
+      }
+    });
+    set({ crowdTimelineIndex: idx, crowdTerminals: terminals });
+  },
 
   isCrowdPlayback: false,
   setIsCrowdPlayback: (playback) => set({ isCrowdPlayback: playback }),
+
+  isFlowRedirected: false,
+  setIsFlowRedirected: (redirected) => set({ isFlowRedirected: redirected }),
+
+  isLayerPassengers: true,
+  isLayerHeatmap: true,
+  isLayerAircraft: true,
+  toggleCrowdLayer: (layer) => {
+    if (layer === 'passengers') {
+      set((state) => ({ isLayerPassengers: !state.isLayerPassengers }));
+    } else if (layer === 'heatmap') {
+      set((state) => ({ isLayerHeatmap: !state.isLayerHeatmap }));
+    } else if (layer === 'aircraft') {
+      set((state) => ({ isLayerAircraft: !state.isLayerAircraft }));
+    }
+  },
 
   crowdAuditTrail: INITIAL_CROWD_AUDIT_LOG,
 
   executeCrowdLaneOpen: (zoneId, lanesToAdd = 1, adminName = 'H. Shereef (Operations Duty Manager)') => {
     const terminals = { ...get().crowdTerminals };
-    const termB = { ...terminals['terminal-b'] };
+    let targetTermId: string | null = null;
+    let targetZoneName = '';
+
+    for (const [tId, term] of Object.entries(terminals)) {
+      const found = term.zones.find((z) => z.id === zoneId);
+      if (found) {
+        targetTermId = tId;
+        targetZoneName = found.name;
+        break;
+      }
+    }
+
+    if (!targetTermId) targetTermId = 'terminal-b';
+    const targetTerm = { ...terminals[targetTermId] };
     const added = lanesToAdd || 1;
-    const updatedZones = termB.zones.map((z) => {
+
+    targetTerm.zones = targetTerm.zones.map((z) => {
       if (z.id === zoneId) {
-        const newLanes = Math.min(8, (z.openLanes || 6) + added);
-        const newOutgoing = added >= 2 ? 118 : (z.outgoingFlow || 92) + 26;
-        const newQueue = added >= 2 ? 120 : Math.max(20, (z.queueLength || 184) - 42);
-        const newPressure = added >= 2 ? 58 : Math.max(30, (z.pressureScore || 84) - 16);
+        const newLanes = Math.min(z.totalLanes || 8, (z.openLanes || 6) + added);
+        const newOutgoing = (z.outgoingFlow || 90) + added * 13;
+        const newQueue = Math.max(10, (z.queueLength || 100) - added * 32);
+        const newPressure = Math.max(25, (z.pressureScore || 80) - added * 13);
         return {
           ...z,
           openLanes: newLanes,
           outgoingFlow: newOutgoing,
           netFlow: z.incomingFlow - newOutgoing,
           queueLength: newQueue,
-          estimatedWaitMin: added >= 2 ? 6.5 : Math.max(3, Math.round(newQueue / 15)),
+          estimatedWaitMin: Math.max(2.5, Math.round((newQueue / 18) * 10) / 10),
           pressureScore: newPressure,
           status: (newPressure > 80 ? 'CRITICAL' : newPressure > 60 ? 'ATTENTION' : 'NORMAL') as CrowdZoneStatus,
-          aiInsight: `Lanes opened: ${newLanes}/8 active. Screening throughput elevated to ${newOutgoing} pax/min; queue visibly compressed to ${newQueue} passengers.`,
+          aiInsight: `Lanes opened: ${newLanes}/${z.totalLanes || 8} active. Screening throughput elevated to ${newOutgoing} pax/min; queue compressed to ${newQueue} passengers.`,
         };
       }
       return z;
     });
 
-    const targetZone = termB.zones.find((z) => z.id === zoneId);
-    termB.zones = updatedZones;
-    termB.pressureScore = added >= 2 ? 58 : Math.max(40, termB.pressureScore - 12);
-    termB.status = (termB.pressureScore > 80 ? 'CRITICAL' : termB.pressureScore > 60 ? 'ATTENTION' : 'NORMAL') as CrowdZoneStatus;
-    terminals['terminal-b'] = termB;
+    const maxPressure = Math.max(...targetTerm.zones.map((z) => z.pressureScore));
+    targetTerm.pressureScore = maxPressure;
+    targetTerm.status = (maxPressure > 80 ? 'CRITICAL' : maxPressure > 60 ? 'ATTENTION' : 'NORMAL') as CrowdZoneStatus;
+    targetTerm.criticalZonesCount = targetTerm.zones.filter((z) => z.status === 'CRITICAL').length;
+    terminals[targetTermId] = targetTerm;
 
     const timeFormatted = formatEventTime();
-    const actionLabel = added >= 2 ? 'Opened 2 Additional Screening Lanes (Lanes 7 & 8)' : 'Opened Additional Security Lane 7';
+    const actionLabel = added >= 2 ? 'Opened 2 Additional Screening Lanes' : 'Opened 1 Additional Security Lane';
     const auditEntry: CrowdAuditEntry = {
       id: `cad-${Date.now()}`,
       time: timeFormatted,
-      action: `${actionLabel} (${targetZone?.name || 'Security Checkpoint'})`,
-      zoneName: targetZone?.name || 'Security Zone 2',
+      action: `${actionLabel} (${targetZoneName || 'Security Checkpoint'})`,
+      zoneName: targetZoneName || 'Security Checkpoint',
       actor: adminName,
-      result: `Open screening lanes: 6 → ${added >= 2 ? 8 : 7}. Queue decreased to ${added >= 2 ? 120 : 142} pax. Throughput: 118 pax/min. Pressure score reduced from 84 to ${added >= 2 ? 58 : 68}.`,
+      result: `Screening lanes expanded (+${added}). Throughput increased. Queue compressed. Pressure score reduced to ${maxPressure}.`,
       pressureBefore: 84,
-      pressureAfter: added >= 2 ? 58 : 68,
+      pressureAfter: maxPressure,
     };
 
     set({
@@ -840,50 +896,88 @@ export const useTwinStore = create<TwinStoreState>((set, get) => ({
 
     get().addCopilotMessage({
       role: 'assistant',
-      content: `✅ **Operational Action Executed by ${adminName}:**\n\n• **Action:** ${actionLabel} in **Terminal B**.\n• **Result:** Screening throughput increased to 118 pax/min; queue reduced from 184 to ${added >= 2 ? 120 : 142} passengers.\n• **Crowd Pressure:** Reduced from 84 (Critical) to ${added >= 2 ? 58 : 68} (${added >= 2 ? 'Optimal/Attention' : 'Attention'}).\n• **Audit Trail:** Recorded in immutable operational log.`,
+      content: `✅ **Operational Action Executed by ${adminName}:**\n\n• **Action:** ${actionLabel} in **${targetTerm.terminalName}**.\n• **Result:** Throughput elevated; queue compressed; crowd pressure reduced to **${maxPressure}** (${targetTerm.status}).\n• **Audit Trail:** Recorded in immutable operational log.`,
       actions: [
-        { label: 'Inspect Security Zone 2', actionType: 'FOCUS_TWIN', targetId: 'terminal-b' },
+        { label: `Inspect ${targetTerm.terminalName}`, actionType: 'FOCUS_TWIN', targetId: targetTermId },
       ],
     });
   },
 
-  executeCrowdRedirectFlow: (fromZoneId, toZoneId, adminName = 'H. Shereef (Operations Duty Manager)') => {
+  executeCrowdRedirectFlow: (fromZoneId = 'sec-zone-c2', toZoneId = 'sec-zone-c1', adminName = 'H. Shereef (Operations Duty Manager)') => {
     const terminals = { ...get().crowdTerminals };
-    const termB = { ...terminals['terminal-b'] };
-    termB.zones = termB.zones.map((z) => {
+    let targetTermId = 'terminal-c';
+    if (terminals['terminal-b']?.zones.some((z) => z.id === fromZoneId)) {
+      targetTermId = 'terminal-b';
+    }
+
+    const term = { ...terminals[targetTermId] };
+    term.zones = term.zones.map((z) => {
       if (z.id === fromZoneId) {
+        // Source zone (e.g. C-East or Zone 2): Divert flow away
+        const diverted = Math.round(z.incomingFlow * 0.28);
+        const newInflow = Math.max(30, z.incomingFlow - diverted);
+        const newQueue = Math.max(18, Math.round(z.queueLength * 0.45));
+        const newPressure = Math.max(35, Math.round(z.pressureScore * 0.58));
         return {
           ...z,
-          incomingFlow: Math.max(40, z.incomingFlow - 30),
-          queueLength: Math.max(20, z.queueLength - 35),
-          pressureScore: Math.max(35, z.pressureScore - 14),
+          incomingFlow: newInflow,
+          netFlow: newInflow - z.outgoingFlow,
+          queueLength: newQueue,
+          estimatedWaitMin: Math.max(3, Math.round(newQueue / 15)),
+          pressureScore: newPressure,
+          status: (newPressure > 80 ? 'CRITICAL' : newPressure > 60 ? 'ATTENTION' : 'NORMAL') as CrowdZoneStatus,
+          aiInsight: `Flow redirected (-${diverted} pax/min). Queue successfully reduced to ${newQueue} pax; wait time normalized.`,
         };
       }
       if (z.id === toZoneId) {
+        // Destination zone (e.g. C-West or Island 33): Absorbs diverted flow
+        const absorbed = 24;
+        const newInflow = z.incomingFlow + absorbed;
+        const newQueue = z.queueLength + 12;
+        const newPressure = Math.min(65, z.pressureScore + 10);
         return {
           ...z,
-          incomingFlow: z.incomingFlow + 25,
-          queueLength: z.queueLength + 15,
+          incomingFlow: newInflow,
+          netFlow: newInflow - z.outgoingFlow,
+          queueLength: newQueue,
+          estimatedWaitMin: Math.max(3, Math.round(newQueue / 15)),
+          pressureScore: newPressure,
+          status: (newPressure > 80 ? 'CRITICAL' : newPressure > 60 ? 'ATTENTION' : 'NORMAL') as CrowdZoneStatus,
+          aiInsight: `Absorbed redirected queue (+${absorbed} pax/min). Operating within safe capacity bounds.`,
         };
       }
       return z;
     });
-    terminals['terminal-b'] = termB;
+
+    const maxPressure = Math.max(...term.zones.map((z) => z.pressureScore));
+    term.pressureScore = maxPressure;
+    term.status = (maxPressure > 80 ? 'CRITICAL' : maxPressure > 60 ? 'ATTENTION' : 'NORMAL') as CrowdZoneStatus;
+    term.criticalZonesCount = term.zones.filter((z) => z.status === 'CRITICAL').length;
+    terminals[targetTermId] = term;
 
     const auditEntry: CrowdAuditEntry = {
       id: `cad-${Date.now()}`,
       time: formatEventTime(),
-      action: `Redirected Passenger Flow from ${fromZoneId} to ${toZoneId}`,
-      zoneName: 'Terminal B Concourse',
+      action: `Dynamic Crowd Redirection: ${fromZoneId} → ${toZoneId}`,
+      zoneName: `${term.terminalName} Screening Concourse`,
       actor: adminName,
-      result: 'Concourse floor marshals directed 30% of incoming queue to secondary check-in island.',
-      pressureBefore: 84,
-      pressureAfter: 74,
+      result: `Passenger flow redirected: 25% diverted to secondary checkpoint. Bottleneck resolved; queue compressed.`,
+      pressureBefore: 88,
+      pressureAfter: maxPressure,
     };
 
     set({
       crowdTerminals: terminals,
+      isFlowRedirected: true,
       crowdAuditTrail: [auditEntry, ...get().crowdAuditTrail],
+    });
+
+    get().addCopilotMessage({
+      role: 'assistant',
+      content: `🔀 **Crowd Flow Redirection Executed by ${adminName}:**\n\n• **Diverted:** 25% passenger ingress from **${fromZoneId}** to **${toZoneId}** in **${term.terminalName}**.\n• **Operational Impact:** Bottleneck queue resolved; waiting times normalized.\n• **Digital Twin:** 3D passenger walking paths and diversion stream updated live.`,
+      actions: [
+        { label: `View ${term.terminalName} Flow`, actionType: 'FOCUS_TWIN', targetId: targetTermId },
+      ],
     });
   },
 

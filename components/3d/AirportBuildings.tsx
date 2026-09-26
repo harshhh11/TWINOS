@@ -6,7 +6,12 @@ import * as THREE from 'three';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
 
 export function AirportBuildings() {
-  const { selectedMarkerId, focusEntity, isCrowdMode } = useTwinStore();
+  const { selectedMarkerId, focusEntity, isCrowdMode, selectedCrowdTerminal } = useTwinStore();
+  const isTerminalACutaway = isCrowdMode && selectedCrowdTerminal === 'terminal-a';
+  const isTerminalBCutaway = isCrowdMode && (selectedCrowdTerminal === 'terminal-b' || !selectedCrowdTerminal);
+  const isTerminalCCutaway = isCrowdMode && selectedCrowdTerminal === 'terminal-c';
+  const isTerminalDCutaway = isCrowdMode && selectedCrowdTerminal === 'terminal-d';
+
   const radarRef = useRef<THREE.Group>(null);
   const beaconRef = useRef<THREE.Mesh>(null);
   const hvacFanRef = useRef<THREE.Group>(null);
@@ -42,36 +47,40 @@ export function AirportBuildings() {
           focusEntity('terminal-a', [-22, 3.2, 8]);
         }}
       >
-        {/* Main Central Processor Hall */}
-        <mesh position={[0, 2.5, 0]} castShadow receiveShadow>
-          <boxGeometry args={[16, 5.0, 9]} />
-          <meshStandardMaterial
-            color={selectedMarkerId === 'terminal-a' ? '#1E293B' : '#151A22'}
-            roughness={0.4}
-            metalness={0.6}
-          />
-        </mesh>
+        {/* Main Central Processor Hall & Wave Roof */}
+        {!isTerminalACutaway && (
+          <>
+            <mesh position={[0, 2.5, 0]} castShadow receiveShadow>
+              <boxGeometry args={[16, 5.0, 9]} />
+              <meshStandardMaterial
+                color={selectedMarkerId === 'terminal-a' ? '#1E293B' : '#151A22'}
+                roughness={0.4}
+                metalness={0.6}
+              />
+            </mesh>
 
-        {/* Curved / Wave Architectural Canopy Roof */}
-        <mesh position={[0, 5.2, 0.4]} rotation={[0.04, 0, 0]} castShadow receiveShadow>
-          <boxGeometry args={[17.5, 0.5, 10.5]} />
-          <meshStandardMaterial color="#2B3644" roughness={0.28} metalness={0.75} />
-        </mesh>
+            {/* Curved / Wave Architectural Canopy Roof */}
+            <mesh position={[0, 5.2, 0.4]} rotation={[0.04, 0, 0]} castShadow receiveShadow>
+              <boxGeometry args={[17.5, 0.5, 10.5]} />
+              <meshStandardMaterial color="#2B3644" roughness={0.28} metalness={0.75} />
+            </mesh>
 
-        {/* Rooftop Skylight Strips */}
-        {[-5, -2, 2, 5].map((x, idx) => (
-          <mesh key={`t1-skylight-${idx}`} position={[x, 5.5, 0.4]}>
-            <boxGeometry args={[1.2, 0.15, 7.5]} />
-            <meshStandardMaterial
-              color="#38BDF8"
-              emissive="#0284C7"
-              emissiveIntensity={0.3}
-              roughness={0.1}
-              transparent
-              opacity={0.85}
-            />
-          </mesh>
-        ))}
+            {/* Rooftop Skylight Strips */}
+            {[-5, -2, 2, 5].map((x, idx) => (
+              <mesh key={`t1-skylight-${idx}`} position={[x, 5.5, 0.4]}>
+                <boxGeometry args={[1.2, 0.15, 7.5]} />
+                <meshStandardMaterial
+                  color="#38BDF8"
+                  emissive="#0284C7"
+                  emissiveIntensity={0.3}
+                  roughness={0.1}
+                  transparent
+                  opacity={0.85}
+                />
+              </mesh>
+            ))}
+          </>
+        )}
 
         {/* Tinted Glass Curtain Wall (Airside) */}
         <mesh position={[0, 2.5, -4.55]}>
@@ -130,7 +139,7 @@ export function AirportBuildings() {
         }}
       >
         {/* Main Terminal B Structure (Hidden in Crowd Cutaway Mode) */}
-        {!isCrowdMode && (
+        {!isTerminalBCutaway && (
           <>
             <mesh position={[0, 2.2, 0]} castShadow receiveShadow>
               <boxGeometry args={[13, 4.4, 8]} />
@@ -183,21 +192,55 @@ export function AirportBuildings() {
           focusEntity('terminal-c', [18, 3.2, 8]);
         }}
       >
-        {/* Central Y-Processor Building */}
-        <mesh position={[0, 2.5, 0]} castShadow receiveShadow>
-          <boxGeometry args={[15, 5.0, 9]} />
-          <meshStandardMaterial
-            color={selectedMarkerId === 'terminal-c' ? '#2A1F1D' : '#151A22'}
-            roughness={0.4}
-            metalness={0.6}
-          />
-        </mesh>
+        {/* Central Y-Processor Building & Roof */}
+        {!isTerminalCCutaway && (
+          <>
+            <mesh position={[0, 2.5, 0]} castShadow receiveShadow>
+              <boxGeometry args={[15, 5.0, 9]} />
+              <meshStandardMaterial
+                color={selectedMarkerId === 'terminal-c' ? '#2A1F1D' : '#151A22'}
+                roughness={0.4}
+                metalness={0.6}
+              />
+            </mesh>
 
-        {/* Modern Cantilevered Aerodynamic Wing Roof */}
-        <mesh position={[0, 5.2, -0.3]} rotation={[-0.04, 0, 0.02]} castShadow receiveShadow>
-          <boxGeometry args={[16.5, 0.5, 10.2]} />
-          <meshStandardMaterial color="#2B3644" roughness={0.3} metalness={0.7} />
-        </mesh>
+            {/* Modern Cantilevered Aerodynamic Wing Roof */}
+            <mesh position={[0, 5.2, -0.3]} rotation={[-0.04, 0, 0.02]} castShadow receiveShadow>
+              <boxGeometry args={[16.5, 0.5, 10.2]} />
+              <meshStandardMaterial color="#2B3644" roughness={0.3} metalness={0.7} />
+            </mesh>
+
+            {/* Rooftop Solar Array */}
+            <group position={[-3.5, 5.5, 0]}>
+              {[-1.8, 0, 1.8].map((z, idx) => (
+                <mesh key={`solar-t3-${idx}`} position={[0, 0, z]} rotation={[-0.15, 0, 0]}>
+                  <boxGeometry args={[5.2, 0.08, 1.2]} />
+                  <meshStandardMaterial color="#0F172A" metalness={0.9} roughness={0.1} />
+                </mesh>
+              ))}
+            </group>
+
+            {/* Rooftop HVAC Chiller Plant (Linked to Active Incident TT-03) */}
+            <group position={[3.5, 5.6, -0.5]}>
+              <mesh castShadow>
+                <boxGeometry args={[2.8, 0.95, 2.5]} />
+                <meshStandardMaterial color="#475569" roughness={0.6} metalness={0.5} />
+              </mesh>
+              {/* Chiller Exhaust Fans */}
+              <group ref={hvacFanRef} position={[0, 0.5, 0]}>
+                <mesh rotation={[-Math.PI / 2, 0, 0]}>
+                  <cylinderGeometry args={[0.65, 0.65, 0.12, 12]} />
+                  <meshStandardMaterial color="#1E293B" metalness={0.8} />
+                </mesh>
+              </group>
+              {/* Anomaly Thermal Pulse Status Ring */}
+              <mesh position={[0, 0.62, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                <ringGeometry args={[1.5, 1.7, 24]} />
+                <meshBasicMaterial color="#F28C18" side={THREE.DoubleSide} />
+              </mesh>
+            </group>
+          </>
+        )}
 
         {/* Tinted Panoramic Curtain Wall */}
         <mesh position={[0, 2.5, -4.55]}>
@@ -211,36 +254,6 @@ export function AirportBuildings() {
             opacity={0.88}
           />
         </mesh>
-
-        {/* Rooftop Solar Array */}
-        <group position={[-3.5, 5.5, 0]}>
-          {[-1.8, 0, 1.8].map((z, idx) => (
-            <mesh key={`solar-t3-${idx}`} position={[0, 0, z]} rotation={[-0.15, 0, 0]}>
-              <boxGeometry args={[5.2, 0.08, 1.2]} />
-              <meshStandardMaterial color="#0F172A" metalness={0.9} roughness={0.1} />
-            </mesh>
-          ))}
-        </group>
-
-        {/* Rooftop HVAC Chiller Plant (Linked to Active Incident TT-03) */}
-        <group position={[3.5, 5.6, -0.5]}>
-          <mesh castShadow>
-            <boxGeometry args={[2.8, 0.95, 2.5]} />
-            <meshStandardMaterial color="#475569" roughness={0.6} metalness={0.5} />
-          </mesh>
-          {/* Chiller Exhaust Fans */}
-          <group ref={hvacFanRef} position={[0, 0.5, 0]}>
-            <mesh rotation={[-Math.PI / 2, 0, 0]}>
-              <cylinderGeometry args={[0.65, 0.65, 0.12, 12]} />
-              <meshStandardMaterial color="#1E293B" metalness={0.8} />
-            </mesh>
-          </group>
-          {/* Anomaly Thermal Pulse Status Ring */}
-          <mesh position={[0, 0.62, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-            <ringGeometry args={[1.5, 1.7, 24]} />
-            <meshBasicMaterial color="#F28C18" side={THREE.DoubleSide} />
-          </mesh>
-        </group>
 
         {/* Aerobridges (Gates C1 - C5) */}
         {[-12, -6, 0, 6, 12].map((z, idx) => (
@@ -263,20 +276,24 @@ export function AirportBuildings() {
           focusEntity('terminal-d', [36, 2.8, 14]);
         }}
       >
-        {/* Terminal D Structure */}
-        <mesh position={[0, 2.0, 0]} castShadow receiveShadow>
-          <boxGeometry args={[12, 4.0, 7]} />
-          <meshStandardMaterial
-            color={selectedMarkerId === 'terminal-d' ? '#1E293B' : '#151A22'}
-            roughness={0.4}
-            metalness={0.6}
-          />
-        </mesh>
-        {/* Solar Canopy Roof */}
-        <mesh position={[0, 4.1, 0]} castShadow>
-          <boxGeometry args={[13.2, 0.35, 8.0]} />
-          <meshStandardMaterial color="#1E293B" metalness={0.8} roughness={0.2} />
-        </mesh>
+        {/* Terminal D Structure & Roof */}
+        {!isTerminalDCutaway && (
+          <>
+            <mesh position={[0, 2.0, 0]} castShadow receiveShadow>
+              <boxGeometry args={[12, 4.0, 7]} />
+              <meshStandardMaterial
+                color={selectedMarkerId === 'terminal-d' ? '#1E293B' : '#151A22'}
+                roughness={0.4}
+                metalness={0.6}
+              />
+            </mesh>
+            {/* Solar Canopy Roof */}
+            <mesh position={[0, 4.1, 0]} castShadow>
+              <boxGeometry args={[13.2, 0.35, 8.0]} />
+              <meshStandardMaterial color="#1E293B" metalness={0.8} roughness={0.2} />
+            </mesh>
+          </>
+        )}
         {/* Glass Entrance */}
         <mesh position={[0, 2.0, -3.55]}>
           <planeGeometry args={[11.6, 3.4]} />
