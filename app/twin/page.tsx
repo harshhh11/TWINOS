@@ -1,19 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import {
   ArrowLeft,
   RotateCw,
   Layers,
-  Building2,
-  Cpu,
-  Plane,
-  Zap,
-  AlertTriangle,
-  Network,
-  ChevronDown,
+  Users,
 } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
 import { ContextualEntityModal } from '@/components/3d/ContextualEntityModal';
@@ -23,177 +17,152 @@ const AirportTwinScene = dynamic(
   { ssr: false }
 );
 
-const HEADER_TARGETS: Array<{ id: string; name: string; position: [number, number, number] }> = [
-  { id: 'terminal-a', name: 'Terminal A', position: [-25, 3, -2] },
-  { id: 'terminal-b', name: 'Terminal B', position: [2, 3, 10] },
-  { id: 'terminal-c', name: 'Terminal C', position: [35, 4, -22] },
-  { id: 'terminal-d', name: 'Terminal D', position: [40, 3, 12] },
-  { id: 'runway-1', name: 'Runway 1 (09L/27R)', position: [-5, 0.4, -45] },
-  { id: 'atc-tower', name: 'ATC Tower', position: [-4, 18, -12] },
-  { id: 'parking', name: 'Parking', position: [-28, 2, 25] },
-  { id: 'energy-hub', name: 'Central Energy Substation', position: [-45, 2, 35] },
+interface NavPreset {
+  id: string;
+  label: string;
+  position: [number, number, number];
+}
+
+const PRESET_LOCATIONS: NavPreset[] = [
+  { id: 'terminal-a', label: 'Terminal A', position: [-22, 3.2, 8] },
+  { id: 'terminal-b', label: 'Terminal B', position: [-2, 3.0, 4] },
+  { id: 'terminal-c', label: 'Terminal C', position: [18, 3.2, 8] },
+  { id: 'terminal-d', label: 'Terminal D', position: [36, 2.8, 14] },
+  { id: 'runway-1', label: 'Runway 01', position: [-38, 0.4, -26] },
+  { id: 'runway-2', label: 'Runway 02', position: [26, 0.4, -42] },
+  { id: 'atc-tower', label: 'ATC Tower', position: [4, 10.5, -16] },
+  { id: 'parking-garage', label: 'Parking', position: [-2, 2.2, 26] },
+  { id: 'energy-hub', label: 'Central Energy Facility', position: [-32, 1.8, 28] },
+  { id: 'cargo-hub', label: 'Cargo Hub', position: [42, 2.4, -12] },
 ];
+
+const OPERATIONAL_LAYERS = [
+  { id: 'ALL', label: 'All Layers' },
+  { id: 'BUILDINGS', label: 'Buildings' },
+  { id: 'ASSETS', label: 'Assets' },
+  { id: 'OPERATIONS', label: 'Operations' },
+  { id: 'ENERGY', label: 'Energy' },
+  { id: 'INCIDENTS', label: 'Incidents' },
+  { id: 'DEPENDENCIES', label: 'Dependencies' },
+] as const;
 
 export default function TwinExplorerPage() {
   const {
     focusEntity,
     resetCamera,
     selectedMarkerId,
-    activeLayers,
-    toggleLayer,
+    activeLayer,
+    setActiveLayer,
   } = useTwinStore();
 
-  const [isLayersOpen, setIsLayersOpen] = useState(false);
-
-  const layerItems = [
-    { key: 'buildings' as const, label: 'Buildings', icon: Building2 },
-    { key: 'assets' as const, label: 'Assets', icon: Cpu },
-    { key: 'operations' as const, label: 'Operations', icon: Plane },
-    { key: 'energy' as const, label: 'Energy', icon: Zap },
-    { key: 'incidents' as const, label: 'Incidents', icon: AlertTriangle },
-    { key: 'dependencies' as const, label: 'Dependencies', icon: Network },
-  ];
-
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#070B14] font-sans select-none text-white">
-      {/* 3D Scene Hero: Complete WebGL Digital Twin */}
+    <main className="relative w-screen h-screen overflow-hidden bg-[#080A0D] font-sans select-none">
+      {/* 1. HERO 3D DIGITAL TWIN VIEWPORT (Full Campus Masterplan) */}
       <div className="absolute inset-0 z-0">
         <AirportTwinScene />
       </div>
 
-      {/* Top Floating Control Bar */}
-      <header className="absolute top-6 inset-x-8 z-30 flex items-center justify-between pointer-events-auto">
-        <div className="flex items-center gap-3">
-          {/* Dashboard Back Link */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-black/55 hover:bg-black/75 text-white border border-white/10 text-xs font-semibold backdrop-blur-md shadow-xl transition-all cursor-pointer"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 text-white" />
-            <span>Dashboard</span>
-          </Link>
+      {/* 2. TOP UNIFIED NAVIGATION & LAYER FILTER BAR */}
+      <header className="absolute top-4 inset-x-6 z-30 flex flex-col gap-2 pointer-events-auto">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          {/* Left: Back to Dashboard & Digital Twin Title */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#0D1014]/90 hover:bg-[#151A21] backdrop-blur-xl border border-white/[0.08] hover:border-white/20 text-xs font-semibold text-[#F4F4F5] transition-all shadow-card"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-[#8B9199]" />
+              <span>Dashboard</span>
+            </Link>
 
-          {/* 3D Twin Explorer Pill */}
-          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 text-xs shadow-xl">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-extrabold text-white">3D Digital Twin Explorer</span>
-            <span className="text-[#94A3B8]">• Airport Environment</span>
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] text-xs text-[#8B9199] shadow-card">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-bold text-[#F4F4F5]">3D Digital Twin Explorer</span>
+              <span>• Airport Operations Hub</span>
+            </div>
           </div>
-        </div>
 
-        {/* Spatial Quick Jumps & Layer Controls */}
-        <div className="flex items-center gap-2">
-          {/* Quick Jump Camera Navigation Bar */}
-          <div className="flex items-center gap-1.5 p-1.5 bg-black/55 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl text-xs overflow-x-auto max-w-2xl">
+          {/* Right: Camera Presets & Reset View Controls */}
+          <div className="flex items-center gap-1.5 p-1.5 bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-card text-xs flex-wrap">
+            {/* Reset View Button */}
             <button
               onClick={resetCamera}
-              title="Reset Camera View to Full Campus Overview"
-              className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
+              title="Reset Camera View to Campus Overview"
+              className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-medium text-[#8B9199] hover:text-[#F4F4F5] transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <RotateCw className="w-3.5 h-3.5" />
               <span>Reset View</span>
             </button>
 
-            <div className="w-[1px] h-4 bg-white/15 mx-1 shrink-0" />
+            {/* Crowd Operations 3D Cutaway Direct Jump */}
+            <Link
+              href="/crowd"
+              title="Jump into Terminal B 3D Crowd Management View"
+              className="px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-xs font-bold text-rose-300 border border-rose-500/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+            >
+              <Users className="w-3.5 h-3.5 text-rose-400" />
+              <span>Crowd 3D Cutaway</span>
+            </Link>
 
-            {HEADER_TARGETS.map((target) => (
-              <button
-                key={target.id}
-                onClick={() => focusEntity(target.id, target.position)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                  selectedMarkerId === target.id
-                    ? 'bg-[#F26A21] text-white font-bold shadow-md'
-                    : 'text-slate-300 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {target.name}
-              </button>
-            ))}
+            <div className="w-[1px] h-4 bg-white/10 mx-1 hidden sm:block" />
+
+            {/* Predefined Camera Locations */}
+            {PRESET_LOCATIONS.map((loc) => {
+              const isSelected = selectedMarkerId === loc.id;
+              return (
+                <button
+                  key={loc.id}
+                  onClick={() => focusEntity(loc.id, loc.position)}
+                  className={`px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#F28C18] text-black font-bold shadow-sm'
+                      : 'text-[#8B9199] hover:text-[#F4F4F5] hover:bg-white/5'
+                  }`}
+                >
+                  {loc.label}
+                </button>
+              );
+            })}
           </div>
+        </div>
 
-          {/* Operational Layers Toggle Button */}
-          <div className="relative">
+        {/* Operational Layers Filter Bar */}
+        <div className="self-start flex items-center gap-1.5 p-1 bg-[#0D1014]/85 backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-card">
+          <div className="flex items-center gap-1.5 px-2 text-[10px] font-semibold text-[#8B9199] uppercase tracking-wider">
+            <Layers className="w-3 h-3 text-[#F28C18]" />
+            <span>Layers:</span>
+          </div>
+          {OPERATIONAL_LAYERS.map((layer) => (
             <button
-              onClick={() => setIsLayersOpen(!isLayersOpen)}
-              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-2xl backdrop-blur-md border text-xs font-semibold shadow-xl transition-all cursor-pointer ${
-                isLayersOpen
-                  ? 'bg-black/80 border-[#F26A21] text-white shadow-orange-500/20'
-                  : 'bg-black/55 hover:bg-black/75 border-white/10 text-slate-200'
+              key={layer.id}
+              onClick={() => setActiveLayer(layer.id as any)}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all cursor-pointer ${
+                activeLayer === layer.id
+                  ? 'bg-white/15 text-[#F4F4F5] font-semibold'
+                  : 'text-[#8B9199] hover:text-[#F4F4F5] hover:bg-white/5'
               }`}
             >
-              <Layers className="w-3.5 h-3.5 text-[#F26A21]" />
-              <span>Layers</span>
-              <ChevronDown
-                className={`w-3.5 h-3.5 text-slate-400 transition-transform ${
-                  isLayersOpen ? 'rotate-180' : ''
-                }`}
-              />
+              {layer.label}
             </button>
-
-            {/* Dropdown Layers Popover */}
-            {isLayersOpen && (
-              <div className="absolute right-0 top-12 w-52 p-2 bg-[#0B132B]/95 backdrop-blur-xl border border-white/15 rounded-2xl shadow-2xl z-40 flex flex-col gap-1 text-xs">
-                <span className="text-[10px] font-bold text-slate-400 px-2 py-1 uppercase tracking-wider border-b border-white/10">
-                  Digital Twin Layers
-                </span>
-                {layerItems.map((layer) => {
-                  const Icon = layer.icon;
-                  const isEnabled = activeLayers[layer.key];
-                  return (
-                    <button
-                      key={layer.key}
-                      onClick={() => toggleLayer(layer.key)}
-                      className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl transition-all cursor-pointer ${
-                        isEnabled
-                          ? 'bg-white/10 text-white font-semibold'
-                          : 'text-slate-400 hover:text-white hover:bg-white/5'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Icon
-                          className={`w-3.5 h-3.5 ${
-                            isEnabled ? 'text-[#F26A21]' : 'text-slate-500'
-                          }`}
-                        />
-                        <span>{layer.label}</span>
-                      </div>
-                      <span
-                        className={`w-2 h-2 rounded-full ${
-                          isEnabled
-                            ? 'bg-emerald-400 shadow-[0_0_6px_#34D399]'
-                            : 'bg-slate-600'
-                        }`}
-                      />
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+          ))}
         </div>
       </header>
 
-      {/* Contextual Entity Inspection Modal */}
+      {/* 3. CONTEXTUAL ASSET INSPECTION PANEL */}
       <ContextualEntityModal />
 
-      {/* Bottom Navigation Controls Guide */}
-      <footer className="absolute bottom-6 inset-x-8 z-30 flex justify-center pointer-events-none">
-        <div className="px-6 py-2.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-xs font-normal text-slate-300 shadow-xl pointer-events-auto flex items-center gap-3">
-          <span>
-            <strong className="text-white font-semibold">Left-Click + Drag:</strong> Rotate
-          </span>
-          <span className="text-white/20">•</span>
-          <span>
-            <strong className="text-white font-semibold">Right-Click + Drag:</strong> Pan
-          </span>
-          <span className="text-white/20">•</span>
-          <span>
-            <strong className="text-white font-semibold">Scroll:</strong> Zoom
-          </span>
-          <span className="text-white/20">•</span>
-          <span>Click any 3D building, runway, or pin to inspect live telemetry</span>
+      {/* 4. BOTTOM INTERACTION & MULTI-SCALE HINT */}
+      <footer className="absolute bottom-5 inset-x-6 z-30 flex justify-between items-center pointer-events-none gap-4">
+        {/* Multi-Scale Hierarchy Badge */}
+        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#0D1014]/85 backdrop-blur-md border border-white/[0.08] text-[11px] text-[#8B9199] pointer-events-auto shadow-card">
+          <span className="text-[#F28C18] font-bold">L1</span> Campus Overview → <span className="text-[#38BDF8] font-bold">L2</span> Terminal Concourse → <span className="text-emerald-400 font-bold">L3</span> Subsystem Telemetry
+        </div>
+
+        {/* Interaction Controls */}
+        <div className="px-4 py-1.5 rounded-full bg-[#0D1014]/85 backdrop-blur-md border border-white/[0.08] text-[11px] text-[#8B9199] shadow-card pointer-events-auto">
+          Left-Click: <span className="text-[#F4F4F5]">Rotate</span> • Right-Click: <span className="text-[#F4F4F5]">Pan</span> • Scroll: <span className="text-[#F4F4F5]">Zoom</span> • Click any facility to inspect
         </div>
       </footer>
-    </div>
+    </main>
   );
 }

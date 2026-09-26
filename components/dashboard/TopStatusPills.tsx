@@ -9,6 +9,8 @@ import {
   Zap,
   TrendingDown,
   ArrowRight,
+  HeartPulse,
+  Users,
 } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
 
@@ -17,7 +19,7 @@ interface SideStatusRailProps {
 }
 
 export function TopStatusPills({ layout = 'vertical' }: SideStatusRailProps) {
-  const { incidents, assets } = useTwinStore();
+  const { incidents, assets, activeEmergency, setEmergencyDrawerOpen } = useTwinStore();
   const activeAlertsCount = incidents.filter((i) => i.status !== 'RESOLVED').length;
   const criticalCount = incidents.filter((i) => i.severity === 'HIGH' && i.status !== 'RESOLVED').length;
 
@@ -35,6 +37,47 @@ export function TopStatusPills({ layout = 'vertical' }: SideStatusRailProps) {
           : 'flex-row items-center gap-2.5 flex-wrap'
       } pointer-events-auto select-none`}
     >
+      {/* 0. Emergency Status Pill (when active) */}
+      {activeEmergency && activeEmergency.status !== 'RESOLVED' && (
+        <button
+          onClick={() => setEmergencyDrawerOpen(true)}
+          className="flex items-center justify-between p-2.5 rounded-xl bg-red-950/90 hover:bg-red-900/90 backdrop-blur-xl border border-red-500/60 shadow-[0_0_20px_rgba(239,68,68,0.35)] transition-all cursor-pointer animate-pulse text-left group"
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-red-500/20 text-red-400 flex items-center justify-center shrink-0">
+              <HeartPulse className="w-3.5 h-3.5 animate-pulse" />
+            </div>
+            <div className="flex flex-col text-left leading-tight">
+              <span className="text-[9px] text-red-400 font-mono uppercase font-bold">EMERGENCY ACTIVE</span>
+              <span className="text-xs font-bold text-white">
+                {activeEmergency.operationalContext.gate}
+              </span>
+            </div>
+          </div>
+          <ArrowRight className="w-3 h-3 text-red-400 group-hover:translate-x-0.5 transition-transform" />
+        </button>
+      )}
+
+      {/* 0.5. Crowd Operations Pill (Terminal B Surge) */}
+      <Link
+        href="/crowd"
+        className="flex items-center justify-between p-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/70 backdrop-blur-xl border border-rose-500/40 shadow-card transition-all group"
+      >
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+            <Users className="w-3.5 h-3.5" />
+          </div>
+          <div className="flex flex-col text-left leading-tight">
+            <span className="text-[10px] text-rose-300/80 font-medium">Crowd Pressure</span>
+            <span className="text-xs font-bold text-white flex items-center gap-1.5 mt-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+              T-B: 84% Critical
+            </span>
+          </div>
+        </div>
+        <ArrowRight className="w-3 h-3 text-rose-400 group-hover:translate-x-0.5 transition-transform" />
+      </Link>
+
       {/* 1. System Status */}
       <Link
         href="/monitoring"

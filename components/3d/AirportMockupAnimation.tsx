@@ -6,7 +6,7 @@ export function AirportMockupAnimation() {
   return (
     <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-[2]">
       {/* 1. ATC Tower Beacon & Radar Pulse */}
-      <div className="absolute left-[75.5%] top-[38.8%] -translate-x-1/2 -translate-y-1/2">
+      <div className="absolute left-[64.8%] top-[25.2%] -translate-x-1/2 -translate-y-1/2">
         {/* Pulsing Red Hazard Strobe */}
         <span className="relative flex h-3 w-3 items-center justify-center">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />

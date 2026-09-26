@@ -108,3 +108,29 @@ export function detectAnomalies(
 
   return anomalies;
 }
+
+/**
+ * Returns ML flight delay predictions grounded in the 1,000-flight dataset
+ */
+export function getDatasetFlightDelayPredictions() {
+  const summary = require('@/data/airport_dataset_summary.json');
+  return {
+    mlModel: summary.ml_models.flight_delay_classifier,
+    highRiskFlights: summary.high_risk_flights,
+    airlineOtp: summary.airline_otp,
+    delayReasons: summary.delay_reasons,
+  };
+}
+
+/**
+ * Returns terminal passenger congestion and baggage chokepoint forecasts
+ */
+export function getTerminalCongestionForecast() {
+  const summary = require('@/data/airport_dataset_summary.json');
+  return {
+    hourlyTrend: summary.hourly_trend,
+    securityMetrics: summary.security_metrics,
+    gateUtilization: summary.gate_utilization,
+    passengerMetrics: summary.passenger_metrics,
+  };
+}

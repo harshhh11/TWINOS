@@ -1,24 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-  LayoutDashboard,
+  Menu,
+  X,
+  Home,
   Box,
   Activity,
   BarChart3,
   TrendingUp,
-  AlertCircle,
-  Network,
-  Bell,
-  Cpu,
   AlertTriangle,
+  Cpu,
+  ShieldAlert,
   Zap,
   Sparkles,
-  ChevronLeft,
-  ChevronRight,
+  GitFork,
+  ArrowRight,
+  Users,
 } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
 
@@ -26,155 +26,188 @@ interface NavItem {
   label: string;
   href: string;
   icon: React.ElementType;
+  badge?: string;
 }
 
-// STRICT D-DAY SUPPORTING & CORE PLATFORM MODULES (Section 9)
-const SIDEBAR_MODULES: NavItem[] = [
-  { label: 'Dashboard', href: '/', icon: LayoutDashboard },
+const NAV_ITEMS: NavItem[] = [
+  { label: 'Dashboard', href: '/', icon: Home },
   { label: 'Digital Twin', href: '/twin', icon: Box },
+  { label: 'Crowd Operations', href: '/crowd', icon: Users, badge: '84%' },
   { label: 'Monitoring', href: '/monitoring', icon: Activity },
   { label: 'Analytics', href: '/analytics', icon: BarChart3 },
   { label: 'Predictions', href: '/predictions', icon: TrendingUp },
-  { label: 'Anomaly Detection', href: '/anomalies', icon: AlertCircle },
-  { label: 'Dependencies', href: '/dependencies', icon: Network },
-  { label: 'Alerts', href: '/alerts', icon: Bell },
+  { label: 'Alerts', href: '/alerts', icon: AlertTriangle, badge: '2' },
   { label: 'Assets', href: '/assets', icon: Cpu },
-  { label: 'Incidents', href: '/incidents', icon: AlertTriangle },
+  { label: 'Incidents', href: '/incidents', icon: ShieldAlert, badge: '1' },
   { label: 'Energy', href: '/energy', icon: Zap },
+  { label: 'Dependencies', href: '/dependencies', icon: GitFork },
 ];
 
 export function LeftSidebar() {
   const pathname = usePathname();
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isPinned, setIsPinned] = useState(false);
-  const { setCopilotOpen } = useTwinStore();
-
-  const showExpanded = isPinned || isExpanded;
+  const { isSidebarOpen, setSidebarOpen, toggleSidebar, setCopilotOpen, incidents } = useTwinStore();
+  const activeIncidents = incidents.filter((i) => i.status !== 'RESOLVED').length;
 
   return (
-    <motion.aside
-      onMouseEnter={() => !isPinned && setIsExpanded(true)}
-      onMouseLeave={() => !isPinned && setIsExpanded(false)}
-      animate={{ width: showExpanded ? 220 : 64 }}
-      transition={{ duration: 0.22, ease: [0.25, 1, 0.5, 1] }}
-      className="shrink-0 bg-[#0C121E]/95 backdrop-blur-2xl rounded-[24px] p-2.5 flex flex-col justify-between select-none shadow-[0_12px_40px_rgba(0,0,0,0.6)] border border-white/[0.08] sticky top-4 h-[calc(100vh-2rem)] overflow-hidden z-30"
-    >
-      {/* Top: Brand Toggle & Module List */}
-      <div className="flex flex-col min-w-0">
-        {/* Brand Header */}
-        <div className="flex items-center justify-between px-1.5 py-1 mb-3">
-          <Link href="/" className="flex items-center gap-2.5 overflow-hidden group">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#FF7A1A] to-[#E55310] flex items-center justify-center shadow-[0_2px_10px_rgba(242,106,33,0.4)] shrink-0">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" className="text-white">
-                <path
-                  d="M12 2L3 7V17L12 22L21 17V7L12 2Z"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M12 22V12M12 12L21 7M12 12L3 7"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-
-            <AnimatePresence>
-              {showExpanded && (
-                <motion.div
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -8 }}
-                  transition={{ duration: 0.15 }}
-                  className="flex flex-col min-w-0"
-                >
-                  <span className="text-xs font-black text-white tracking-tight leading-none">
-                    TwinOS<span className="text-[10px] text-[#F26A21]">™</span>
-                  </span>
-                  <span className="text-[9px] text-gray-400 font-medium leading-tight mt-0.5 truncate">
-                    Operations Hub
-                  </span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Link>
-
-          {showExpanded && (
-            <button
-              onClick={() => setIsPinned(!isPinned)}
-              title={isPinned ? 'Unpin sidebar' : 'Pin sidebar'}
-              className="w-5 h-5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+    <>
+      {/* 1. Collapsed Floating Trigger Button (Visible when sidebar is closed) */}
+      <div className="pointer-events-auto">
+        <button
+          onClick={toggleSidebar}
+          title="Open Navigation Menu"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-2xl bg-[#0D1014]/92 hover:bg-[#151A21] backdrop-blur-xl border border-white/[0.08] hover:border-[#F28C18]/40 text-[#F4F4F5] transition-all shadow-card group cursor-pointer"
+        >
+          {/* Muted Orange TwinOS Emblem */}
+          <div className="w-7 h-7 rounded-xl bg-[#F28C18] flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105">
+            <svg
+              className="w-4 h-4 text-black fill-current"
+              viewBox="0 0 24 24"
             >
-              {isPinned ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+              <path d="M12 2L2 22h5.5l2.2-4.8h4.6l2.2 4.8H22L12 2zm0 6.5l1.6 3.5h-3.2L12 8.5z" />
+            </svg>
+          </div>
+          <div className="flex flex-col text-left leading-tight pr-1">
+            <span className="text-xs font-bold text-[#F4F4F5] flex items-center gap-1">
+              TwinOS<span className="text-[9px] text-[#F28C18]">™</span>
+            </span>
+            <span className="text-[10px] text-[#8B9199]">Menu</span>
+          </div>
+          <Menu className="w-4 h-4 text-[#8B9199] group-hover:text-[#F4F4F5] transition-colors ml-1" />
+        </button>
+      </div>
+
+      {/* 2. Slide-over Backdrop Overlay */}
+      {isSidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity pointer-events-auto"
+        />
+      )}
+
+      {/* 3. Slide-Out Side Navigation Drawer */}
+      <aside
+        className={`fixed top-0 left-0 bottom-0 z-50 w-[270px] h-full flex flex-col justify-between p-4 bg-[#0D1014]/98 backdrop-blur-2xl border-r border-white/[0.08] shadow-2xl transition-transform duration-300 ease-in-out pointer-events-auto select-none ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Top Header of Drawer */}
+        <div className="flex flex-col">
+          <div className="flex items-center justify-between pb-4 mb-2 border-b border-white/[0.08]">
+            <Link
+              href="/"
+              onClick={() => setSidebarOpen(false)}
+              className="flex items-center gap-2.5 group"
+            >
+              <div className="w-8 h-8 rounded-xl bg-[#F28C18] flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105">
+                <svg
+                  className="w-4.5 h-4.5 text-black fill-current"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2L2 22h5.5l2.2-4.8h4.6l2.2 4.8H22L12 2zm0 6.5l1.6 3.5h-3.2L12 8.5z" />
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-base font-bold text-[#F4F4F5] leading-none flex items-center gap-0.5">
+                  TwinOS<span className="text-[9px] text-[#F28C18] font-semibold">™</span>
+                </span>
+                <span className="text-[10px] text-[#8B9199] mt-1 font-medium">
+                  Command Center
+                </span>
+              </div>
+            </Link>
+
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[#8B9199] hover:text-[#F4F4F5] transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
             </button>
-          )}
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="flex flex-col gap-1 mt-2">
+            {NAV_ITEMS.map((item) => {
+              const isActive =
+                item.href === '/'
+                  ? pathname === '/'
+                  : pathname.startsWith(item.href);
+              const Icon = item.icon;
+
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                    isActive
+                      ? 'bg-[#1D1711] text-[#F4F4F5] border-l-2 border-[#F28C18] shadow-sm'
+                      : 'text-[#8B9199] hover:text-[#F4F4F5] hover:bg-[#151A21] border-l-2 border-transparent'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Icon
+                      className={`w-4 h-4 shrink-0 transition-colors ${
+                        isActive ? 'text-[#F28C18]' : 'text-[#8B9199]'
+                      }`}
+                    />
+                    <span className="truncate text-xs">{item.label}</span>
+                  </div>
+
+                  {item.label === 'Alerts' && activeIncidents > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                      {activeIncidents}
+                    </span>
+                  )}
+                  {item.label === 'Incidents' && (
+                    <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+                      1
+                    </span>
+                  )}
+                  {item.label === 'Crowd Operations' && (
+                    <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 animate-pulse">
+                      84% ⚠️
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Modules Navigation (11 Approved Core + Supporting Modules) */}
-        <nav className="flex flex-col gap-1 py-1 overflow-y-auto max-h-[calc(100vh-14rem)] pr-0.5 no-scrollbar">
-          {SIDEBAR_MODULES.map((item) => {
-            const isActive = item.href === '/' ? pathname === '/' : pathname === item.href;
-            const Icon = item.icon;
-
-            return (
-              <Link key={item.label} href={item.href}>
-                <div
-                  className={`flex items-center gap-3 px-2.5 py-2 rounded-xl text-xs transition-all group relative cursor-pointer ${
-                    isActive
-                      ? 'bg-[#F26A21]/15 text-[#F26A21] font-bold border border-[#F26A21]/30 shadow-[inset_0_0_10px_rgba(242,106,33,0.12)]'
-                      : 'text-gray-400 hover:text-white hover:bg-white/[0.05] border border-transparent font-medium'
-                  } ${!showExpanded ? 'justify-center px-0' : ''}`}
-                  title={!showExpanded ? item.label : undefined}
-                >
-                  <Icon
-                    className={`w-4 h-4 shrink-0 transition-colors ${
-                      isActive ? 'text-[#F26A21]' : 'text-gray-400 group-hover:text-white'
-                    }`}
-                  />
-                  {showExpanded && (
-                    <span className="truncate tracking-tight text-[11px]">{item.label}</span>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
-
-      {/* Bottom: Contextual AI Copilot Trigger (Module 12) */}
-      <div className="pt-2 border-t border-white/[0.06] flex flex-col gap-1">
-        <button
-          onClick={() => setCopilotOpen(true)}
-          className={`flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.03] hover:bg-[#F26A21]/15 border border-white/[0.06] hover:border-[#F26A21]/30 text-gray-300 hover:text-white transition-all cursor-pointer group ${
-            !showExpanded ? 'justify-center' : ''
-          }`}
-          title="TwinOS AI Copilot"
-        >
-          <div className="w-6 h-6 rounded-lg bg-[#F26A21]/20 text-[#F26A21] flex items-center justify-center shrink-0">
-            <Sparkles className="w-3.5 h-3.5" />
-          </div>
-          {showExpanded && (
-            <div className="flex flex-col text-left min-w-0">
-              <span className="text-[11px] font-bold text-white tracking-tight leading-tight">
-                AI Copilot
-              </span>
-              <span className="text-[9px] text-gray-400 leading-tight truncate">
-                Ask about infrastructure
-              </span>
+        {/* Bottom Drawer Section */}
+        <div className="pt-3 border-t border-white/[0.08]">
+          <button
+            onClick={() => {
+              setSidebarOpen(false);
+              setCopilotOpen(true);
+            }}
+            className="w-full text-left p-3 rounded-xl bg-[#11151A] hover:bg-[#151A21] border border-white/[0.08] hover:border-[#F28C18]/40 transition-all cursor-pointer group shadow-sm"
+          >
+            <div className="flex items-center gap-2.5 mb-1">
+              <div className="w-6 h-6 rounded-lg bg-[#F28C18]/15 border border-[#F28C18]/30 flex items-center justify-center text-[#F28C18] shrink-0">
+                <Sparkles className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="text-xs font-semibold text-[#F4F4F5] flex items-center justify-between">
+                  <span>AI Copilot</span>
+                  <ArrowRight className="w-3 h-3 text-[#8B9199] group-hover:text-[#F28C18] transition-colors" />
+                </h4>
+              </div>
             </div>
-          )}
-        </button>
+            <p className="text-[10px] text-[#8B9199] leading-tight truncate">
+              Query telemetry & system state
+            </p>
+          </button>
 
-        {showExpanded && (
-          <div className="text-center text-[9px] font-mono text-gray-500 pt-1">
-            v1.0.0
+          <div className="mt-3 px-1 flex items-center justify-between text-[10px] text-[#626870] font-mono">
+            <span>TwinOS v2.4 • Airport</span>
+            <span className="flex items-center gap-1 text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Live Sync
+            </span>
           </div>
-        )}
-      </div>
-    </motion.aside>
+        </div>
+      </aside>
+    </>
   );
 }

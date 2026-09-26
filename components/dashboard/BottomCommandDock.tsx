@@ -10,6 +10,7 @@ import {
   ArrowRight,
   TrendingDown,
   CheckCircle2,
+  Users,
 } from 'lucide-react';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
 
@@ -20,7 +21,7 @@ export function BottomCommandDock() {
   const atRiskAssets = assets.filter((a) => a.healthScore < 80);
 
   return (
-    <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-3 pointer-events-auto select-none">
+    <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-3 pointer-events-auto select-none">
       {/* 1. Monitoring Summary */}
       <Link
         href="/monitoring"
@@ -70,6 +71,34 @@ export function BottomCommandDock() {
           <span className="text-[10px] text-red-400 font-medium">
             Terminal B Concourse • Action Required
           </span>
+        </div>
+      </Link>
+
+      {/* 2.5. Crowd Operations Summary */}
+      <Link
+        href="/crowd"
+        className="p-3.5 rounded-2xl bg-[#0D1014]/92 hover:bg-[#131820] backdrop-blur-xl border border-white/[0.08] hover:border-rose-500/40 transition-all shadow-card group flex flex-col justify-between"
+      >
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg bg-rose-500/15 flex items-center justify-center text-rose-400">
+              <Users className="w-3.5 h-3.5" />
+            </div>
+            <span className="text-xs font-bold text-[#F4F4F5]">Crowd Ops</span>
+          </div>
+          <span className="px-1.5 py-0.5 rounded-md bg-rose-500/20 text-rose-400 text-[10px] font-bold border border-rose-500/30 animate-pulse">
+            T-B: 84%
+          </span>
+        </div>
+        <div className="text-xs text-[#8B9199]">
+          <div className="flex items-center justify-between mb-1">
+            <span>Security Zone 2:</span>
+            <span className="text-rose-400 font-bold font-mono">184 in queue</span>
+          </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span>Est. Wait:</span>
+            <span className="text-amber-400 font-medium">17 min (Lane 7 Standby)</span>
+          </div>
         </div>
       </Link>
 

@@ -6,11 +6,25 @@ import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
   AlertTriangle,
+  CheckCircle2,
+  Clock,
   Box,
+  Radio,
+  Filter,
+  Eye,
+  Shield,
+  Zap,
+  Activity,
   Check,
+  HeartPulse,
+  Sparkles,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useTwinStore } from '@/lib/twin/twinStateStore';
+import { ReportEmergencyModal } from '@/components/emergency/ReportEmergencyModal';
+import { EmergencyConfirmationDialog } from '@/components/emergency/EmergencyConfirmationDialog';
+import { EmergencyResolveModal } from '@/components/emergency/EmergencyResolveModal';
+import { EmergencyIncidentDrawer } from '@/components/emergency/EmergencyIncidentDrawer';
 
 interface AlertItem {
   id: string;
@@ -30,11 +44,11 @@ const INITIAL_ALERTS: AlertItem[] = [
     id: 'alt-1',
     type: 'ANOMALY',
     severity: 'CRITICAL',
-    title: 'HVAC Thermal Anomaly & Electrical Load Spike',
+    title: 'Thermal Anomaly & Ingress Backpressure Surge',
     affectedSystem: 'Terminal B Concourse B2 & HVAC-03',
     time: '2 min ago',
     status: 'NEW',
-    anomalyPattern: 'Sudden 31.8°C thermal rise in Zone B2 coil loop.',
+    anomalyPattern: 'Sudden +32% crowd density spike with simultaneous 31.8°C thermal rise in Zone B2.',
     locationId: 'terminal-b',
     coordinates: [11, 2.5, 3],
   },
@@ -43,7 +57,7 @@ const INITIAL_ALERTS: AlertItem[] = [
     type: 'ANOMALY',
     severity: 'WARNING',
     title: 'Unusual Harmonic Motor Vibration on Baggage Carousel 03',
-    affectedSystem: 'Carousel Belt 03 / Motor B03',
+    affectedSystem: 'Carousel Belt 03 / Inverter B03',
     time: '14 min ago',
     status: 'ACKNOWLEDGED',
     anomalyPattern: 'High-frequency vibration amplitude exceeding 4.2 mm/s baseline threshold.',
@@ -54,19 +68,19 @@ const INITIAL_ALERTS: AlertItem[] = [
     id: 'alt-3',
     type: 'INCIDENT',
     severity: 'WARNING',
-    title: 'Feeder Line Voltage Fluctuation on Substation Bus B',
-    affectedSystem: 'Substation South Primary Feed',
+    title: 'Unverified Airside Perimeter Motion',
+    affectedSystem: 'Gate 4 Restricted Maintenance Corridor',
     time: '28 min ago',
     status: 'ACKNOWLEDGED',
-    anomalyPattern: 'Voltage deviation exceeding ±4.5% IEEE distribution tolerance.',
-    locationId: 'energy-hub',
-    coordinates: [-16, 1.2, 14],
+    anomalyPattern: 'Optical flow boundary tripwire breach outside scheduled service window.',
+    locationId: 'terminal-a',
+    coordinates: [-10, 1.2, 4],
   },
   {
     id: 'alt-4',
     type: 'SYSTEM',
     severity: 'INFO',
-    title: 'Automated Solar Power Shifting Nominal',
+    title: 'Automated Micro-Grid Solar Shifting Nominal',
     affectedSystem: 'Substation South Dual Feeder 2A',
     time: '1 hour ago',
     status: 'RESOLVED',
@@ -78,7 +92,13 @@ const INITIAL_ALERTS: AlertItem[] = [
 
 export default function AlertsPage() {
   const router = useRouter();
-  const { focusEntity } = useTwinStore();
+  const {
+    focusEntity,
+    activeEmergency,
+    setEmergencyDrawerOpen,
+    setReportModalOpen,
+    simulateDemoEmergency,
+  } = useTwinStore();
   const [alerts, setAlerts] = useState<AlertItem[]>(INITIAL_ALERTS);
   const [activeFilter, setActiveFilter] = useState<'ALL' | 'CRITICAL' | 'WARNING' | 'ANOMALY'>('ALL');
 
@@ -113,54 +133,125 @@ export default function AlertsPage() {
   });
 
   return (
-    <div className="w-screen min-h-screen bg-[#080B10] text-[#F8FAFC] font-sans select-none flex flex-col">
+    <div className="w-screen h-screen overflow-y-auto bg-[#080A0D] text-[#F4F4F5] font-sans select-none flex flex-col">
       {/* Top Header */}
-      <header className="px-8 py-4 border-b border-white/[0.08] bg-[#0C121E]/95 backdrop-blur-2xl sticky top-0 z-30 shadow-lg flex items-center justify-between">
+      <header className="px-8 py-4 border-b border-white/[0.08] bg-[#0D1014]/90 backdrop-blur-xl flex items-center justify-between sticky top-0 z-30 shadow-card">
         <div className="flex items-center gap-4">
           <Link
             href="/"
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-bold text-white transition-all"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-[#F4F4F5] transition-all"
           >
-            <ArrowLeft className="w-4 h-4 text-[#F26A21]" />
+            <ArrowLeft className="w-3.5 h-3.5" />
             <span>Dashboard</span>
           </Link>
 
           <div>
-            <h1 className="text-base font-extrabold text-white flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-[#F26A21]" />
-              Alerts & Operational Notifications
+            <h1 className="text-base font-bold text-[#F4F4F5] flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-[#F28C18]" />
+              Alerts & Anomaly Detection Center
             </h1>
-            <p className="text-[11px] text-gray-400">
+            <p className="text-[11px] text-[#8B9199]">
               Real-Time Statistical Anomalies • Critical Operational Notifications • Fast Resolution Lifecycle
             </p>
           </div>
         </div>
 
-        {/* Severity Filter Chips */}
-        <div className="flex items-center gap-1.5 p-1 bg-white/[0.04] border border-white/[0.08] rounded-full text-xs">
-          {[
-            { id: 'ALL', label: 'All Alerts' },
-            { id: 'CRITICAL', label: 'Critical' },
-            { id: 'WARNING', label: 'Warnings' },
-            { id: 'ANOMALY', label: 'Anomalies' },
-          ].map((f) => (
-            <button
-              key={f.id}
-              onClick={() => setActiveFilter(f.id as any)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                activeFilter === f.id
-                  ? 'bg-[#F26A21] text-white font-bold shadow-[0_2px_10px_rgba(242,106,33,0.4)]'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
+        {/* Emergency Actions & Severity Filters */}
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => simulateDemoEmergency()}
+            className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span>TEST INCIDENT (B14)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setReportModalOpen(true)}
+            className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold shadow-lg shadow-red-600/30 transition-all cursor-pointer flex items-center gap-1.5"
+          >
+            <HeartPulse className="w-3.5 h-3.5" />
+            <span>+ REPORT EMERGENCY</span>
+          </button>
+
+          <div className="flex items-center gap-1.5 p-1 bg-white/5 border border-white/10 rounded-full text-xs">
+            {[
+              { id: 'ALL', label: 'All Alerts' },
+              { id: 'CRITICAL', label: 'Critical' },
+              { id: 'WARNING', label: 'Warnings' },
+              { id: 'ANOMALY', label: 'Anomalies' },
+            ].map((f) => (
+              <button
+                key={f.id}
+                onClick={() => setActiveFilter(f.id as any)}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                  activeFilter === f.id
+                    ? 'bg-[#F28C18] text-black font-bold shadow-sm'
+                    : 'text-[#8B9199] hover:text-[#F4F4F5]'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
       {/* Main Grid */}
       <div className="flex-1 p-8 max-w-7xl mx-auto w-full space-y-4">
+        {/* Active Emergency Alert Banner */}
+        {activeEmergency && (
+          <div
+            onClick={() => setEmergencyDrawerOpen(true)}
+            className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+              activeEmergency.status === 'RESOLVED'
+                ? 'bg-emerald-950/20 border-emerald-500/40 hover:border-emerald-500'
+                : 'bg-red-950/40 border-red-500/60 shadow-[0_0_30px_rgba(239,68,68,0.25)] hover:border-red-400 animate-pulse'
+            }`}
+          >
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <div className="flex items-center gap-2.5">
+                <div
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                    activeEmergency.status === 'RESOLVED'
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                      : 'bg-red-500/20 text-red-400 border border-red-500/40'
+                  }`}
+                >
+                  <HeartPulse className="w-5 h-5 animate-pulse" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-white">
+                      CRITICAL EMERGENCY: {activeEmergency.title}
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+                      {activeEmergency.severity}
+                    </span>
+                  </div>
+                  <span className="text-xs text-[#8B9199]">
+                    {activeEmergency.locationName} • {activeEmergency.operationalContext.nearestMedicalStation}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEmergencyDrawerOpen(true);
+                  }}
+                  className="px-3.5 py-1.5 rounded-xl bg-[#F28C18] hover:bg-[#E07D10] text-black font-bold text-xs shadow-sm transition-all"
+                >
+                  Manage Emergency
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {filtered.map((item) => {
           const isCritical = item.severity === 'CRITICAL';
           const isWarning = item.severity === 'WARNING';
@@ -169,20 +260,20 @@ export default function AlertsPage() {
           return (
             <div
               key={item.id}
-              className={`p-5 rounded-3xl border transition-all bg-[#0C121E]/95 backdrop-blur-2xl shadow-md ${
+              className={`p-4 rounded-2xl border transition-all ${
                 isResolved
-                  ? 'border-white/[0.04] opacity-60'
+                  ? 'bg-[#0D1014]/60 border-white/[0.05] opacity-75'
                   : isCritical
-                  ? 'border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.08)]'
+                  ? 'bg-red-950/20 border-red-500/40 shadow-card'
                   : isWarning
-                  ? 'border-amber-500/30'
-                  : 'border-white/[0.08]'
+                  ? 'bg-amber-950/20 border-amber-500/30 shadow-card'
+                  : 'bg-[#0D1014]/90 border-white/[0.08] shadow-card'
               }`}
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-2">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 ${
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
                       isCritical
                         ? 'bg-red-500/20 text-red-400'
                         : isWarning
@@ -190,13 +281,13 @@ export default function AlertsPage() {
                         : 'bg-emerald-500/20 text-emerald-400'
                     }`}
                   >
-                    <AlertTriangle className="w-5 h-5" />
+                    <AlertTriangle className="w-4 h-4" />
                   </div>
 
                   <div>
                     <div className="flex items-center gap-2">
                       <span
-                        className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                        className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded ${
                           isCritical
                             ? 'bg-red-500/20 text-red-400 border border-red-500/30'
                             : isWarning
@@ -206,24 +297,24 @@ export default function AlertsPage() {
                       >
                         {item.severity}
                       </span>
-                      <span className="text-[10px] text-gray-400 font-mono uppercase font-bold">
+                      <span className="text-[10px] text-[#8B9199] font-mono uppercase">
                         {item.type}
                       </span>
-                      <span className="text-[10px] text-gray-500">• {item.time}</span>
+                      <span className="text-[10px] text-white/40">• {item.time}</span>
                     </div>
-                    <h3 className="text-sm font-extrabold text-white mt-0.5">{item.title}</h3>
+                    <h3 className="text-sm font-bold text-[#F4F4F5] mt-0.5">{item.title}</h3>
                   </div>
                 </div>
 
                 {/* Status Badge */}
                 <div className="flex items-center gap-2">
                   <span
-                    className={`text-xs font-bold px-3 py-1 rounded-full ${
+                    className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
                       item.status === 'RESOLVED'
                         ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                         : item.status === 'ACKNOWLEDGED'
                         ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30'
-                        : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                        : 'bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse'
                     }`}
                   >
                     {item.status}
@@ -232,24 +323,24 @@ export default function AlertsPage() {
               </div>
 
               {/* Details & Pattern */}
-              <div className="pl-12 space-y-2 text-xs">
-                <div className="text-gray-400">
-                  <strong className="text-white">Affected System:</strong> {item.affectedSystem}
+              <div className="pl-11 space-y-1.5 text-xs">
+                <div className="text-[#8B9199]">
+                  <strong className="text-[#F4F4F5]">Affected System:</strong> {item.affectedSystem}
                 </div>
                 {item.anomalyPattern && (
-                  <div className="text-xs text-gray-300 bg-white/[0.03] p-3 rounded-2xl border border-white/[0.06] font-medium">
-                    <strong className="text-[#F26A21]">Detected Pattern:</strong> {item.anomalyPattern}
+                  <div className="text-[11px] text-white/70 bg-white/[0.02] p-2.5 rounded-xl border border-white/5">
+                    <strong className="text-[#F28C18]">Detected Pattern:</strong> {item.anomalyPattern}
                   </div>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div className="pl-12 mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between flex-wrap gap-2 text-xs">
+              <div className="pl-11 mt-3 pt-3 border-t border-white/5 flex items-center justify-between flex-wrap gap-2 text-xs">
                 <button
                   onClick={() => handleLocateInTwin(item)}
-                  className="text-[#F26A21] hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                  className="text-[#F28C18] hover:underline font-semibold flex items-center gap-1 cursor-pointer"
                 >
-                  <Box className="w-4 h-4" />
+                  <Box className="w-3.5 h-3.5" />
                   <span>Highlight in 3D Twin</span>
                 </button>
 
@@ -257,7 +348,7 @@ export default function AlertsPage() {
                   {item.status === 'NEW' && (
                     <button
                       onClick={() => handleAcknowledge(item.id)}
-                      className="px-3.5 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-xs font-bold text-white transition-colors cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-[#F4F4F5] transition-colors cursor-pointer"
                     >
                       Acknowledge
                     </button>
@@ -266,7 +357,7 @@ export default function AlertsPage() {
                   {item.status !== 'RESOLVED' && (
                     <button
                       onClick={() => handleResolve(item.id)}
-                      className="px-4 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-bold text-xs transition-colors flex items-center gap-1 cursor-pointer"
                     >
                       <Check className="w-3.5 h-3.5" />
                       <span>Mark Resolved</span>
@@ -278,6 +369,18 @@ export default function AlertsPage() {
           );
         })}
       </div>
+
+      {/* Medical Emergency Operations Slide-over Drawer */}
+      <EmergencyIncidentDrawer />
+
+      {/* Medical Emergency Report Modal */}
+      <ReportEmergencyModal />
+
+      {/* Human-in-the-Loop Confirmation Dialog */}
+      <EmergencyConfirmationDialog />
+
+      {/* Resolution & Closure Modal */}
+      <EmergencyResolveModal />
     </div>
   );
 }

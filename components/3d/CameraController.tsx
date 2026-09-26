@@ -12,7 +12,7 @@ export function CameraController() {
   const { camera } = useThree();
 
   const targetLookAt = useRef(new THREE.Vector3(0, 0, 0));
-  const desiredCamPos = useRef(new THREE.Vector3(0, 48, 65));
+  const desiredCamPos = useRef(new THREE.Vector3(48, 58, 68));
   const isTransitioning = useRef(false);
 
   // When target changes, smoothly fly to entity
@@ -23,9 +23,9 @@ export function CameraController() {
         desiredCamPos.current.set(cameraPosition[0], cameraPosition[1], cameraPosition[2]);
       } else {
         desiredCamPos.current.set(
-          cameraTarget[0] + 12,
-          cameraTarget[1] + 14,
-          cameraTarget[2] + 16
+          cameraTarget[0] + 16,
+          cameraTarget[1] + 18,
+          cameraTarget[2] + 22
         );
       }
       isTransitioning.current = true;
@@ -36,14 +36,14 @@ export function CameraController() {
     if (!controlsRef.current) return;
 
     if (isTransitioning.current) {
-      // Lerp camera position
-      camera.position.lerp(desiredCamPos.current, delta * 3.2);
+      // Smooth lerp camera position
+      camera.position.lerp(desiredCamPos.current, delta * 3.4);
 
-      // Lerp orbit control target
-      controlsRef.current.target.lerp(targetLookAt.current, delta * 3.2);
+      // Smooth lerp orbit control look-at target
+      controlsRef.current.target.lerp(targetLookAt.current, delta * 3.4);
       controlsRef.current.update();
 
-      // Check if close enough to finish transition
+      // Complete transition when within threshold
       if (
         camera.position.distanceTo(desiredCamPos.current) < 0.25 &&
         controlsRef.current.target.distanceTo(targetLookAt.current) < 0.25
@@ -57,10 +57,10 @@ export function CameraController() {
     <OrbitControls
       ref={controlsRef}
       enableDamping
-      dampingFactor={0.07}
-      maxPolarAngle={Math.PI / 2.15}
-      minDistance={6}
-      maxDistance={240}
+      dampingFactor={0.06}
+      maxPolarAngle={Math.PI / 2.05}
+      minDistance={8}
+      maxDistance={260}
       rotateSpeed={0.8}
       zoomSpeed={1.0}
     />

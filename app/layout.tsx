@@ -2,11 +2,12 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { GlobalSearchModal } from '@/components/shared/GlobalSearchModal';
 import { AskTwinOSFloating } from '@/components/copilot/AskTwinOSFloating';
+import { ScenarioControlDrawer } from '@/components/scenario/ScenarioControlDrawer';
 
 export const metadata: Metadata = {
-  title: 'TwinOS™ — AI Digital Twin for Smarter Infrastructure',
+  title: 'TwinOS — AI Digital Twin for Smarter Infrastructure',
   description:
-    'TwinOS creates a live digital representation of physical infrastructure with real-time monitoring, analytics, and operational predictions.',
+    'TwinOS creates a live digital representation of physical infrastructure and uses AI to detect, predict and understand what is happening across the environment.',
 };
 
 export default function RootLayout({
@@ -15,11 +16,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className="bg-[#080D16] text-[#F8FAFC] antialiased min-h-screen selection:bg-[#F26A21]/30 selection:text-white">
+    <html lang="en" className="dark" style={{ colorScheme: 'dark', backgroundColor: '#080A0D' }}>
+      <body
+        style={{ colorScheme: 'dark', backgroundColor: '#080A0D', color: '#F4F4F5' }}
+        className="bg-[#080A0D] text-[#F4F4F5] antialiased w-screen h-screen overflow-hidden font-sans"
+      >
         {children}
         <GlobalSearchModal />
         <AskTwinOSFloating />
+        <ScenarioControlDrawer />
       </body>
     </html>
   );

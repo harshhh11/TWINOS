@@ -5,8 +5,20 @@ import Link from 'next/link';
 import {
   ArrowLeft,
   BarChart3,
+  TrendingUp,
+  Zap,
+  Users,
+  Shield,
+  AlertTriangle,
+  Clock,
   Cpu,
   Activity,
+  Plane,
+  ShoppingBag,
+  Wrench,
+  Luggage,
+  CheckCircle2,
+  Database,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -17,81 +29,99 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  LineChart,
   Line,
+  PieChart,
+  Pie,
+  Cell,
 } from 'recharts';
-
-const HISTORICAL_ACTIVITY_DATA = [
-  { time: '06:00', throughputLoad: 4200, subsystemEvents: 26, energyMw: 18.2 },
-  { time: '08:00', throughputLoad: 8900, subsystemEvents: 50, energyMw: 21.5 },
-  { time: '10:00', throughputLoad: 11400, subsystemEvents: 65, energyMw: 23.8 },
-  { time: '12:00', throughputLoad: 13200, subsystemEvents: 74, energyMw: 25.4 },
-  { time: '14:00', throughputLoad: 12600, subsystemEvents: 62, energyMw: 24.1 },
-  { time: '16:00', throughputLoad: 12482, subsystemEvents: 68, energyMw: 24.3 },
-  { time: '18:00', throughputLoad: 11100, subsystemEvents: 56, energyMw: 23.2 },
-  { time: '20:00', throughputLoad: 9800, subsystemEvents: 46, energyMw: 21.8 },
-  { time: '22:00', throughputLoad: 7100, subsystemEvents: 33, energyMw: 19.4 },
-];
-
-const ASSET_PERFORMANCE_METRICS = [
-  { name: 'Terminal B HVAC-03', uptime: 98.2, healthScore: 78, mtbfHours: 720, incidents: 1 },
-  { name: 'Central Substation B', uptime: 99.9, healthScore: 95, mtbfHours: 4200, incidents: 0 },
-  { name: 'Baggage Conveyor 03', uptime: 96.4, healthScore: 76, mtbfHours: 480, incidents: 1 },
-  { name: 'Elevators Bank 1', uptime: 99.4, healthScore: 88, mtbfHours: 1850, incidents: 0 },
-  { name: 'Primary Optical Mesh', uptime: 99.8, healthScore: 98, mtbfHours: 3600, incidents: 0 },
-];
-
-const INCIDENT_TRENDS_DATA = [
-  { day: 'Mon', equipmentWarnings: 2, thermalAlerts: 1, resolved: 3 },
-  { day: 'Tue', equipmentWarnings: 3, thermalAlerts: 2, resolved: 5 },
-  { day: 'Wed', equipmentWarnings: 1, thermalAlerts: 1, resolved: 2 },
-  { day: 'Thu', equipmentWarnings: 2, thermalAlerts: 2, resolved: 4 },
-  { day: 'Fri', equipmentWarnings: 4, thermalAlerts: 3, resolved: 7 },
-  { day: 'Sat', equipmentWarnings: 3, thermalAlerts: 2, resolved: 5 },
-  { day: 'Sun', equipmentWarnings: 2, thermalAlerts: 1, resolved: 3 },
-];
+import { airportDataService } from '@/lib/data/airportDataService';
 
 export default function AnalyticsPage() {
-  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'PERFORMANCE' | 'INCIDENTS' | 'ENERGY'>('OVERVIEW');
+  const summary = airportDataService.getSummary();
+  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'AIRLINES' | 'PASSENGERS' | 'OPERATIONS' | 'REVENUE' | 'MAINTENANCE'>('OVERVIEW');
+
+  const {
+    kpis,
+    airline_otp,
+    delay_reasons,
+    hourly_trend,
+    passenger_metrics,
+    security_metrics,
+    retail_metrics,
+    maintenance_metrics,
+    gate_utilization,
+    meta,
+  } = summary;
+
+  const COLORS = ['#F28C18', '#38BDF8', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
+
+  const gateData = Object.entries(gate_utilization || {})
+    .slice(0, 8)
+    .map(([gate, count]) => ({ gate, count }));
+
+  const cabinClassData = Object.entries(passenger_metrics.cabin_class || {}).map(([name, value]) => ({
+    name,
+    value,
+  }));
+
+  const ageGroupData = Object.entries(passenger_metrics.age_groups || {}).map(([name, value]) => ({
+    name,
+    value,
+  }));
+
+  const nationalityData = Object.entries(passenger_metrics.top_nationalities || {}).map(([name, value]) => ({
+    name,
+    value,
+  }));
 
   return (
-    <div className="w-screen min-h-screen bg-[#080D16] text-[#F8FAFC] font-sans select-none flex flex-col">
+    <div className="w-screen h-screen overflow-y-auto bg-[#080A0D] text-[#F4F4F5] font-sans select-none flex flex-col">
       {/* Top Header */}
-      <header className="px-8 py-4 border-b border-white/[0.08] bg-[#0C121E]/95 backdrop-blur-2xl sticky top-0 z-30 shadow-lg flex items-center justify-between">
+      <header className="px-8 py-4 border-b border-white/[0.08] bg-[#0D1014]/90 backdrop-blur-xl flex items-center justify-between sticky top-0 z-30 shadow-card">
         <div className="flex items-center gap-4">
           <Link
             href="/"
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-bold text-white transition-all"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-[#F4F4F5] transition-all"
           >
-            <ArrowLeft className="w-4 h-4 text-[#F26A21]" />
+            <ArrowLeft className="w-3.5 h-3.5" />
             <span>Dashboard</span>
           </Link>
 
           <div>
-            <h1 className="text-base font-extrabold text-white flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-[#F26A21]" />
-              Operational Analytics & Historical Trends
-            </h1>
-            <p className="text-[11px] text-gray-400">
-              System Activity • Asset Performance • Energy Profiles • Incident MTTR Metrics
+            <div className="flex items-center gap-2">
+              <h1 className="text-base font-bold text-[#F4F4F5] flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-[#F28C18]" />
+                Airport Operations Analytics & Multi-Table Intelligence
+              </h1>
+              <span className="px-2.5 py-0.5 rounded-full bg-[#F28C18]/15 border border-[#F28C18]/30 text-[10px] font-mono font-bold text-[#F28C18] flex items-center gap-1">
+                <Database className="w-2.5 h-2.5" />
+                {meta.airport_code} Dataset (8 Tables)
+              </span>
+            </div>
+            <p className="text-[11px] text-[#8B9199]">
+              {meta.airport_name} • 1,000 Flights • 2,500 Passengers • Baggage & Security Screening Analytics
             </p>
           </div>
         </div>
 
         {/* Tab Filters */}
-        <div className="flex items-center gap-1.5 p-1 bg-white/[0.04] border border-white/[0.08] rounded-full text-xs">
+        <div className="flex items-center gap-1.5 p-1 bg-white/5 border border-white/10 rounded-full text-xs">
           {[
-            { id: 'OVERVIEW', label: 'System Overview' },
-            { id: 'PERFORMANCE', label: 'Asset Performance' },
-            { id: 'INCIDENTS', label: 'Incident Trends' },
-            { id: 'ENERGY', label: 'Energy Profiles' },
+            { id: 'OVERVIEW', label: 'Overview' },
+            { id: 'AIRLINES', label: 'Airlines & OTP' },
+            { id: 'PASSENGERS', label: 'Passenger Flow' },
+            { id: 'OPERATIONS', label: 'Security & Baggage' },
+            { id: 'REVENUE', label: 'Retail Revenue' },
+            { id: 'MAINTENANCE', label: 'Fleet Maintenance' },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-3.5 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
                 activeTab === tab.id
-                  ? 'bg-[#F26A21] text-white font-bold shadow-[0_2px_12px_rgba(242,106,33,0.4)]'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-[#F28C18] text-black font-bold shadow-sm'
+                  : 'text-[#8B9199] hover:text-[#F4F4F5]'
               }`}
             >
               {tab.label}
@@ -100,148 +130,225 @@ export default function AnalyticsPage() {
         </div>
       </header>
 
-      {/* Main Grid */}
+      {/* Main Container */}
       <div className="flex-1 p-8 max-w-7xl mx-auto w-full space-y-6">
-        {/* KPI Summary Row */}
+        {/* KPI Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-[#0C121E]/95 backdrop-blur-2xl rounded-2xl p-5 border border-white/[0.08] shadow-md">
-            <span className="text-gray-400 text-xs font-semibold block">Peak Throughput Load</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-black text-white">13,200</span>
-              <span className="text-xs font-bold text-emerald-400">↑ 12% vs avg</span>
+          <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4 shadow-card">
+            <div className="flex items-center justify-between">
+              <span className="text-[#8B9199] text-[10px] uppercase font-mono">Flight OTP (On-Time)</span>
+              <Plane className="w-3.5 h-3.5 text-[#F28C18]" />
             </div>
-            <span className="text-[11px] text-gray-500 block mt-1">Midday Peak (12:00 PM)</span>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-black text-[#F4F4F5]">{kpis.on_time_performance_pct}%</span>
+              <span className="text-xs font-bold text-emerald-400">{1000 - kpis.delayed_flights} / 1000</span>
+            </div>
+            <span className="text-[10px] text-[#8B9199] block mt-1">
+              Avg Delay: {kpis.avg_delay_minutes} min ({kpis.delayed_flights} delayed)
+            </span>
           </div>
 
-          <div className="bg-[#0C121E]/95 backdrop-blur-2xl rounded-2xl p-5 border border-white/[0.08] shadow-md">
-            <span className="text-gray-400 text-xs font-semibold block">24h Energy Footprint</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-black text-white">114.8</span>
-              <span className="text-xs font-mono font-bold text-gray-400">MWh</span>
+          <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4 shadow-card">
+            <div className="flex items-center justify-between">
+              <span className="text-[#8B9199] text-[10px] uppercase font-mono">Passenger Demographics</span>
+              <Users className="w-3.5 h-3.5 text-sky-400" />
             </div>
-            <span className="text-[11px] text-emerald-400 font-semibold block mt-1">↓ 5.2% efficiency gain</span>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-black text-[#F4F4F5]">{kpis.total_passengers_monitored.toLocaleString()}</span>
+              <span className="text-xs font-mono text-[#8B9199]">pax</span>
+            </div>
+            <span className="text-[10px] text-sky-400 block mt-1">
+              Avg Dwell: {passenger_metrics.avg_dwell_hours} hrs • {passenger_metrics.frequent_flyer_pct}% FF
+            </span>
           </div>
 
-          <div className="bg-[#0C121E]/95 backdrop-blur-2xl rounded-2xl p-5 border border-white/[0.08] shadow-md">
-            <span className="text-gray-400 text-xs font-semibold block">Fleet MTBF Reliability</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-black text-white">1,840</span>
-              <span className="text-xs font-mono font-bold text-gray-400">hrs</span>
+          <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4 shadow-card">
+            <div className="flex items-center justify-between">
+              <span className="text-[#8B9199] text-[10px] uppercase font-mono">Retail Concession GMV</span>
+              <ShoppingBag className="w-3.5 h-3.5 text-emerald-400" />
             </div>
-            <span className="text-[11px] text-emerald-400 font-semibold block mt-1">99.2% availability index</span>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-black text-[#F4F4F5]">₹{(kpis.retail_gmv_inr / 1000000).toFixed(2)}M</span>
+              <span className="text-xs font-bold text-emerald-400">{kpis.retail_transactions.toLocaleString()} txns</span>
+            </div>
+            <span className="text-[10px] text-[#8B9199] block mt-1">
+              Avg Basket: ₹{kpis.retail_avg_basket_inr.toFixed(0)}
+            </span>
           </div>
 
-          <div className="bg-[#0C121E]/95 backdrop-blur-2xl rounded-2xl p-5 border border-white/[0.08] shadow-md">
-            <span className="text-gray-400 text-xs font-semibold block">Incident MTTR (Mean Time)</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-black text-white">18.4</span>
-              <span className="text-xs font-mono font-bold text-gray-400">mins</span>
+          <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4 shadow-card">
+            <div className="flex items-center justify-between">
+              <span className="text-[#8B9199] text-[10px] uppercase font-mono">Security & Operations</span>
+              <Shield className="w-3.5 h-3.5 text-amber-400" />
             </div>
-            <span className="text-[11px] text-emerald-400 font-semibold block mt-1">↓ 35% faster with TwinOS</span>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-black text-[#F4F4F5]">{(kpis.security_avg_wait_sec / 60).toFixed(1)}</span>
+              <span className="text-xs font-mono text-[#8B9199]">min wait</span>
+            </div>
+            <span className="text-[10px] text-amber-400 block mt-1">
+              {kpis.security_hourly_throughput} pax/hr/lane • {kpis.total_baggage_handled} bags
+            </span>
           </div>
         </div>
 
-        {/* Chart 1: Historical System Activity (Throughput & Power) */}
-        {(activeTab === 'OVERVIEW' || activeTab === 'ENERGY') && (
-          <div className="bg-[#0C121E]/95 backdrop-blur-2xl rounded-3xl p-6 border border-white/[0.08] shadow-md">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-[#F26A21]" />
-                  Historical System Activity & Hourly Throughput
-                </h3>
-                <span className="text-[11px] text-gray-400">
-                  Hourly operational activity correlated with instantaneous facility energy demand
-                </span>
+        {/* 1. OVERVIEW TAB */}
+        {activeTab === 'OVERVIEW' && (
+          <div className="space-y-6">
+            {/* Chart 1: Passenger Volume & Energy Demand */}
+            <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-sm font-bold text-[#F4F4F5] flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-[#F28C18]" />
+                    24-Hour Passenger Traffic Waves & Facility Power Load
+                  </h3>
+                  <span className="text-[11px] text-[#8B9199]">
+                    Correlation of passenger banking with terminal energy load and security checkpoint wait times
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 text-xs font-mono">
+                  <span className="flex items-center gap-1.5 text-[#F4F4F5]">
+                    <span className="w-3 h-1 bg-[#F28C18] rounded-full" /> Passenger Volume
+                  </span>
+                  <span className="flex items-center gap-1.5 text-sky-400">
+                    <span className="w-3 h-1 bg-sky-400 rounded-full" /> Grid Power (MW)
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-4 text-xs font-semibold">
-                <span className="flex items-center gap-1.5 text-white">
-                  <span className="w-3 h-1.5 bg-[#F26A21] rounded-full" /> Throughput Units
-                </span>
-                <span className="flex items-center gap-1.5 text-sky-400">
-                  <span className="w-3 h-1.5 bg-sky-400 rounded-full" /> Grid Power (MW)
-                </span>
+
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={hourly_trend} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="paxGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#F28C18" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#F28C18" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="time" stroke="#626870" fontSize={10} tickLine={false} />
+                    <YAxis stroke="#626870" fontSize={10} tickLine={false} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#0D1014',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderRadius: '12px',
+                        fontSize: '11px',
+                      }}
+                    />
+                    <Area type="monotone" dataKey="passengers" stroke="#F28C18" strokeWidth={2.5} fill="url(#paxGrad)" name="Passengers" />
+                    <Line type="monotone" dataKey="energyMw" stroke="#38BDF8" strokeWidth={2} name="Power (MW)" />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             </div>
 
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={HISTORICAL_ACTIVITY_DATA} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="paxGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#F26A21" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#F26A21" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="time" stroke="#64748B" fontSize={10} tickLine={false} />
-                  <YAxis stroke="#64748B" fontSize={10} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#0F172A',
-                      borderColor: 'rgba(255,255,255,0.1)',
-                      borderRadius: '12px',
-                      fontSize: '11px',
-                      color: '#F8FAFC',
-                    }}
-                  />
-                  <Area type="monotone" dataKey="throughputLoad" stroke="#F26A21" strokeWidth={2.5} fill="url(#paxGrad)" name="Throughput Units" />
-                  <Line type="monotone" dataKey="energyMw" stroke="#38BDF8" strokeWidth={2} name="Power (MW)" />
-                </AreaChart>
-              </ResponsiveContainer>
+            {/* Delay Reasons & Gate Utilization */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Delay Causes */}
+              <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card">
+                <h3 className="text-sm font-bold text-[#F4F4F5] flex items-center gap-2 mb-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-400" />
+                  Flight Delay Root Cause Distribution
+                </h3>
+                <span className="text-[11px] text-[#8B9199] block mb-4">
+                  Breakdown across 307 delayed flights at Indira Gandhi International Airport
+                </span>
+                <div className="h-52 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={delay_reasons} layout="vertical" margin={{ top: 5, right: 20, left: 30, bottom: 5 }}>
+                      <XAxis type="number" stroke="#626870" fontSize={10} tickLine={false} />
+                      <YAxis dataKey="reason" type="category" stroke="#626870" fontSize={10} tickLine={false} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: '#0D1014',
+                          borderColor: 'rgba(255,255,255,0.1)',
+                          borderRadius: '12px',
+                          fontSize: '11px',
+                        }}
+                      />
+                      <Bar dataKey="count" fill="#F28C18" radius={[0, 6, 6, 0]} name="Delayed Flights" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Gate Utilization */}
+              <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card">
+                <h3 className="text-sm font-bold text-[#F4F4F5] flex items-center gap-2 mb-2">
+                  <Plane className="w-4 h-4 text-sky-400" />
+                  Terminal 3 Gate Flight Allocations
+                </h3>
+                <span className="text-[11px] text-[#8B9199] block mb-4">
+                  Highest volume departure gates assigned in operational dataset
+                </span>
+                <div className="h-52 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={gateData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+                      <XAxis dataKey="gate" stroke="#626870" fontSize={10} tickLine={false} />
+                      <YAxis stroke="#626870" fontSize={10} tickLine={false} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: '#0D1014',
+                          borderColor: 'rgba(255,255,255,0.1)',
+                          borderRadius: '12px',
+                          fontSize: '11px',
+                        }}
+                      />
+                      <Bar dataKey="count" fill="#38BDF8" radius={[4, 4, 0, 0]} name="Flights Handled" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Section 2: Asset Performance Benchmarks */}
-        {(activeTab === 'OVERVIEW' || activeTab === 'PERFORMANCE') && (
-          <div className="bg-[#0C121E]/95 backdrop-blur-2xl rounded-3xl p-6 border border-white/[0.08] shadow-md">
-            <div className="flex items-center justify-between mb-4 border-b border-white/[0.06] pb-3">
-              <div>
-                <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-                  <Cpu className="w-4 h-4 text-[#F26A21]" />
-                  Asset Performance & Reliability Benchmark
-                </h3>
-                <span className="text-[11px] text-gray-400">
-                  Uptime percentage, health score, and mean time between failures (MTBF)
-                </span>
-              </div>
+        {/* 2. AIRLINES & OTP TAB */}
+        {activeTab === 'AIRLINES' && (
+          <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card space-y-4">
+            <div>
+              <h3 className="text-sm font-bold text-[#F4F4F5] flex items-center gap-2">
+                <Plane className="w-4 h-4 text-[#F28C18]" />
+                Airline On-Time Performance (OTP) & Delay Benchmark
+              </h3>
+              <p className="text-[11px] text-[#8B9199]">
+                Carrier metrics computed from 1,000 scheduled arrivals and departures at Indira Gandhi International Airport
+              </p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-white/[0.08] text-gray-400 text-[10px] uppercase font-mono font-bold">
-                    <th className="py-3 px-3">Asset System</th>
-                    <th className="py-3 px-3">Operational Uptime</th>
-                    <th className="py-3 px-3">Health Score</th>
-                    <th className="py-3 px-3">MTBF Benchmark</th>
-                    <th className="py-3 px-3 text-right">Active Status</th>
+                  <tr className="border-b border-white/[0.08] text-[#8B9199] text-[10px] uppercase font-mono">
+                    <th className="py-2.5 px-3">Airline Carrier</th>
+                    <th className="py-2.5 px-3">Total Flights</th>
+                    <th className="py-2.5 px-3">On-Time Performance</th>
+                    <th className="py-2.5 px-3">Delayed Count</th>
+                    <th className="py-2.5 px-3">Avg Delay (min)</th>
+                    <th className="py-2.5 px-3 text-right">Avg Load Factor</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/[0.04]">
-                  {ASSET_PERFORMANCE_METRICS.map((metric, i) => (
+                <tbody className="divide-y divide-white/5">
+                  {airline_otp.map((carrier, i) => (
                     <tr key={i} className="hover:bg-white/[0.02]">
-                      <td className="py-3.5 px-3 font-bold text-white">{metric.name}</td>
-                      <td className="py-3.5 px-3 text-emerald-400 font-mono font-bold">{metric.uptime}%</td>
-                      <td className="py-3.5 px-3">
-                        <span
-                          className={`font-bold ${
-                            metric.healthScore < 80 ? 'text-amber-400' : 'text-emerald-400'
-                          }`}
-                        >
-                          {metric.healthScore}%
-                        </span>
+                      <td className="py-3 px-3 font-semibold text-[#F4F4F5] flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-[#F28C18]" />
+                        {carrier.airline_name}
                       </td>
-                      <td className="py-3.5 px-3 font-mono text-gray-400">{metric.mtbfHours} hrs</td>
-                      <td className="py-3.5 px-3 text-right">
-                        {metric.incidents > 0 ? (
-                          <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-bold border border-amber-500/30">
-                            {metric.incidents} Flagged
+                      <td className="py-3 px-3 font-mono text-[#F4F4F5]">{carrier.total_flights}</td>
+                      <td className="py-3 px-3">
+                        <div className="flex items-center gap-2">
+                          <span className={`font-mono font-bold ${carrier.otp >= 75 ? 'text-emerald-400' : carrier.otp >= 70 ? 'text-amber-400' : 'text-red-400'}`}>
+                            {carrier.otp}%
                           </span>
-                        ) : (
-                          <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/20 px-2.5 py-0.5 rounded-full">Optimal</span>
-                        )}
+                          <div className="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                            <div className="h-full bg-emerald-400 rounded-full" style={{ width: `${carrier.otp}%` }} />
+                          </div>
+                        </div>
                       </td>
+                      <td className="py-3 px-3 font-mono text-amber-400">{carrier.delayed_flights}</td>
+                      <td className="py-3 px-3 font-mono text-[#8B9199]">{carrier.avg_delay} min</td>
+                      <td className="py-3 px-3 font-mono text-right text-sky-400">{carrier.avg_load_factor}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -250,40 +357,226 @@ export default function AnalyticsPage() {
           </div>
         )}
 
-        {/* Section 3: Incident Weekly Trends */}
-        {(activeTab === 'OVERVIEW' || activeTab === 'INCIDENTS') && (
-          <div className="bg-[#0C121E]/95 backdrop-blur-2xl rounded-3xl p-6 border border-white/[0.08] shadow-md">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-[#F26A21]" />
-                  Weekly Incident & Anomaly Resolution Trends
-                </h3>
-                <span className="text-[11px] text-gray-400">
-                  Detected operational anomalies vs verified maintenance resolutions
-                </span>
+        {/* 3. PASSENGERS TAB */}
+        {activeTab === 'PASSENGERS' && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Cabin Class Distribution */}
+            <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card">
+              <h3 className="text-sm font-bold text-[#F4F4F5] mb-1">Cabin Class Breakdown</h3>
+              <p className="text-[11px] text-[#8B9199] mb-4">Proportion across 2,500 passenger journeys</p>
+              <div className="h-52 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={cabinClassData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={4} dataKey="value">
+                      {cabinClassData.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ backgroundColor: '#0D1014', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '11px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex justify-center gap-6 mt-2 text-xs">
+                {cabinClassData.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[idx] }} />
+                    <span className="text-[#8B9199]">{item.name}:</span>
+                    <span className="font-bold text-[#F4F4F5]">{item.value}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="h-60 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={INCIDENT_TRENDS_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <XAxis dataKey="day" stroke="#64748B" fontSize={10} tickLine={false} />
-                  <YAxis stroke="#64748B" fontSize={10} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#0F172A',
-                      borderColor: 'rgba(255,255,255,0.1)',
-                      borderRadius: '12px',
-                      fontSize: '11px',
-                      color: '#F8FAFC',
-                    }}
-                  />
-                  <Bar dataKey="thermalAlerts" fill="#EF4444" radius={[4, 4, 0, 0]} name="Thermal Alerts" />
-                  <Bar dataKey="equipmentWarnings" fill="#F59E0B" radius={[4, 4, 0, 0]} name="Equipment Warnings" />
-                  <Bar dataKey="resolved" fill="#10B981" radius={[4, 4, 0, 0]} name="Resolved" />
-                </BarChart>
-              </ResponsiveContainer>
+            {/* Age Groups */}
+            <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card">
+              <h3 className="text-sm font-bold text-[#F4F4F5] mb-1">Passenger Age Demographics</h3>
+              <p className="text-[11px] text-[#8B9199] mb-4">Youth, Adult, Senior & Child distributions</p>
+              <div className="h-52 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={ageGroupData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <XAxis dataKey="name" stroke="#626870" fontSize={10} tickLine={false} />
+                    <YAxis stroke="#626870" fontSize={10} tickLine={false} />
+                    <Tooltip contentStyle={{ backgroundColor: '#0D1014', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '11px' }} />
+                    <Bar dataKey="value" fill="#38BDF8" radius={[4, 4, 0, 0]} name="Passengers" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Top Nationalities */}
+            <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card">
+              <h3 className="text-sm font-bold text-[#F4F4F5] mb-1">Top Passenger Nationalities</h3>
+              <p className="text-[11px] text-[#8B9199] mb-4">Origin passport profiles at DEL hub</p>
+              <div className="space-y-2.5">
+                {nationalityData.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-xs">
+                    <span className="text-[#F4F4F5] font-medium">{item.name}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-[#F28C18] rounded-full" style={{ width: `${(item.value / 600) * 100}%` }} />
+                      </div>
+                      <span className="font-mono text-[#8B9199] w-8 text-right">{item.value}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 4. SECURITY & BAGGAGE TAB */}
+        {activeTab === 'OPERATIONS' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card space-y-4">
+              <h3 className="text-sm font-bold text-[#F4F4F5] flex items-center gap-2">
+                <Shield className="w-4 h-4 text-emerald-400" />
+                Security Screening Telemetry (2,500 Screenings)
+              </h3>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                  <span className="text-[#8B9199] block text-[10px]">Average Queue Wait</span>
+                  <span className="text-xl font-bold text-[#F4F4F5] mt-1 block font-mono">
+                    {security_metrics.avg_wait_sec} sec
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                  <span className="text-[#8B9199] block text-[10px]">Average Scan Duration</span>
+                  <span className="text-xl font-bold text-[#F4F4F5] mt-1 block font-mono">
+                    {security_metrics.avg_processing_sec} sec
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                  <span className="text-[#8B9199] block text-[10px]">Lane Throughput</span>
+                  <span className="text-xl font-bold text-emerald-400 mt-1 block font-mono">
+                    {security_metrics.throughput_per_lane} pax/hr
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                  <span className="text-[#8B9199] block text-[10px]">Alarm Trigger Rate</span>
+                  <span className="text-xl font-bold text-amber-400 mt-1 block font-mono">
+                    {security_metrics.alarm_rate_pct}%
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card space-y-4">
+              <h3 className="text-sm font-bold text-[#F4F4F5] flex items-center gap-2">
+                <Luggage className="w-4 h-4 text-[#F28C18]" />
+                Baggage Lifecycle & Sortation (2,800 Bags)
+              </h3>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                  <span className="text-[#8B9199] block text-[10px]">Total Baggage Handled</span>
+                  <span className="text-xl font-bold text-[#F4F4F5] mt-1 block font-mono">
+                    {kpis.total_baggage_handled.toLocaleString()}
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                  <span className="text-[#8B9199] block text-[10px]">Average Bag Weight</span>
+                  <span className="text-xl font-bold text-sky-400 mt-1 block font-mono">
+                    {kpis.baggage_avg_weight_kg} kg
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                  <span className="text-[#8B9199] block text-[10px]">Primary Carousel</span>
+                  <span className="text-xl font-bold text-[#F4F4F5] mt-1 block font-mono">
+                    Carousel C12
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                  <span className="text-[#8B9199] block text-[10px]">Mishandled Count</span>
+                  <span className="text-xl font-bold text-emerald-400 mt-1 block font-mono">
+                    0 (100% Success)
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 5. REVENUE TAB */}
+        {activeTab === 'REVENUE' && (
+          <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card space-y-4">
+            <div>
+              <h3 className="text-sm font-bold text-[#F4F4F5] flex items-center gap-2">
+                <ShoppingBag className="w-4 h-4 text-emerald-400" />
+                Airport Retail & Concession Performance (₹12,626,167 GMV)
+              </h3>
+              <p className="text-[11px] text-[#8B9199]">
+                3,000 retail transactions logged across Terminal 3 Duty Free & Concourse shops
+              </p>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-white/[0.08] text-[#8B9199] text-[10px] uppercase font-mono">
+                    <th className="py-2.5 px-3">Product Category</th>
+                    <th className="py-2.5 px-3">Transactions</th>
+                    <th className="py-2.5 px-3">Total GMV (INR)</th>
+                    <th className="py-2.5 px-3 text-right">Avg Basket</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {retail_metrics.category_sales.map((cat, i) => (
+                    <tr key={i} className="hover:bg-white/[0.02]">
+                      <td className="py-3 px-3 font-semibold text-[#F4F4F5]">{cat.product_category}</td>
+                      <td className="py-3 px-3 font-mono text-[#F4F4F5]">{cat.transactions.toLocaleString()}</td>
+                      <td className="py-3 px-3 font-mono text-emerald-400 font-bold">₹{cat.revenue.toLocaleString()}</td>
+                      <td className="py-3 px-3 font-mono text-right text-sky-400">₹{(cat.revenue / cat.transactions).toFixed(0)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* 6. MAINTENANCE TAB */}
+        {activeTab === 'MAINTENANCE' && (
+          <div className="bg-[#0D1014]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-card space-y-4">
+            <div>
+              <h3 className="text-sm font-bold text-[#F4F4F5] flex items-center gap-2">
+                <Wrench className="w-4 h-4 text-amber-400" />
+                Fleet Engineering Defect Logs (400 Work Orders)
+              </h3>
+              <p className="text-[11px] text-[#8B9199]">
+                Aircraft maintenance tracking: hydraulic seals, line inspections, and engineer signoffs
+              </p>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-white/[0.08] text-[#8B9199] text-[10px] uppercase font-mono">
+                    <th className="py-2.5 px-3">Work Order</th>
+                    <th className="py-2.5 px-3">Aircraft Tail</th>
+                    <th className="py-2.5 px-3">Flight ID</th>
+                    <th className="py-2.5 px-3">Defect Issue</th>
+                    <th className="py-2.5 px-3">Component</th>
+                    <th className="py-2.5 px-3">Severity</th>
+                    <th className="py-2.5 px-3 text-right">Downtime (min)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {maintenance_metrics.recent_orders.map((order, i) => (
+                    <tr key={i} className="hover:bg-white/[0.02]">
+                      <td className="py-3 px-3 font-mono text-[#F28C18]">{order.work_order_id}</td>
+                      <td className="py-3 px-3 font-semibold text-[#F4F4F5]">{order.tail_number}</td>
+                      <td className="py-3 px-3 font-mono text-sky-400">{order.flight_id}</td>
+                      <td className="py-3 px-3 text-[#F4F4F5]">{order.issue_type}</td>
+                      <td className="py-3 px-3 text-[#8B9199]">{order.component}</td>
+                      <td className="py-3 px-3">
+                        <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-bold font-mono text-[10px] border border-red-500/30">
+                          Level {order.severity}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-mono text-right text-amber-400">{order.downtime_minutes} min</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
